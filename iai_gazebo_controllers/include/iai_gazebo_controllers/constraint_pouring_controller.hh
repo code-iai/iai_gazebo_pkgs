@@ -7,6 +7,10 @@
 
 namespace iai_gazebo_controllers
 {
+  void VelocityControlLink(const gazebo::math::Vector3& linear_velocity,
+      const gazebo::math::Vector3& angular_velocity,
+      gazebo::physics::Link& Link);
+
   class ConstraintPouringController : public gazebo::WorldPlugin
   {
     public:
@@ -20,7 +24,10 @@ namespace iai_gazebo_controllers
 
       // internal data structures
       gazebo::physics::WorldPtr world_;
-      sdf::ElementPtr self_model_;
+      sdf::ElementPtr self_description_;
+      gazebo::physics::ModelPtr controlled_model_;
+
+      gazebo::common::PID pid_;
 
       // internal helper functions
       void ReadParameters();

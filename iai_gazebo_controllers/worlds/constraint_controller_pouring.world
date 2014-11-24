@@ -41,7 +41,7 @@
 
     <include>
         <uri>model://mug</uri>
-        <pose>0.2 0.1 0.855 0.0 0 0</pose>
+        <pose>0.2 0.1 1.855 0.0 0 0</pose>
     </include>
 
   <plugin name="SpawnLiquid" filename="libSpawnLiquid.so">
@@ -67,7 +67,7 @@
   </plugin>
 
   <plugin name="constraint_pouring_controller" filename="libconstraint_pouring_controller.so">
-    <controlled_model>mug<controlled_model/>
+    <controlled_model>Cup<controlled_model/>
   </plugin>
  
   </world>

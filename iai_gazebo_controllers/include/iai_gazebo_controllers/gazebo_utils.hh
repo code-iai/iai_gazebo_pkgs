@@ -47,6 +47,14 @@ namespace iai_gazebo_controllers
       return false;
     }
   }
+
+  void VelocityControlLink(const gazebo::math::Vector3& linear_velocity,
+      const gazebo::math::Vector3& angular_velocity,
+      gazebo::physics::LinkPtr link)
+  {
+    link->SetLinearVel(linear_velocity);
+    link->SetAngularVel(angular_velocity);
+  }
 }
 #endif //IAI_GAZEBO_CONTROLLERS_GAZEBO_UTILS_HH 
 

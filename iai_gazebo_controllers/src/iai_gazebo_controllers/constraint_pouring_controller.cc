@@ -10,7 +10,7 @@ namespace iai_gazebo_controllers
   {
     printf("Loading ConstraintPouringController...\n");
     this->world_ = parent;
-    this->self_model_ = self;
+    this->self_description_ = self;
 
     ReadParameters();
 
@@ -19,14 +19,18 @@ namespace iai_gazebo_controllers
 
   void ConstraintPouringController::UpdateCallback(const common::UpdateInfo& info)
   {
-   // implement me
+    // TODO(Georg): add constraint controller here
+    VelocityControlLink(math::Vector3(), math::Vector3(), 
+        controlled_model_->GetLinks()[0]);
   }
 
   void ConstraintPouringController::ReadParameters()
   {
     std::string controlled_model;
-    GetSDFValue("controlled_model", self_model_, controlled_model);
-    printf("Extracted the following parameter: %s\n", controlled_model.c_str());
+    GetSDFValue("controlled_model", self_description_, controlled_model);
+    controlled_model_ = world_->GetModel(controlled_model);
+    if(!controlled_model_)
+      printf("ERROR: Model '%s' not in world!", controlled_model.c_str());
   }
 
   void ConstraintPouringController::SetupConnections()
