@@ -1,6 +1,9 @@
+#ifndef IAI_GAZEBO_CONTROLLERS_GAZEBO_UTILS_HH 
+#define IAI_GAZEBO_CONTROLLERS_GAZEBO_UTILS_HH 
+
 #include <gazebo/gazebo.hh>
 
-namespace gazebo
+namespace iai_gazebo_controllers
 {
   /**
    * Looks up the value of an sdf element.
@@ -45,3 +48,5 @@ namespace gazebo
     }
   }
 }
+#endif //IAI_GAZEBO_CONTROLLERS_GAZEBO_UTILS_HH 
+

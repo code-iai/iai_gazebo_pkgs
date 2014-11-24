@@ -1,22 +1,25 @@
+#ifndef IAI_GAZEBO_CONTROLLERS_CONSTRAINT_POURING_CONTROLLER_HH 
+#define IAI_GAZEBO_CONTROLLERS_CONSTRAINT_POURING_CONTROLLER_HH 
+
 #include <gazebo/gazebo.hh>
 #include <gazebo/physics/physics.hh>
 #include <gazebo/common/common.hh>
 
-namespace gazebo
+namespace iai_gazebo_controllers
 {
-  class ConstraintPouringController : public WorldPlugin
+  class ConstraintPouringController : public gazebo::WorldPlugin
   {
     public:
-       void Load(physics::WorldPtr parent, sdf::ElementPtr self);
+       void Load(gazebo::physics::WorldPtr parent, sdf::ElementPtr self);
 
-       void UpdateCallback(const common::UpdateInfo& info);
+       void UpdateCallback(const gazebo::common::UpdateInfo& info);
 
     private: 
       // communication stuff
-      event::ConnectionPtr updateConnection_;
+      gazebo::event::ConnectionPtr updateConnection_;
 
       // internal data structures
-      physics::WorldPtr world_;
+      gazebo::physics::WorldPtr world_;
       sdf::ElementPtr self_model_;
 
       // internal helper functions
@@ -24,3 +27,4 @@ namespace gazebo
       void SetupConnections();
   };
 } // namespace gazebo
+#endif //IAI_GAZEBO_CONTROLLERS_CONSTRAINT_POURING_CONTROLLER_HH 

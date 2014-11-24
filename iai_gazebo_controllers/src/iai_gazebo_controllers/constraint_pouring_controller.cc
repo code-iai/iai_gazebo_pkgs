@@ -2,7 +2,9 @@
 #include <iai_gazebo_controllers/gazebo_utils.hh>
 #include <boost/bind.hpp>
 
-namespace gazebo
+using namespace gazebo;
+
+namespace iai_gazebo_controllers
 {  
   void ConstraintPouringController::Load(physics::WorldPtr parent, sdf::ElementPtr self)
   {
