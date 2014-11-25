@@ -48,13 +48,16 @@ namespace iai_gazebo_controllers
     }
   }
 
-  void VelocityControlLink(const gazebo::math::Vector3& linear_velocity,
-      const gazebo::math::Vector3& angular_velocity,
-      gazebo::physics::LinkPtr link)
+  class Twist
   {
-    link->SetLinearVel(linear_velocity);
-    link->SetAngularVel(angular_velocity);
-  }
+    public:
+      Twist() {}
+      ~Twist() {}
+      Twist(const gazebo::math::Vector3& linear_velocity,
+          const gazebo::math::Vector3& angular_velocity) :
+        linear_velocity_(linear_velocity), angular_velocity_(angular_velocity) {}
+
+      gazebo::math::Vector3 linear_velocity_, angular_velocity_;
+  };
 }
 #endif //IAI_GAZEBO_CONTROLLERS_GAZEBO_UTILS_HH 
-

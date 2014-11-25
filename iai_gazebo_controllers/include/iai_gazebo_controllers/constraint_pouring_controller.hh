@@ -4,13 +4,10 @@
 #include <gazebo/gazebo.hh>
 #include <gazebo/physics/physics.hh>
 #include <gazebo/common/common.hh>
+#include <iai_gazebo_controllers/gazebo_utils.hh>
 
 namespace iai_gazebo_controllers
 {
-  void VelocityControlLink(const gazebo::math::Vector3& linear_velocity,
-      const gazebo::math::Vector3& angular_velocity,
-      gazebo::physics::Link& Link);
-
   class ConstraintPouringController : public gazebo::WorldPlugin
   {
     public:
@@ -27,11 +24,12 @@ namespace iai_gazebo_controllers
       sdf::ElementPtr self_description_;
       gazebo::physics::ModelPtr controlled_model_;
 
-      gazebo::common::PID pid_;
-
       // internal helper functions
-      void ReadParameters();
+      void InitController();
+      void ReadPluginParameters();
       void SetupConnections();
+
+      void PerformVelocityControl(const Twist& twist);
   };
 } // namespace gazebo
 #endif //IAI_GAZEBO_CONTROLLERS_CONSTRAINT_POURING_CONTROLLER_HH 

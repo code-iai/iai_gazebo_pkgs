@@ -12,19 +12,24 @@ namespace iai_gazebo_controllers
     this->world_ = parent;
     this->self_description_ = self;
 
-    ReadParameters();
+    ReadPluginParameters();
+
+    InitController();
 
     SetupConnections();
   }
 
   void ConstraintPouringController::UpdateCallback(const common::UpdateInfo& info)
   {
-    // TODO(Georg): add constraint controller here
-    VelocityControlLink(math::Vector3(), math::Vector3(), 
-        controlled_model_->GetLinks()[0]);
+    PerformVelocityControl(Twist(math::Vector3(), math::Vector3()));
   }
 
-  void ConstraintPouringController::ReadParameters()
+  void ConstraintPouringController::InitController()
+  {
+    controlled_model_->SetGravityMode(false);
+  }
+
+  void ConstraintPouringController::ReadPluginParameters()
   {
     std::string controlled_model;
     GetSDFValue("controlled_model", self_description_, controlled_model);
@@ -39,6 +44,12 @@ namespace iai_gazebo_controllers
           boost::bind(&ConstraintPouringController::UpdateCallback, this, _1));
   }
 
+  void ConstraintPouringController::PerformVelocityControl(const Twist& twist)
+  {
+    gazebo::physics::LinkPtr link = controlled_model_->GetLinks()[0];
+    link->SetLinearVel(twist.linear_velocity_);
+    link->SetAngularVel(twist.angular_velocity_);
+  }
   // Register this plugin with the simulator
   GZ_REGISTER_WORLD_PLUGIN(ConstraintPouringController)
 }
