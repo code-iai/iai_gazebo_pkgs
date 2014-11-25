@@ -8,19 +8,18 @@
 
 namespace iai_gazebo_controllers
 {
-  class ConstraintPouringController : public gazebo::WorldPlugin
+  class ConstraintPouringController : public gazebo::ModelPlugin
   {
     public:
-       void Load(gazebo::physics::WorldPtr parent, sdf::ElementPtr self);
+       void Load(gazebo::physics::ModelPtr parent, sdf::ElementPtr self);
 
     private: 
       // communication stuff
       gazebo::event::ConnectionPtr updateConnection_;
 
-      // internal data structures
-      gazebo::physics::WorldPtr world_;
-      sdf::ElementPtr self_description_;
+      // pointers to ourself
       gazebo::physics::ModelPtr controlled_model_;
+      sdf::ElementPtr self_description_;
 
       // callback functions
       void UpdateCallback(const gazebo::common::UpdateInfo& info);

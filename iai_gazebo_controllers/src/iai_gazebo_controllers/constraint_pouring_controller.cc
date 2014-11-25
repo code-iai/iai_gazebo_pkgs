@@ -6,16 +6,14 @@ using namespace gazebo;
 
 namespace iai_gazebo_controllers
 {  
-  void ConstraintPouringController::Load(physics::WorldPtr parent, sdf::ElementPtr self)
+  void ConstraintPouringController::Load(physics::ModelPtr parent, sdf::ElementPtr self)
   {
     printf("Loading ConstraintPouringController...\n");
-    this->world_ = parent;
     this->self_description_ = self;
+    this->controlled_model_ = parent;
 
     ReadPluginParameters();
-
     InitController();
-
     SetupConnections();
   }
 
@@ -31,11 +29,6 @@ namespace iai_gazebo_controllers
 
   void ConstraintPouringController::ReadPluginParameters()
   {
-    std::string controlled_model;
-    GetSDFValue("controlled_model", self_description_, controlled_model);
-    controlled_model_ = world_->GetModel(controlled_model);
-    if(!controlled_model_)
-      printf("ERROR: Model '%s' not in world!", controlled_model.c_str());
   }
 
   void ConstraintPouringController::SetupConnections()
@@ -52,5 +45,5 @@ namespace iai_gazebo_controllers
   }
 
   // Register this plugin with the simulator
-  GZ_REGISTER_WORLD_PLUGIN(ConstraintPouringController)
+  GZ_REGISTER_MODEL_PLUGIN(ConstraintPouringController)
 }
