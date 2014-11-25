@@ -13,8 +13,6 @@ namespace iai_gazebo_controllers
     public:
        void Load(gazebo::physics::WorldPtr parent, sdf::ElementPtr self);
 
-       void UpdateCallback(const gazebo::common::UpdateInfo& info);
-
     private: 
       // communication stuff
       gazebo::event::ConnectionPtr updateConnection_;
@@ -24,11 +22,15 @@ namespace iai_gazebo_controllers
       sdf::ElementPtr self_description_;
       gazebo::physics::ModelPtr controlled_model_;
 
-      // internal helper functions
+      // callback functions
+      void UpdateCallback(const gazebo::common::UpdateInfo& info);
+
+      // init functions
       void InitController();
       void ReadPluginParameters();
       void SetupConnections();
 
+      // control functions
       void PerformVelocityControl(const Twist& twist);
   };
 } // namespace gazebo

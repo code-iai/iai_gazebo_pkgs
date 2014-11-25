@@ -50,6 +50,7 @@ namespace iai_gazebo_controllers
     link->SetLinearVel(twist.linear_velocity_);
     link->SetAngularVel(twist.angular_velocity_);
   }
+
   // Register this plugin with the simulator
   GZ_REGISTER_WORLD_PLUGIN(ConstraintPouringController)
 }
