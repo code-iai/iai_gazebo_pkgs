@@ -2,6 +2,7 @@
 #define IAI_GAZEBO_CONTROLLERS_GAZEBO_UTILS_HH 
 
 #include <gazebo/gazebo.hh>
+#include <kdl/frames.hpp>
 
 namespace iai_gazebo_controllers
 {
@@ -59,5 +60,22 @@ namespace iai_gazebo_controllers
 
       gazebo::math::Vector3 linear_velocity_, angular_velocity_;
   };
+
+  KDL::Frame toKDL(const gazebo::math::Pose& pose)
+  {
+    KDL::Rotation rot = KDL::Rotation::Quaternion(pose.rot.x, pose.rot.y, pose.rot.z, pose.rot.w);
+    KDL::Vector pos = KDL::Vector(pose.pos.x, pose.pos.y, pose.pos.z); 
+    return KDL::Frame(rot, pos);
+  }
+
+  gazebo::math::Vector3 toGazebo(const KDL::Vector& v)
+  {
+    return gazebo::math::Vector3(v.x(), v.y(), v.z());
+  }
+
+  Twist toGazebo(const KDL::Twist& twist)
+  {
+    return Twist(toGazebo(twist.vel), toGazebo(twist.rot));
+  }
 }
 #endif //IAI_GAZEBO_CONTROLLERS_GAZEBO_UTILS_HH 
