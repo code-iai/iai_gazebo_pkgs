@@ -9,6 +9,9 @@ using namespace fccl::kdl;
 
 namespace iai_gazebo_controllers
 {  
+  #define DELTA_DERIVATIVE 0.01
+  #define DEFAULT_CYCLE_TIME 0.001
+
   void ConstraintPouringController::Load(physics::ModelPtr self, 
       sdf::ElementPtr self_description)
   {
@@ -23,24 +26,25 @@ namespace iai_gazebo_controllers
 
   void ConstraintPouringController::UpdateCallback(const common::UpdateInfo& info)
   {
-    FillTransformMap();
-    //TODO: add time calcuation and pass it to update()
-    controller_.update(transforms_);
+   FillTransformMap();
+    controller_.update(transforms_, DELTA_DERIVATIVE, getCycleTime(DEFAULT_CYCLE_TIME).Double());
     PerformVelocityControl(toGazebo(controller_.desiredTwist().numerics()));
-    std::cout << "desired twist: " << controller_.desiredTwist() << "\n";
+    last_control_time_ = getCurrentSimTime();
   }
 
   void ConstraintPouringController::InitController()
   {
     self_->SetGravityMode(false);
 
+    last_control_time_ = getCurrentSimTime();
+
     controller_.init(GetConstraints());
     fccl::control::PIDGains gains;
     gains.init(controller_.constraints().names());
-    gains.p().numerics()(0) = 10.0;
+    gains.p().numerics()(0) = 50.0;
     controller_.setGains(gains); 
     FillTransformMap();
-    controller_.start(transforms_);
+    controller_.start(transforms_, getCycleTime(DEFAULT_CYCLE_TIME).Double());
   }
 
   void ConstraintPouringController::ReadPluginParameters()
@@ -112,6 +116,24 @@ namespace iai_gazebo_controllers
     constraints.init(constraint_vector);
 
     return constraints;
+  }
+
+  gazebo::common::Time ConstraintPouringController::getCurrentSimTime() const
+  {
+    return self_->GetWorld()->GetSimTime();
+  }
+
+  gazebo::common::Time ConstraintPouringController::getCycleTime(double default_cycle_time) const
+  {
+    common::Time cycle_time = getCurrentSimTime() - last_control_time_;
+    if(cycle_time.Double() <= 0.0)
+    {
+      printf("WARNING: resetting negative cycle time to default: %f.\n", default_cycle_time);
+      printf("Now: %f, last: %f, cycle: %f\n", getCurrentSimTime().Double(),
+          last_control_time_.Double(), cycle_time.Double());
+      cycle_time = common::Time(default_cycle_time);
+    }
+    return cycle_time;
   }
 
   // Register this plugin with the simulator

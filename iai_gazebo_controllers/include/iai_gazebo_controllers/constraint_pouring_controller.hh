@@ -26,6 +26,7 @@ namespace iai_gazebo_controllers
       // Cartesian Constraint Controller
       fccl::control::CartesianConstraintController controller_;
       fccl::utils::TransformMap transforms_;
+      gazebo::common::Time last_control_time_;
 
       // callback functions
       void UpdateCallback(const gazebo::common::UpdateInfo& info);
@@ -41,6 +42,8 @@ namespace iai_gazebo_controllers
       // aux functions
       void FillTransformMap();
       fccl::base::ConstraintArray GetConstraints();
+      gazebo::common::Time getCurrentSimTime() const;
+      gazebo::common::Time getCycleTime(double default_cycle_time) const;
   };
 } // namespace gazebo
 #endif //IAI_GAZEBO_CONTROLLERS_CONSTRAINT_POURING_CONTROLLER_HH 
