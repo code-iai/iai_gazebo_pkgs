@@ -14,7 +14,7 @@ Setup a catkin workspace:
   * http://wiki.ros.org/catkin/Tutorials/create_a_workspace
 
 Install various needed packages:
-  * ```sudo apt-get install ros-hydro-orocos-kdl ros-hydro-control-toolbox ros-hydro-reflexxes-type2``` ros-hydro-kdl-parser
+  * ```sudo apt-get install ros-hydro-orocos-kdl ros-hydro-control-toolbox ros-hydro-reflexxes-type2 ros-hydro-kdl-parser```
 
 ### Getting the controller plugin from source
 Add the needed source repositories to your workspace:
