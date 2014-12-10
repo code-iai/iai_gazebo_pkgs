@@ -1,0 +1,23 @@
+- name: Sample Motion 1
+  start-delay: 0.0 # ignored for the moment
+  constraints:
+    -  name: Cup above stove constraint
+       reference: World
+       type: ABOVE
+       tool-feature:
+         name: main axis of cup
+         reference: Cup
+         type: LINE
+         position: [0.0, 0.0, 0.0]
+         orientation: [0.0, 0.0, 1.0]
+       object-feature: 
+         name: center of top plane of pancake stove
+         reference: PancakeMaker
+         type: PLANE
+         position: [0.0, 0.0, 0.05]
+         orientation: [0.0, 0.0, 1.0]
+       lower-boundary: 0.3
+       upper-boundary: 0.4
+       max-velocity: 0.1
+       max-acceleration: 0.2
+       max-jerk: 0.4
