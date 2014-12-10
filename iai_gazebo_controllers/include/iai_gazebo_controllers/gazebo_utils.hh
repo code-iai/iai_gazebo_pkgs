@@ -18,7 +18,7 @@ namespace iai_gazebo_controllers
   {
     if (sdf->HasElement(key))
     {
-      value = sdf->Get<std::string>(key);
+      value = sdf->Get<T>(key);
       return true;
     }
     else
@@ -39,7 +39,7 @@ namespace iai_gazebo_controllers
   {
     if (sdf->HasElement(key))
     {
-      value = sdf->Get<std::string>(key);
+      value = sdf->Get<T>(key);
       return true;
     }
     else

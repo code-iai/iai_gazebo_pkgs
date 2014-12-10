@@ -10,6 +10,14 @@
 
 namespace iai_gazebo_controllers
 {
+  class MotionDescription
+  {
+    public:
+      std::string name_;
+      double start_delay_;
+      fccl::base::ConstraintArray constraints_;
+  };
+
   class ConstraintPouringController : public gazebo::ModelPlugin
   {
     public:
@@ -24,6 +32,7 @@ namespace iai_gazebo_controllers
       sdf::ElementPtr self_description_;
 
       // Cartesian Constraint Controller
+      std::vector<MotionDescription> motions_;
       fccl::control::CartesianConstraintController controller_;
       fccl::utils::TransformMap transforms_;
       gazebo::common::Time last_control_time_;
@@ -33,7 +42,7 @@ namespace iai_gazebo_controllers
 
       // init functions
       void InitController();
-      void ReadPluginParameters();
+      void ReadMotionDescriptions();
       void SetupConnections();
 
       // control functions
@@ -41,7 +50,6 @@ namespace iai_gazebo_controllers
 
       // aux functions
       void FillTransformMap();
-      fccl::base::ConstraintArray GetConstraints();
       gazebo::common::Time getCurrentSimTime() const;
       gazebo::common::Time getCycleTime(double default_cycle_time) const;
   };

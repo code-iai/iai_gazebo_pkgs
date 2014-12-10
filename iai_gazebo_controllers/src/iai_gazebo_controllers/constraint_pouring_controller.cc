@@ -1,6 +1,10 @@
 #include <iai_gazebo_controllers/constraint_pouring_controller.hh>
 #include <iai_gazebo_controllers/gazebo_utils.hh>
 #include <boost/bind.hpp>
+#include <fstream>
+#include <iostream>
+#include <fccl_conversions/YamlParser.h>
+#include <yaml-cpp/yaml.h>
 
 using namespace gazebo;
 using namespace fccl::base;
@@ -12,6 +16,26 @@ namespace iai_gazebo_controllers
   #define DELTA_DERIVATIVE 0.01
   #define DEFAULT_CYCLE_TIME 0.001
 
+  void operator>> (const YAML::Node& node, MotionDescription& m)
+  {
+    node["name"] >> m.name_;
+    node["start-delay"] >> m.start_delay_;
+    using fccl::conversions::operator>>;
+    node["constraints"] >> m.constraints_;
+  }
+
+  std::ostream& operator<<(std::ostream& os, const MotionDescription& m)
+  {
+    using fccl::base::operator<<;
+
+    os << "MotionDescription:\n";
+    os << "name: " << m.name_ << "\n";
+    os << "start-delay: " << m.start_delay_ << "\n";
+    os << "constraints: " << m.constraints_;
+
+    return os;
+  }
+ 
   void ConstraintPouringController::Load(physics::ModelPtr self, 
       sdf::ElementPtr self_description)
   {
@@ -19,7 +43,7 @@ namespace iai_gazebo_controllers
     this->self_description_ = self_description;
     this->self_ = self;
 
-    ReadPluginParameters();
+    ReadMotionDescriptions();
     InitController();
     SetupConnections();
   }
@@ -38,7 +62,7 @@ namespace iai_gazebo_controllers
 
     last_control_time_ = getCurrentSimTime();
 
-    controller_.init(GetConstraints());
+    controller_.init(motions_[0].constraints_);
     fccl::control::PIDGains gains;
     gains.init(controller_.constraints().names());
     gains.p().numerics()(0) = 50.0;
@@ -47,8 +71,26 @@ namespace iai_gazebo_controllers
     controller_.start(transforms_, getCycleTime(DEFAULT_CYCLE_TIME).Double());
   }
 
-  void ConstraintPouringController::ReadPluginParameters()
+  void ConstraintPouringController::ReadMotionDescriptions()
   {
+    std::string motion_file = "motions/sample-motion1.yaml";
+
+    std::ifstream file_in(motion_file.c_str());
+    assert(file_in.good());
+
+    motions_.clear();
+    YAML::Parser parser(file_in);
+    YAML::Node doc;
+    parser.GetNextDocument(doc);
+    MotionDescription tmp_motion;
+    for(unsigned int i=0; i<doc.size(); ++i)
+    {
+      doc[i] >> tmp_motion;
+      motions_.push_back(tmp_motion);
+      std::cout << tmp_motion << "\n\n";
+
+      assert(tmp_motion.constraints_.isValid());
+    }
   }
 
   void ConstraintPouringController::SetupConnections()
@@ -81,43 +123,6 @@ namespace iai_gazebo_controllers
     transforms_.setTransform(stove_transform);
   }
  
-  fccl::base::ConstraintArray ConstraintPouringController::GetConstraints() 
-  {
-    // init features
-    Feature stove_top_plane, cup_main_axis;
-    cup_main_axis.semantics().type() = LINE_FEATURE;
-    cup_main_axis.semantics().reference().setName("Cup");
-    cup_main_axis.semantics().name().setName("main axis of cup");
-    cup_main_axis.orientation() = KDL::Vector(0.0, 0.0, 1.0);
-
-    stove_top_plane.semantics().type() = PLANE_FEATURE;
-    stove_top_plane.semantics().reference().setName("PancakeMaker");
-    stove_top_plane.semantics().name().setName("center of top plane of pancake stove");
-    stove_top_plane.position() = KDL::Vector(0.0, 0.0, 0.05);
-    stove_top_plane.orientation() = KDL::Vector(0.0, 0.0, 1.0);
-
-    // assembling constraints
-    Constraint above_constraint;    
-    above_constraint.toolFeature() = cup_main_axis;
-    above_constraint.objectFeature() = stove_top_plane;
-    above_constraint.semantics().reference().setName("World");
-    above_constraint.semantics().name().setName("Cup above stove constraint.");
-    above_constraint.semantics().type().setName("above");
-    above_constraint.lowerBoundary() = 0.3;
-    above_constraint.upperBoundary() = 0.4;
-    above_constraint.maxVelocity() = 0.1;
-    above_constraint.maxAcceleration() = 0.2;
-    above_constraint.maxJerk() = 0.4;
-
-    printf("Constraint valid: %d\n", above_constraint.isValid());
-    std::vector<Constraint> constraint_vector;
-    constraint_vector.push_back(above_constraint);
-    ConstraintArray constraints;
-    constraints.init(constraint_vector);
-
-    return constraints;
-  }
-
   gazebo::common::Time ConstraintPouringController::getCurrentSimTime() const
   {
     return self_->GetWorld()->GetSimTime();
