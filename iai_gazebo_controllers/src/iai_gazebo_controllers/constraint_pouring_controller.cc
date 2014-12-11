@@ -44,7 +44,8 @@ namespace iai_gazebo_controllers
     this->self_ = self;
 
     ReadMotionDescriptions();
-    InitController();
+    current_motion_index_ = 0;
+    InitController(motions_, current_motion_index_);
     SetupConnections();
   }
 
@@ -56,6 +57,12 @@ namespace iai_gazebo_controllers
       controller_.update(transforms_, DELTA_DERIVATIVE, getCycleTime(DEFAULT_CYCLE_TIME).Double());
       PerformVelocityControl(toGazebo(controller_.desiredTwist().numerics()));
       last_control_time_ = getCurrentSimTime();
+      if(controller_.constraints().areFulfilled() && (current_motion_index_ + 1 < motions_.size() ))
+      {
+        std::cout << "Switching motion\n";
+        current_motion_index_ += 1;
+        InitController(motions_, current_motion_index_);
+      } 
     }
     else
     {
@@ -63,13 +70,13 @@ namespace iai_gazebo_controllers
     }
   }
 
-  void ConstraintPouringController::InitController()
+  void ConstraintPouringController::InitController(const std::vector<MotionDescription>& motions, unsigned int index)
   {
     self_->SetGravityMode(false);
 
     last_control_time_ = getCurrentSimTime();
 
-    controller_.init(motions_[0].constraints_);
+    controller_.init(motions[index].constraints_);
     fccl::control::PIDGains gains;
     gains.init(controller_.constraints().names());
     for(unsigned int i=0; i<gains.size(); ++i)

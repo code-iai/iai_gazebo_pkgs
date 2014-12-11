@@ -21,7 +21,7 @@ namespace iai_gazebo_controllers
   class ConstraintPouringController : public gazebo::ModelPlugin
   {
     public:
-       void Load(gazebo::physics::ModelPtr self, sdf::ElementPtr self_description);
+      void Load(gazebo::physics::ModelPtr self, sdf::ElementPtr self_description);
 
     private: 
       // communication stuff
@@ -37,12 +37,13 @@ namespace iai_gazebo_controllers
       fccl::control::CartesianConstraintController controller_;
       fccl::utils::TransformMap transforms_;
       gazebo::common::Time last_control_time_;
+      unsigned int current_motion_index_;
 
       // callback functions
       void UpdateCallback(const gazebo::common::UpdateInfo& info);
 
       // init functions
-      void InitController();
+      void InitController(const std::vector<MotionDescription>& motions, unsigned int index);
       void ReadMotionDescriptions();
       void SetupConnections();
 
