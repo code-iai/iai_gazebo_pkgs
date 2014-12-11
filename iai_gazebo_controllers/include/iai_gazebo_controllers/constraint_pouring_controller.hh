@@ -10,8 +10,8 @@
 
 namespace iai_gazebo_controllers
 {
-  class MotionDescription
-  {
+  class MotionDescription 
+  { 
     public:
       std::string name_;
       double start_delay_;
@@ -32,6 +32,7 @@ namespace iai_gazebo_controllers
       sdf::ElementPtr self_description_;
 
       // Cartesian Constraint Controller
+      double simulation_start_delay_;
       std::vector<MotionDescription> motions_;
       fccl::control::CartesianConstraintController controller_;
       fccl::utils::TransformMap transforms_;
@@ -52,6 +53,7 @@ namespace iai_gazebo_controllers
       void FillTransformMap();
       gazebo::common::Time getCurrentSimTime() const;
       gazebo::common::Time getCycleTime(double default_cycle_time) const;
+      bool simulationStartDelayOver() const;
   };
 } // namespace gazebo
 #endif //IAI_GAZEBO_CONTROLLERS_CONSTRAINT_POURING_CONTROLLER_HH 

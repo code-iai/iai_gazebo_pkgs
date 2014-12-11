@@ -24,46 +24,48 @@ default-translation-constraint: &default-translation-constraint
 # HERE COMES THE ACTUAL COMMAND
 # SYNTAX: A LIST OF MOTIONS
 motion-command:
-- name: Sample Motion 1
-  start-delay: 0.0 # ignored for the moment
-  constraints:
-    -  name: Cup above stove constraint
-       type: ABOVE
-       reference: World
-       tool-feature: *CupMainAxis
-       object-feature: *StoveTopPlane
-       lower-boundary: 0.3
-       upper-boundary: 0.35
-       max-velocity: 0.1
-       max-acceleration: 0.2
-       max-jerk: 0.4
-    -  name: Cup right of stove constraint
-       type: RIGHT
-       reference: World
-       tool-feature: *CupMainAxis
-       object-feature: *StoveTopPlane
-       lower-boundary: 0.03
-       upper-boundary: 0.05
-       max-velocity: 0.1
-       max-acceleration: 0.2
-       max-jerk: 0.4
-    -  name: Cup behind of stove constraint
-       type: BEHIND
-       reference: World
-       tool-feature: *CupMainAxis
-       object-feature: *StoveTopPlane
-       lower-boundary: -0.03
-       upper-boundary: 0.03
-       max-velocity: 0.1
-       max-acceleration: 0.2
-       max-jerk: 0.4
-    -  name: Bottle tilted constraint
-       type: PERPENDICULAR
-       reference: World
-       tool-feature: *CupMainAxis
-       object-feature: *StoveTopPlane
-       lower-boundary: 0.8
-       upper-boundary: 0.9
-       max-velocity: 0.05
-       max-acceleration: 1.0
-       max-jerk: 1.0
+  simulation-start-delay: 4.5
+  motions:
+  - name: Sample Motion 1
+    start-delay: 0.0 # ignored for the moment
+    constraints:
+      -  name: Cup above stove constraint
+         type: ABOVE
+         reference: World
+         tool-feature: *CupMainAxis
+         object-feature: *StoveTopPlane
+         lower-boundary: 0.3
+         upper-boundary: 0.35
+         max-velocity: 0.1
+         max-acceleration: 0.2
+         max-jerk: 0.4
+      -  name: Cup right of stove constraint
+         type: RIGHT
+         reference: World
+         tool-feature: *CupMainAxis
+         object-feature: *StoveTopPlane
+         lower-boundary: 0.03
+         upper-boundary: 0.05
+         max-velocity: 0.1
+         max-acceleration: 0.2
+         max-jerk: 0.4
+      -  name: Cup behind of stove constraint
+         type: BEHIND
+         reference: World
+         tool-feature: *CupMainAxis
+         object-feature: *StoveTopPlane
+         lower-boundary: -0.03
+         upper-boundary: 0.03
+         max-velocity: 0.1
+         max-acceleration: 0.2
+         max-jerk: 0.4
+      -  name: Bottle tilted constraint
+         type: PERPENDICULAR
+         reference: World
+         tool-feature: *CupMainAxis
+         object-feature: *StoveTopPlane
+         lower-boundary: 0.8
+         upper-boundary: 0.9
+         max-velocity: 0.03
+         max-acceleration: 1.0
+         max-jerk: 1.0

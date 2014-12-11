@@ -18,19 +18,10 @@ namespace iai_gazebo_controllers
 
   void operator>> (const YAML::Node& node, MotionDescription& m)
   {
-std::cout << "a\n";
     node["name"] >> m.name_;
-std::cout << "motion-name: " << m.name_ << "\n";
-
     node["start-delay"] >> m.start_delay_;
-std::cout << "start-delay: " << m.start_delay_ << "\n";
-
     using fccl::conversions::operator>>;
-std::cout << "a\n";
-
     node["constraints"] >> m.constraints_;
-std::cout << "a\n";
-
   }
 
   std::ostream& operator<<(std::ostream& os, const MotionDescription& m)
@@ -59,10 +50,17 @@ std::cout << "a\n";
 
   void ConstraintPouringController::UpdateCallback(const common::UpdateInfo& info)
   {
-   FillTransformMap();
-    controller_.update(transforms_, DELTA_DERIVATIVE, getCycleTime(DEFAULT_CYCLE_TIME).Double());
-    PerformVelocityControl(toGazebo(controller_.desiredTwist().numerics()));
-    last_control_time_ = getCurrentSimTime();
+    if (simulationStartDelayOver())
+    {
+      FillTransformMap();
+      controller_.update(transforms_, DELTA_DERIVATIVE, getCycleTime(DEFAULT_CYCLE_TIME).Double());
+      PerformVelocityControl(toGazebo(controller_.desiredTwist().numerics()));
+      last_control_time_ = getCurrentSimTime();
+    }
+    else
+    {
+      PerformVelocityControl(Twist());
+    }
   }
 
   void ConstraintPouringController::InitController()
@@ -93,22 +91,17 @@ std::cout << "a\n";
     YAML::Node doc;
     parser.GetNextDocument(doc);
     const YAML::Node& cmd_node = doc["motion-command"];
-std::cout << "cmd_node.size(): " << cmd_node.size() << "\n";
-    for(unsigned int i=0; i<cmd_node.size(); ++i)
+    cmd_node["simulation-start-delay"] >> simulation_start_delay_;
+    assert(simulation_start_delay_ >= 0.0);
+    const YAML::Node& motions_node = cmd_node["motions"];
+std::cout << "motions_node.size(): " << motions_node.size() << "\n";
+    for(unsigned int i=0; i<motions_node.size(); ++i)
     {
-std::cout << "1\n";
       MotionDescription tmp_motion;
-std::cout << "2\n";
-
-      cmd_node[i] >> tmp_motion;
-std::cout << "3\n";
-
+      motions_node[i] >> tmp_motion;
       motions_.push_back(tmp_motion);
-std::cout << "4\n";
 
       std::cout << tmp_motion << "\n\n";
-std::cout << "5\n";
-
       assert(tmp_motion.constraints_.isValid());
     }
   }
@@ -159,6 +152,11 @@ std::cout << "5\n";
       cycle_time = common::Time(default_cycle_time);
     }
     return cycle_time;
+  }
+
+  bool ConstraintPouringController::simulationStartDelayOver() const
+  {
+    return getCurrentSimTime().Double() >= simulation_start_delay_;
   }
 
   // Register this plugin with the simulator
