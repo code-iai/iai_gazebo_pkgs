@@ -32,8 +32,8 @@ motion-command:
        reference: World
        tool-feature: *CupMainAxis
        object-feature: *StoveTopPlane
-       lower-boundary: 0.1
-       upper-boundary: 0.15
+       lower-boundary: 0.3
+       upper-boundary: 0.35
        max-velocity: 0.1
        max-acceleration: 0.2
        max-jerk: 0.4

@@ -49,6 +49,8 @@
   <plugin name="SpawnLiquid" filename="libSpawnLiquid.so">
     <init_pos>0.2 0.1 0.88</init_pos>
     <inObject>Cup</inObject>
+    <inObjectZOffset>0.018</inObjectZOffset>
+    <spawn_diameter>0.02</spawn_diameter>
     <nr_spheres>72</nr_spheres>
     <mass>0.0006</mass>
     <radius>0.0045</radius>		
