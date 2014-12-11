@@ -57,3 +57,13 @@ motion-command:
        max-velocity: 0.1
        max-acceleration: 0.2
        max-jerk: 0.4
+    -  name: Bottle tilted constraint
+       type: PERPENDICULAR
+       reference: World
+       tool-feature: *CupMainAxis
+       object-feature: *StoveTopPlane
+       lower-boundary: 0.8
+       upper-boundary: 0.9
+       max-velocity: 0.05
+       max-acceleration: 1.0
+       max-jerk: 1.0
