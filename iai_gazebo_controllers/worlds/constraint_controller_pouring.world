@@ -73,6 +73,10 @@
   <!--plugin name="constraint_pouring_controller" filename="libconstraint_pouring_controller.so">
     <controlled_model>Cup<controlled_model/>
   </plugin-->
- 
+  
+   <plugin name="WorldControlPlugin" filename="libWorldControlPlugin.so">
+    <startDelay>5<startDelay/>
+   </plugin>
+  
   </world>
 </sdf>
