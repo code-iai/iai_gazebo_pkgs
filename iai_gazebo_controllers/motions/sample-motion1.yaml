@@ -1,9 +1,15 @@
 # PRELIMINARY: FEATURE DEFINITIONS FOR FUTURE REFERENCE
-cup-main-axis: &CupMainAxis
-  name: main axis of cup
+cup-bottom-plane: &CupBottomPlane
+  name: bottom plane of cup
   reference: Cup
-  type: LINE
+  type: PLANE
   position: [0.0, 0.0, 0.0]
+  orientation: [0.0, 0.0, 1.0]
+cup-top-plane: &CupTopPlane
+  name: top plane of cup
+  reference: Cup
+  type: PLANE
+  position: [0.0, 0.0, 0.08]
   orientation: [0.0, 0.0, 1.0]
 stove-top-plane: &StoveTopPlane
   name: center of top plane of pancake stove
@@ -15,7 +21,7 @@ stove-top-plane: &StoveTopPlane
 # PRELIMINARY: DEFAULT CONSTRAINTS
 default-translation-constraint: &default-translation-constraint
   reference: World
-  tool-feature: *CupMainAxis
+  tool-feature: *CupBottomPlane
   object-feature: *StoveTopPlane
   max-velocity: 0.1
   max-acceleration: 0.2
@@ -32,7 +38,7 @@ motion-command:
       -  name: Cup above stove constraint
          type: ABOVE
          reference: World
-         tool-feature: *CupMainAxis
+         tool-feature: *CupBottomPlane
          object-feature: *StoveTopPlane
          lower-boundary: 0.1
          upper-boundary: 0.15
@@ -42,7 +48,7 @@ motion-command:
       -  name: Cup right of stove constraint
          type: RIGHT
          reference: World
-         tool-feature: *CupMainAxis
+         tool-feature: *CupBottomPlane
          object-feature: *StoveTopPlane
          lower-boundary: 0.03
          upper-boundary: 0.05
@@ -52,7 +58,7 @@ motion-command:
       -  name: Cup behind of stove constraint
          type: BEHIND
          reference: World
-         tool-feature: *CupMainAxis
+         tool-feature: *CupBottomPlane
          object-feature: *StoveTopPlane
          lower-boundary: -0.03
          upper-boundary: 0.03
@@ -62,7 +68,7 @@ motion-command:
       -  name: Bottle tilted constraint
          type: PERPENDICULAR
          reference: World
-         tool-feature: *CupMainAxis
+         tool-feature: *CupBottomPlane
          object-feature: *StoveTopPlane
          lower-boundary: 0.95
          upper-boundary: 1.2
@@ -75,7 +81,7 @@ motion-command:
       -  name: Cup above stove constraint
          type: ABOVE
          reference: World
-         tool-feature: *CupMainAxis
+         tool-feature: *CupTopPlane
          object-feature: *StoveTopPlane
          lower-boundary: 0.1
          upper-boundary: 0.15
@@ -85,7 +91,7 @@ motion-command:
       -  name: Cup right of stove constraint
          type: RIGHT
          reference: World
-         tool-feature: *CupMainAxis
+         tool-feature: *CupTopPlane
          object-feature: *StoveTopPlane
          lower-boundary: 0.03
          upper-boundary: 0.05
@@ -95,7 +101,7 @@ motion-command:
       -  name: Cup behind of stove constraint
          type: BEHIND
          reference: World
-         tool-feature: *CupMainAxis
+         tool-feature: *CupTopPlane
          object-feature: *StoveTopPlane
          lower-boundary: -0.03
          upper-boundary: 0.03
@@ -105,10 +111,10 @@ motion-command:
       -  name: Bottle tilted constraint
          type: PERPENDICULAR
          reference: World
-         tool-feature: *CupMainAxis
+         tool-feature: *CupTopPlane
          object-feature: *StoveTopPlane
-         lower-boundary: -0.3
-         upper-boundary: -0.2
+         lower-boundary: -0.5
+         upper-boundary: -0.4
          max-velocity: 0.2
          max-acceleration: 1.0
          max-jerk: 1.0
