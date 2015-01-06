@@ -110,14 +110,13 @@ namespace iai_gazebo_controllers
     cmd_node["simulation-start-delay"] >> simulation_start_delay_;
     assert(simulation_start_delay_ >= 0.0);
     const YAML::Node& motions_node = cmd_node["motions"];
-std::cout << "motions_node.size(): " << motions_node.size() << "\n";
+
     for(unsigned int i=0; i<motions_node.size(); ++i)
     {
       MotionDescription tmp_motion;
       motions_node[i] >> tmp_motion;
       motions_.push_back(tmp_motion);
 
-      std::cout << tmp_motion << "\n\n";
       assert(tmp_motion.constraints_.isValid());
     }
   }
