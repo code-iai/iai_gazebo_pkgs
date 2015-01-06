@@ -50,8 +50,8 @@
     <init_pos>0.2 0.1 0.88</init_pos>
     <inObject>Cup</inObject>
     <inObjectZOffset>0.018</inObjectZOffset>
-    <spawn_diameter>0.02</spawn_diameter>
-    <nr_spheres>72</nr_spheres>
+    <spawnDiam>0.02</spawnDiam>
+    <nrSpheres>72</nrSpheres>
     <mass>0.0006</mass>
     <radius>0.0045</radius>		
     <friction>1</friction>			
@@ -67,7 +67,7 @@
     <kd>1.2</kd>
     <bounce>0.0</bounce>
     <inertia>0.00005</inertia>
-    <auto_disable>0</auto_disable>
+    <autoDisable>0</autoDisable>
   </plugin>
 
   <!--plugin name="constraint_pouring_controller" filename="libconstraint_pouring_controller.so">
