@@ -36,7 +36,7 @@ namespace iai_gazebo_controllers
       std::vector<MotionDescription> motions_;
       fccl::control::CartesianConstraintController controller_;
       fccl::utils::TransformMap transforms_;
-      gazebo::common::Time last_control_time_;
+      gazebo::common::Time last_control_time_, accumulated_convergence_time_;
       unsigned int current_motion_index_;
 
       // callback functions

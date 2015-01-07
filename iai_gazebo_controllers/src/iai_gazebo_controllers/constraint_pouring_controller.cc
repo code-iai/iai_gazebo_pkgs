@@ -75,6 +75,9 @@ namespace iai_gazebo_controllers
 
     last_control_time_ = getCurrentSimTime();
 
+    if (controller_.constraints().areFulfilled())
+      accumulated_convergence_time_ += getCycleTime(DEFAULT_CYCLE_TIME);
+
     // logic: conditionally switch to next phase or stop simulation
     if ( currentMotionPhaseOver() )
       if ( MoreMotionPhasesRemaining() )
@@ -84,6 +87,8 @@ namespace iai_gazebo_controllers
   void ConstraintPouringController::InitController(const std::vector<MotionDescription>& motions, unsigned int index)
   {
     self_->SetGravityMode(false);
+
+    accumulated_convergence_time_.Set(0.0);
 
     controller_.init(motions[index].constraints_);
     fccl::control::PIDGains gains;
@@ -183,7 +188,8 @@ namespace iai_gazebo_controllers
 
   bool ConstraintPouringController::currentMotionPhaseOver() const
   {
-    return controller_.constraints().areFulfilled();
+    return controller_.constraints().areFulfilled() &&
+        (accumulated_convergence_time_.Double() >= motions_[current_motion_index_].finish_delay_);
   }
 
   bool ConstraintPouringController::MoreMotionPhasesRemaining() const
