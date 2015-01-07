@@ -52,6 +52,7 @@ namespace iai_gazebo_controllers
 
   void ConstraintPouringController::UpdateCallback(const common::UpdateInfo& info)
   {
+    // maybe wait for initial simulation delay
     if (!simulationStartDelayOver())
     {
       PerformVelocityControl(Twist());
@@ -71,15 +72,11 @@ namespace iai_gazebo_controllers
 
     PerformVelocityControl(toGazebo(desired_twist.numerics()));
 
+    last_control_time_ = getCurrentSimTime();
+
     // maybe switch controller
     if(currentMotionPhaseOver() && MoreMotionPhasesRemaining())
-    {
-      std::cout << "Switching motion at time: " << getCurrentSimTime().Double() << "\n";
-      current_motion_index_ += 1;
-      InitController(motions_, current_motion_index_);
-    } 
-
-    last_control_time_ = getCurrentSimTime();
+      SwitchToNextMotionPhase();
   }
 
   void ConstraintPouringController::InitController(const std::vector<MotionDescription>& motions, unsigned int index)
@@ -151,7 +148,14 @@ namespace iai_gazebo_controllers
     transforms_.setTransform(cup_transform);
     transforms_.setTransform(stove_transform);
   }
- 
+
+  void ConstraintPouringController::SwitchToNextMotionPhase()
+  {
+    std::cout << "Switching motion at time: " << getCurrentSimTime().Double() << "\n";
+    current_motion_index_ += 1;
+    InitController(motions_, current_motion_index_);
+  } 
+
   gazebo::common::Time ConstraintPouringController::getCurrentSimTime() const
   {
     return self_->GetWorld()->GetSimTime();

@@ -52,6 +52,7 @@ namespace iai_gazebo_controllers
 
       // aux functions
       void FillTransformMap();
+      void SwitchToNextMotionPhase();
       gazebo::common::Time getCurrentSimTime() const;
       gazebo::common::Time getCycleTime(double default_cycle_time) const;
       bool simulationStartDelayOver() const;
