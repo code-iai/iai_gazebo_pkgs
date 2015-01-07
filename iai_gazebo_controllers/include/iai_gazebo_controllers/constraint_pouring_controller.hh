@@ -55,6 +55,7 @@ namespace iai_gazebo_controllers
       gazebo::common::Time getCurrentSimTime() const;
       gazebo::common::Time getCycleTime(double default_cycle_time) const;
       bool simulationStartDelayOver() const;
+      bool currentMotionPhaseOver() const;
   };
 } // namespace gazebo
 #endif //IAI_GAZEBO_CONTROLLERS_CONSTRAINT_POURING_CONTROLLER_HH 
