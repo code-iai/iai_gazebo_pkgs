@@ -19,7 +19,8 @@ namespace iai_gazebo_controllers
   void operator>> (const YAML::Node& node, MotionDescription& m)
   {
     node["name"] >> m.name_;
-    node["start-delay"] >> m.start_delay_;
+    node["finish-delay"] >> m.finish_delay_;
+    assert(m.finish_delay_ >= 0.0);
     using fccl::conversions::operator>>;
     node["constraints"] >> m.constraints_;
   }
@@ -30,7 +31,7 @@ namespace iai_gazebo_controllers
 
     os << "MotionDescription:\n";
     os << "name: " << m.name_ << "\n";
-    os << "start-delay: " << m.start_delay_ << "\n";
+    os << "finish-delay: " << m.finish_delay_ << "\n";
     os << "constraints: " << m.constraints_;
 
     return os;
@@ -74,9 +75,10 @@ namespace iai_gazebo_controllers
 
     last_control_time_ = getCurrentSimTime();
 
-    // maybe switch controller
-    if(currentMotionPhaseOver() && MoreMotionPhasesRemaining())
-      SwitchToNextMotionPhase();
+    // logic: conditionally switch to next phase or stop simulation
+    if ( currentMotionPhaseOver() )
+      if ( MoreMotionPhasesRemaining() )
+        SwitchToNextMotionPhase();
   }
 
   void ConstraintPouringController::InitController(const std::vector<MotionDescription>& motions, unsigned int index)

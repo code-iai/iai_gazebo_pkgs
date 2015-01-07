@@ -14,7 +14,7 @@ namespace iai_gazebo_controllers
   { 
     public:
       std::string name_;
-      double start_delay_;
+      double finish_delay_;
       fccl::base::ConstraintArray constraints_;
   };
 

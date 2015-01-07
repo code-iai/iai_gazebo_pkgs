@@ -33,7 +33,7 @@ motion-command:
   simulation-start-delay: 1.5
   motions:
   - name: Move above stove motion
-    start-delay: 0.0 # ignored for the moment
+    finish-delay: 0.0 # ignored for the moment
     constraints:
       -  name: Cup above stove constraint
          type: ABOVE
@@ -76,7 +76,7 @@ motion-command:
          max-acceleration: 1.0
          max-jerk: 1.0
   - name: Tilting cup motion
-    start-delay: 0.0 # ignored for the moment
+    finish-delay: 0.0 # ignored for the moment
     constraints:
       -  name: Cup above stove constraint
          type: ABOVE
@@ -119,7 +119,7 @@ motion-command:
          max-acceleration: 1.0
          max-jerk: 1.0
   - name: Move upright motion
-    start-delay: 0.0 # ignored for the moment
+    finish-delay: 0.0 # ignored for the moment
     constraints:
       -  name: Cup above stove constraint
          type: ABOVE
