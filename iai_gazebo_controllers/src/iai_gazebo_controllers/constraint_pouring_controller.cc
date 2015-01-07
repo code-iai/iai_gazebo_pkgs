@@ -52,33 +52,34 @@ namespace iai_gazebo_controllers
 
   void ConstraintPouringController::UpdateCallback(const common::UpdateInfo& info)
   {
-    if (simulationStartDelayOver())
-    {
-      FillTransformMap();
-      controller_.update(transforms_, DELTA_DERIVATIVE, getCycleTime(DEFAULT_CYCLE_TIME).Double());
-
-      // rotate translational velocity in twist
-      // NOTE: this is not a proper twist transformtation, but gazebo requires it like this
-      fccl::kdl::Twist desired_twist = controller_.desiredTwist();
-      fccl::semantics::TransformSemantics transform_semantics;
-      transform_semantics.init("World", "Cup");
-      fccl::kdl::Transform transform = transforms_.getTransform(transform_semantics);
-      desired_twist.numerics().vel = transform.numerics().M * desired_twist.numerics().vel;
-
-      PerformVelocityControl(toGazebo(desired_twist.numerics()));
-
-      if(controller_.constraints().areFulfilled() && (current_motion_index_ + 1 < motions_.size() ))
-      {
-        std::cout << "Switching motion at time: " << getCurrentSimTime().Double() << "\n";
-        current_motion_index_ += 1;
-        InitController(motions_, current_motion_index_);
-      } 
-      last_control_time_ = getCurrentSimTime();
-    }
-    else
+    if (!simulationStartDelayOver())
     {
       PerformVelocityControl(Twist());
+      return;
     }
+
+    FillTransformMap();
+    controller_.update(transforms_, DELTA_DERIVATIVE, getCycleTime(DEFAULT_CYCLE_TIME).Double());
+
+    // rotate translational velocity in twist
+    // NOTE: this is not a proper twist transformtation, but gazebo requires it like this
+    fccl::kdl::Twist desired_twist = controller_.desiredTwist();
+    fccl::semantics::TransformSemantics transform_semantics;
+    transform_semantics.init("World", "Cup");
+    fccl::kdl::Transform transform = transforms_.getTransform(transform_semantics);
+    desired_twist.numerics().vel = transform.numerics().M * desired_twist.numerics().vel;
+
+    PerformVelocityControl(toGazebo(desired_twist.numerics()));
+
+    // maybe switch controller
+    if(controller_.constraints().areFulfilled() && (current_motion_index_ + 1 < motions_.size() ))
+    {
+      std::cout << "Switching motion at time: " << getCurrentSimTime().Double() << "\n";
+      current_motion_index_ += 1;
+      InitController(motions_, current_motion_index_);
+    } 
+
+    last_control_time_ = getCurrentSimTime();
   }
 
   void ConstraintPouringController::InitController(const std::vector<MotionDescription>& motions, unsigned int index)
