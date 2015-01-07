@@ -72,7 +72,7 @@ namespace iai_gazebo_controllers
     PerformVelocityControl(toGazebo(desired_twist.numerics()));
 
     // maybe switch controller
-    if(currentMotionPhaseOver() && (current_motion_index_ + 1 < motions_.size() ))
+    if(currentMotionPhaseOver() && MoreMotionPhasesRemaining())
     {
       std::cout << "Switching motion at time: " << getCurrentSimTime().Double() << "\n";
       current_motion_index_ += 1;
@@ -180,6 +180,10 @@ namespace iai_gazebo_controllers
     return controller_.constraints().areFulfilled();
   }
 
+  bool ConstraintPouringController::MoreMotionPhasesRemaining() const
+  {
+    return (current_motion_index_ + 1 < motions_.size());
+  }
 
   // Register this plugin with the simulator
   GZ_REGISTER_MODEL_PLUGIN(ConstraintPouringController)
