@@ -47,9 +47,8 @@ namespace iai_gazebo_controllers
     this->self_ = self;
 
     ReadMotionDescriptions();
-    last_control_time_ = getCurrentSimTime();
-    current_motion_index_ = 0;
-    InitController(motions_, current_motion_index_);
+    current_motion_index_ = -1;
+    SwitchToNextMotionPhase();
     SetupConnections();
     StartLogging();
   }
@@ -172,8 +171,9 @@ namespace iai_gazebo_controllers
 
   void ConstraintPouringController::SwitchToNextMotionPhase()
   {
-    std::cout << "Switching motion at time: " << getCurrentSimTime().Double() << "\n";
+    std::cout << "Starting new motion at time: " << getCurrentSimTime().Double() << "\n";
     current_motion_index_ += 1;
+    last_control_time_ = getCurrentSimTime();
     InitController(motions_, current_motion_index_);
   } 
 
@@ -185,13 +185,10 @@ namespace iai_gazebo_controllers
   gazebo::common::Time ConstraintPouringController::getCycleTime(double default_cycle_time) const
   {
     common::Time cycle_time = getCurrentSimTime() - last_control_time_;
+
     if(cycle_time.Double() <= 0.0)
-    {
-      printf("WARNING: resetting negative cycle time to default: %f.\n", default_cycle_time);
-      printf("Now: %f, last: %f, cycle: %f\n", getCurrentSimTime().Double(),
-          last_control_time_.Double(), cycle_time.Double());
       cycle_time = common::Time(default_cycle_time);
-    }
+
     return cycle_time;
   }
 
