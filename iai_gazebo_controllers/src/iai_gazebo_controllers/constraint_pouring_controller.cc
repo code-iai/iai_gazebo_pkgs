@@ -1,3 +1,4 @@
+#include <gazebo/msgs/msgs.hh>
 #include <iai_gazebo_controllers/constraint_pouring_controller.hh>
 #include <iai_gazebo_controllers/gazebo_utils.hh>
 #include <boost/bind.hpp>
@@ -53,7 +54,7 @@ namespace iai_gazebo_controllers
 
   void ConstraintPouringController::UpdateCallback(const common::UpdateInfo& info)
   {
-    // maybe wait for initial simulation delay
+   // maybe wait for initial simulation delay
     if (!simulationStartDelayOver())
     {
       PerformVelocityControl(Twist());
@@ -82,6 +83,8 @@ namespace iai_gazebo_controllers
     if ( currentMotionPhaseOver() )
       if ( MoreMotionPhasesRemaining() )
         SwitchToNextMotionPhase();
+      else
+        RequestGazeboShutdown();
   }
 
   void ConstraintPouringController::InitController(const std::vector<MotionDescription>& motions, unsigned int index)
@@ -130,6 +133,12 @@ namespace iai_gazebo_controllers
   {
     this->updateConnection_ = event::Events::ConnectWorldUpdateBegin(
           boost::bind(&ConstraintPouringController::UpdateCallback, this, _1));
+
+    transport::NodePtr node = transport::NodePtr(new transport::Node());
+    node->Init(self_->GetWorld()->GetName());
+
+    serverControlPublisher_ = node->Advertise<msgs::ServerControl>("/gazebo/server/control");
+    
   }
 
   void ConstraintPouringController::PerformVelocityControl(const Twist& twist)
@@ -195,6 +204,14 @@ namespace iai_gazebo_controllers
   bool ConstraintPouringController::MoreMotionPhasesRemaining() const
   {
     return (current_motion_index_ + 1 < motions_.size());
+  }
+
+  void ConstraintPouringController::RequestGazeboShutdown()
+  {
+    std::cout << "\n\nREQUESTING GAZEBO SERVER SHUTDOWN\n\n";
+    msgs::ServerControl server_msg;
+    server_msg.set_stop(true);
+    serverControlPublisher_->Publish(server_msg);
   }
 
   // Register this plugin with the simulator

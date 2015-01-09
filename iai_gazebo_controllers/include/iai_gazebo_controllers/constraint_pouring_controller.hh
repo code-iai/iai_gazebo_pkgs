@@ -4,6 +4,7 @@
 #include <gazebo/gazebo.hh>
 #include <gazebo/physics/physics.hh>
 #include <gazebo/common/common.hh>
+#include <gazebo/transport/transport.hh>
 #include <iai_gazebo_controllers/gazebo_utils.hh>
 
 #include <fccl/control/CartesianConstraintController.h>
@@ -26,6 +27,7 @@ namespace iai_gazebo_controllers
     private: 
       // communication stuff
       gazebo::event::ConnectionPtr updateConnection_;
+      gazebo::transport::PublisherPtr serverControlPublisher_;
 
       // pointers to ourself
       gazebo::physics::ModelPtr self_;
@@ -51,6 +53,7 @@ namespace iai_gazebo_controllers
       void PerformVelocityControl(const Twist& twist);
 
       // aux functions
+      void RequestGazeboShutdown();
       void FillTransformMap();
       void SwitchToNextMotionPhase();
       gazebo::common::Time getCurrentSimTime() const;
