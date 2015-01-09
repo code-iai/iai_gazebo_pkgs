@@ -1,4 +1,5 @@
 #include <gazebo/msgs/msgs.hh>
+#include <gazebo/util/LogRecord.hh>
 #include <iai_gazebo_controllers/constraint_pouring_controller.hh>
 #include <iai_gazebo_controllers/gazebo_utils.hh>
 #include <boost/bind.hpp>
@@ -50,6 +51,7 @@ namespace iai_gazebo_controllers
     current_motion_index_ = 0;
     InitController(motions_, current_motion_index_);
     SetupConnections();
+    StartLogging();
   }
 
   void ConstraintPouringController::UpdateCallback(const common::UpdateInfo& info)
@@ -84,7 +86,10 @@ namespace iai_gazebo_controllers
       if ( MoreMotionPhasesRemaining() )
         SwitchToNextMotionPhase();
       else
+      {
+        StopLogging();
         RequestGazeboShutdown();
+      }
   }
 
   void ConstraintPouringController::InitController(const std::vector<MotionDescription>& motions, unsigned int index)
@@ -212,6 +217,17 @@ namespace iai_gazebo_controllers
     msgs::ServerControl server_msg;
     server_msg.set_stop(true);
     serverControlPublisher_->Publish(server_msg);
+  }
+
+  void ConstraintPouringController::StartLogging()
+  {
+    util::LogRecord::Instance()->SetBasePath("logs");
+    util::LogRecord::Instance()->Start("txt");
+  }
+
+  void ConstraintPouringController::StopLogging()
+  {
+    util::LogRecord::Instance()->Stop();
   }
 
   // Register this plugin with the simulator

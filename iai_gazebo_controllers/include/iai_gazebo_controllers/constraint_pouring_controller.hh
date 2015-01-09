@@ -53,6 +53,8 @@ namespace iai_gazebo_controllers
       void PerformVelocityControl(const Twist& twist);
 
       // aux functions
+      void StartLogging();
+      void StopLogging();
       void RequestGazeboShutdown();
       void FillTransformMap();
       void SwitchToNextMotionPhase();
