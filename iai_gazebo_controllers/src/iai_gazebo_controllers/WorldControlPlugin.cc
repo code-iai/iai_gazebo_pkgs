@@ -150,6 +150,13 @@ void WorldControlPlugin::ReadMotionDescriptions()
 
 //////////////////////////////////////////////////
 
+void WorldControlPlugin::PerformVelocityControl(const Twist& twist)
+{
+  gazebo::physics::LinkPtr link = controlled_model_->GetLinks()[0];
+  link->SetLinearVel(twist.linear_velocity_);
+  link->SetAngularVel(twist.angular_velocity_);
+}
+
 
 //////////////////////////////////////////////////
 

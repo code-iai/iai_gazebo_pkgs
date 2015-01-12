@@ -45,6 +45,7 @@
 #include <fccl/control/CartesianConstraintController.h>
 
 #include <iai_gazebo_controllers/motion_description.hh>
+#include <iai_gazebo_controllers/gazebo_utils.hh>
 
 #include <vector>
 
@@ -86,6 +87,9 @@ namespace iai_gazebo_controllers
       void GetStartDelay();
       void SetupConnections();
       void ReadMotionDescriptions();
+
+      // AUX FUNCTIONS OF CONSTRAINT CONTROLLER
+      void PerformVelocityControl(const Twist& twist);
 
       // \brief Thread for checking the start delay of the simulation
       boost::thread* checkStartDelay;
