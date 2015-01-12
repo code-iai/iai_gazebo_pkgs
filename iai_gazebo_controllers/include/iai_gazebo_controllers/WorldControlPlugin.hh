@@ -85,6 +85,7 @@ namespace iai_gazebo_controllers
       void GetControlledModel();
       void GetStartDelay();
       void SetupConnections();
+      void ReadMotionDescriptions();
 
       // \brief Thread for checking the start delay of the simulation
       boost::thread* checkStartDelay;
