@@ -43,41 +43,36 @@
         <uri>model://mug</uri>
         <!--pose>0.2 0.1 1.855 0.0 0 0</pose-->
         <pose>0.2 0.1 0.89 0 0 0</pose>
-        <plugin name="constraint_pouring_controller" filename="libconstraint_pouring_controller.so"/>
     </include>
 
-  <plugin name="SpawnLiquid" filename="libSpawnLiquid.so">
-    <initPos>0.2 0.1 0.88</initPos>
-    <nrSpheres>72</nrSpheres>
-    <inObject>Cup</inObject>
-    <inObjectZOffset>0.07729136</inObjectZOffset>
-    <mass>0.0006</mass>
-    <sphereRadius>0.0045</sphereRadius>
-    <spawnDiam>0.03</spawnDiam>
-    <inertia>0.00005</inertia>
-    <autoDisable>0</autoDisable>
-    <friction>1</friction>
-    <friction2>1</friction2>
-    <roll_friction>1</roll_friction>
-    <mu>1.0</mu>
-    <mu2>1.0</mu2>
-    <slip1>1</slip1>
-    <slip2>1</slip2>
-    <cfm>1.0</cfm>
-    <erp>0.00000002</erp>
-    <kp>100000000.8</kp>
-    <kd>1.2</kd>
-    <bounce>0.0</bounce>
-  </plugin>
+    <plugin name="SpawnLiquid" filename="libSpawnLiquid.so">
+      <initPos>0.2 0.1 0.88</initPos>
+      <nrSpheres>72</nrSpheres>
+      <inObject>Cup</inObject>
+      <inObjectZOffset>0.07729136</inObjectZOffset>
+      <mass>0.0006</mass>
+      <sphereRadius>0.0045</sphereRadius>
+      <spawnDiam>0.03</spawnDiam>
+      <inertia>0.00005</inertia>
+      <autoDisable>0</autoDisable>
+      <friction>1</friction>
+      <friction2>1</friction2>
+      <roll_friction>1</roll_friction>
+      <mu>1.0</mu>
+      <mu2>1.0</mu2>
+      <slip1>1</slip1>
+      <slip2>1</slip2>
+      <cfm>1.0</cfm>
+      <erp>0.00000002</erp>
+      <kp>100000000.8</kp>
+      <kd>1.2</kd>
+      <bounce>0.0</bounce>
+    </plugin>
 
-  <!--plugin name="constraint_pouring_controller" filename="libconstraint_pouring_controller.so">
-    <controlled_model>Cup<controlled_model/>
-  </plugin-->
-  
-   <plugin name="WorldControlPlugin" filename="libWorldControlPlugin.so">
-     <startDelay>3</startDelay>
-     <controlledModel>Cup</controlledModel>
-   </plugin>
+    <plugin name="WorldControlPlugin" filename="libWorldControlPlugin.so">
+      <startDelay>3</startDelay>
+      <controlledModel>Cup</controlledModel>
+    </plugin>
   
   </world>
 </sdf>
