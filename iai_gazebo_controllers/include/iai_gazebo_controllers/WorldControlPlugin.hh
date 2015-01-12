@@ -51,6 +51,10 @@
 
 namespace iai_gazebo_controllers
 {
+
+  #define DELTA_DERIVATIVE 0.01
+  #define DEFAULT_CYCLE_TIME 0.001
+
   class WorldControlPlugin : public gazebo::WorldPlugin
   {
     public:
@@ -87,10 +91,18 @@ namespace iai_gazebo_controllers
       void GetStartDelay();
       void SetupConnections();
       void ReadMotionDescriptions();
-
+      void InitController(const std::vector<MotionDescription>& motions, unsigned int index);
+ 
       // AUX FUNCTIONS OF CONSTRAINT CONTROLLER
       void PerformVelocityControl(const Twist& twist);
-
+      void FillTransformMap();
+      void SwitchToNextMotionPhase();
+      bool CurrentMotionPhaseOver() const;
+      bool MoreMotionPhasesRemaining() const;
+ 
+      // GAZEBO AUS FUNCTIONS
+      gazebo::common::Time GetCycleTime(double default_cycle_time) const;
+ 
       // \brief Thread for checking the start delay of the simulation
       boost::thread* checkStartDelay;
       // \brief Delay timer

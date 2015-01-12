@@ -157,6 +157,80 @@ void WorldControlPlugin::PerformVelocityControl(const Twist& twist)
   link->SetAngularVel(twist.angular_velocity_);
 }
 
+//////////////////////////////////////////////////
+
+void WorldControlPlugin::FillTransformMap()
+{
+  physics::ModelPtr stove = self_->GetModel("PancakeMaker");
+  math::Pose stove_pose = stove->GetLinks()[0]->GetWorldPose();
+  math::Pose cup_pose = controlled_model_->GetLinks()[0]->GetWorldPose();
+ 
+  Transform cup_transform, stove_transform; 
+  cup_transform.semantics().reference().setName("World");
+  cup_transform.semantics().target().setName("Cup");
+  stove_transform.semantics().reference().setName("World");
+  stove_transform.semantics().target().setName("PancakeMaker");
+  cup_transform.numerics() = toKDL(cup_pose);
+  stove_transform.numerics() = toKDL(stove_pose);
+  transforms_.setTransform(cup_transform);
+  transforms_.setTransform(stove_transform);
+}
+
+//////////////////////////////////////////////////
+
+void WorldControlPlugin::SwitchToNextMotionPhase()
+{
+  std::cout << "Starting new motion at time: " << self_->GetSimTime().Double() << "\n";
+  current_motion_index_ += 1;
+  last_control_time_ = self_->GetSimTime();
+  InitController(motions_, current_motion_index_);
+} 
+
+//////////////////////////////////////////////////
+
+bool WorldControlPlugin::CurrentMotionPhaseOver() const
+{
+  return controller_.constraints().areFulfilled() &&
+      (accumulated_convergence_time_.Double() >= motions_[current_motion_index_].finish_delay_);
+}
+
+//////////////////////////////////////////////////
+
+bool WorldControlPlugin::MoreMotionPhasesRemaining() const
+{
+  return (current_motion_index_ + 1 < motions_.size());
+}
+
+
+//////////////////////////////////////////////////
+
+void WorldControlPlugin::InitController(const std::vector<MotionDescription>& motions, unsigned int index)
+{
+  controlled_model_->SetGravityMode(false);
+
+  accumulated_convergence_time_.Set(0.0);
+
+  controller_.init(motions[index].constraints_);
+  fccl::control::PIDGains gains;
+  gains.init(controller_.constraints().names());
+  for(unsigned int i=0; i<gains.size(); ++i)
+    gains.p().numerics()(i) = 50.0;
+  controller_.setGains(gains); 
+  FillTransformMap();
+  controller_.start(transforms_, GetCycleTime(DEFAULT_CYCLE_TIME).Double());
+}
+ 
+//////////////////////////////////////////////////
+
+gazebo::common::Time WorldControlPlugin::GetCycleTime(double default_cycle_time) const
+{
+  common::Time cycle_time = self_->GetSimTime() - last_control_time_;
+
+  if(cycle_time.Double() <= 0.0)
+    cycle_time = common::Time(default_cycle_time);
+
+  return cycle_time;
+}
 
 //////////////////////////////////////////////////
 
