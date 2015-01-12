@@ -35,6 +35,7 @@
  *********************************************************************/
 
 #include "iai_gazebo_controllers/WorldControlPlugin.hh"
+#include "iai_gazebo_controllers/gazebo_utils.hh"
 
 using namespace iai_gazebo_controllers;
 using namespace gazebo;
@@ -55,16 +56,9 @@ WorldControlPlugin::~WorldControlPlugin()
 //////////////////////////////////////////////////
 void WorldControlPlugin::Load(physics::WorldPtr _parent, sdf::ElementPtr _sdf)
 {
-	// set the world ptr
 	this->self_ = _parent;
 
-	// get the delay value
-	if (!_sdf->HasElement("startDelay"))
-	{
-		std::cout << "Missing parameter <startDelay>, default to 0" << std::endl;
-		this->startDelay = 0;
-	}
-	else this->startDelay = _sdf->Get<double>("startDelay");
+        GetSDFValue("startDelay", _sdf, this->startDelay, 0.0);
 
 
 	// check if the world is paused
