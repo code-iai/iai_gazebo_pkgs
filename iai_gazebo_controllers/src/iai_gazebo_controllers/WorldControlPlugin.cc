@@ -70,6 +70,10 @@ void WorldControlPlugin::Load(physics::WorldPtr _parent, sdf::ElementPtr _sdf)
   SetupConnections();
 
   ReadMotionDescriptions();
+  current_motion_index_ = -1;
+  SwitchToNextMotionPhase();
+ 
+  StartLogging();
 
   GetStartDelay();
   // start thread which delays start of simulation
@@ -105,7 +109,40 @@ void WorldControlPlugin::GetStartDelay()
 
 void WorldControlPlugin::UpdateCallback(const common::UpdateInfo& info)
 {
-  // TODO: get me from the model plugin
+  // maybe wait for initial simulation delay
+  if (!SimulationStartDelayOver())
+  {
+    PerformVelocityControl(Twist());
+    return;
+  }
+
+  FillTransformMap();
+  controller_.update(transforms_, DELTA_DERIVATIVE, GetCycleTime(DEFAULT_CYCLE_TIME).Double());
+
+  // rotate translational velocity in twist
+  // NOTE: this is not a proper twist transformtation, but gazebo requires it like this
+  fccl::kdl::Twist desired_twist = controller_.desiredTwist();
+  fccl::semantics::TransformSemantics transform_semantics;
+  transform_semantics.init("World", "Cup");
+  fccl::kdl::Transform transform = transforms_.getTransform(transform_semantics);
+  desired_twist.numerics().vel = transform.numerics().M * desired_twist.numerics().vel;
+
+  PerformVelocityControl(toGazebo(desired_twist.numerics()));
+
+  last_control_time_ = self_->GetSimTime();
+
+  if (controller_.constraints().areFulfilled())
+    accumulated_convergence_time_ += GetCycleTime(DEFAULT_CYCLE_TIME);
+
+  // logic: conditionally switch to next phase or stop simulation
+  if ( CurrentMotionPhaseOver() )
+    if ( MoreMotionPhasesRemaining() )
+      SwitchToNextMotionPhase();
+    else
+    {
+      StopLogging();
+      RequestGazeboShutdown();
+    }
 }
 
 //////////////////////////////////////////////////
