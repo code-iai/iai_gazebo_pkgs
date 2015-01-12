@@ -75,7 +75,7 @@
   </plugin-->
   
    <plugin name="WorldControlPlugin" filename="libWorldControlPlugin.so">
-     <startDelay>1</startDelay>
+     <startDelay>3</startDelay>
      <controlledModel>Cup</controlledModel>
    </plugin>
   

@@ -56,48 +56,24 @@ WorldControlPlugin::~WorldControlPlugin()
 //////////////////////////////////////////////////
 void WorldControlPlugin::Load(physics::WorldPtr _parent, sdf::ElementPtr _sdf)
 {
-	this->self_ = _parent;
-
-        GetSDFValue("startDelay", _sdf, this->startDelay, 0.0);
-
-        GetControlledModel(_sdf);
-
-	// check if the world is paused
-	if (_parent->IsPaused())
-	{
-		std::cout << "World started in pause mode, starting sim in "
-				<<  this->startDelay << " sec.." << std::endl;
-	}
-	else
-	{
-		//pause the world
-		_parent->SetPaused(true);
-		std::cout << "Paused the world, starting sim in "
-				<<  this->startDelay << " sec.." << std::endl;
-	}
-
-    // thread for checking if the starting delay finished
-	this->checkStartDelay =
-			new boost::thread(&WorldControlPlugin::CheckStartDelayWorker, this);
+  self_ = _parent;
+  
+  GetSDFValue("startDelay", _sdf, startDelay, 0.0);
+  assert(startDelay >= 0.0);
+  
+  GetControlledModel(_sdf);
+ 
+  // start thread which delays start of simulation
+  checkStartDelay = new boost::thread(&WorldControlPlugin::DelaySimulationStart, this);
 }
 
 //////////////////////////////////////////////////
-void WorldControlPlugin::CheckStartDelayWorker()
+void WorldControlPlugin::DelaySimulationStart()
 {
-	while(this->self_->IsPaused())
-	{
-//		std::cout << "Sleeping for "
-//				<<  this->startDelay << " sec.." << std::endl;
-
-		// sleep for the given period
-		usleep(this->startDelay * 1000000);
-
-//		std::cout << "Unpausing the world after "
-//				<<  this->startDelay << " sec.." << std::endl;
-
-		// unpause the world
-		this->self_->SetPaused(false);
-	}
+  self_->SetPaused(true);
+  std::cout << "Paused the world, starting sim in " <<  startDelay << " sec..\n";
+  usleep(startDelay * 1000000);
+  self_->SetPaused(false);
 }
 
 void WorldControlPlugin::GetControlledModel(sdf::ElementPtr _sdf)

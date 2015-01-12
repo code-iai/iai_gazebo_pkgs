@@ -62,7 +62,7 @@ namespace iai_gazebo_controllers
       gazebo::physics::ModelPtr controlled_model_;
  
       // \brief Update the controller
-      void CheckStartDelayWorker();
+      void DelaySimulationStart();
       void GetControlledModel(sdf::ElementPtr _sdf);
 
      // \brief Thread for checking the start delay of the simulation
