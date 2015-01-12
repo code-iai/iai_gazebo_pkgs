@@ -28,14 +28,6 @@ include_directories(
 link_directories(
   ${GAZEBO_LIBRARY_DIRS})
 
-add_library(constraint_pouring_controller
-  src/iai_gazebo_controllers/constraint_pouring_controller.cc)
-target_link_libraries(constraint_pouring_controller
-  ${GAZEBO_LIBRARIES} 
-  ${Boost_LIBRARIES} 
-  ${catkin_LIBRARIES} 
-  ${YAML_CPP_LIBRARIES})
-   
 add_library(WorldControlPlugin
   src/iai_gazebo_controllers/WorldControlPlugin.cc)
 target_link_libraries(WorldControlPlugin
