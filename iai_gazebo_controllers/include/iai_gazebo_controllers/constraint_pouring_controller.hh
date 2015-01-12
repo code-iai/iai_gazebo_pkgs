@@ -6,19 +6,12 @@
 #include <gazebo/common/common.hh>
 #include <gazebo/transport/transport.hh>
 #include <iai_gazebo_controllers/gazebo_utils.hh>
+#include <iai_gazebo_controllers/motion_description.hh>
 
 #include <fccl/control/CartesianConstraintController.h>
 
 namespace iai_gazebo_controllers
 {
-  class MotionDescription 
-  { 
-    public:
-      std::string name_;
-      double finish_delay_;
-      fccl::base::ConstraintArray constraints_;
-  };
-
   class ConstraintPouringController : public gazebo::ModelPlugin
   {
     public:
