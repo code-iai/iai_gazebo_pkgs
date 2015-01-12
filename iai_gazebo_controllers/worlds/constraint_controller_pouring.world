@@ -72,6 +72,7 @@
     <plugin name="WorldControlPlugin" filename="libWorldControlPlugin.so">
       <startDelay>3</startDelay>
       <controlledModel>Cup</controlledModel>
+      <motionFile>motions/sample-motion1.yaml</motionFile>
     </plugin>
   
   </world>

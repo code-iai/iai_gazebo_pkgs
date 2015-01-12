@@ -163,7 +163,8 @@ void WorldControlPlugin::SetupConnections()
 
 void WorldControlPlugin::ReadMotionDescriptions()
 {
-  std::string motion_file = "motions/sample-motion1.yaml";
+  std::string motion_file; // = "motions/sample-motion1.yaml";
+  assert(GetSDFValue("motionFile", self_description_, motion_file));
 
   std::ifstream file_in(motion_file.c_str());
   assert(file_in.good());
