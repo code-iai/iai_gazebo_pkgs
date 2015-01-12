@@ -57,12 +57,10 @@ WorldControlPlugin::~WorldControlPlugin()
 void WorldControlPlugin::Load(physics::WorldPtr _parent, sdf::ElementPtr _sdf)
 {
   self_ = _parent;
-  
-  GetSDFValue("startDelay", _sdf, startDelay, 0.0);
-  assert(startDelay >= 0.0);
-  
-  GetControlledModel(_sdf);
- 
+  self_description_ = _sdf;
+   
+  GetControlledModel();
+  GetStartDelay();
   // start thread which delays start of simulation
   checkStartDelay = new boost::thread(&WorldControlPlugin::DelaySimulationStart, this);
 }
@@ -76,10 +74,16 @@ void WorldControlPlugin::DelaySimulationStart()
   self_->SetPaused(false);
 }
 
-void WorldControlPlugin::GetControlledModel(sdf::ElementPtr _sdf)
+void WorldControlPlugin::GetControlledModel()
 {
   std::string controlledModelName;
-  assert(GetSDFValue("controlledModel", _sdf, controlledModelName));
+  assert(GetSDFValue("controlledModel", self_description_, controlledModelName));
   controlled_model_ = self_->GetModel(controlledModelName);
   assert(controlled_model_);
+}
+
+void WorldControlPlugin::GetStartDelay()
+{
+  GetSDFValue("startDelay", self_description_, startDelay, 0.0);
+  assert(startDelay >= 0.0);
 }
