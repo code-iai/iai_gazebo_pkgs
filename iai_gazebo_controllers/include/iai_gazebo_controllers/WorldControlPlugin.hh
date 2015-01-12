@@ -40,6 +40,7 @@
 #include <gazebo/physics/physics.hh>
 #include <gazebo/common/common.hh>
 #include <gazebo/gazebo.hh>
+#include <gazebo/transport/transport.hh>
 
 #include <fccl/control/CartesianConstraintController.h>
 
@@ -49,17 +50,13 @@
 
 namespace iai_gazebo_controllers
 {
-  /// \brief WorldControlPlugin class
   class WorldControlPlugin : public gazebo::WorldPlugin
   {
     public:
-      // \brief Constructor
       WorldControlPlugin();
-      // \brief Destructor
       virtual ~WorldControlPlugin();
 
     protected:
-      // \brief Load plugin
       virtual void Load(gazebo::physics::WorldPtr _parent, sdf::ElementPtr _sdf);
 
     private:
@@ -67,6 +64,10 @@ namespace iai_gazebo_controllers
       gazebo::physics::WorldPtr self_;
       sdf::ElementPtr self_description_;
       gazebo::physics::ModelPtr controlled_model_;
+
+      // GAZEBO COMMUNICATION
+      gazebo::event::ConnectionPtr updateConnection_;
+      gazebo::transport::PublisherPtr serverControlPublisher_;
 
       // VARIABLES OF POURING CONTROLLER
       std::vector<MotionDescription> motions_;
@@ -76,12 +77,16 @@ namespace iai_gazebo_controllers
       gazebo::common::Time last_control_time_, accumulated_convergence_time_;
       unsigned int current_motion_index_;
 
+      // CALLBACKS
+      void UpdateCallback(const gazebo::common::UpdateInfo& info);
+
       // INIT FUNCTIONS
       void DelaySimulationStart();
       void GetControlledModel();
       void GetStartDelay();
+      void SetupConnections();
 
-     // \brief Thread for checking the start delay of the simulation
+      // \brief Thread for checking the start delay of the simulation
       boost::thread* checkStartDelay;
       // \brief Delay timer
       double startDelay;

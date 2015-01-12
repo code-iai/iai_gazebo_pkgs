@@ -1,7 +1,7 @@
 /*********************************************************************
  * Software License Agreement (BSD License)
  *
- *  Copyright (c) 2013, Andrei Haidu,
+ *  Copyright (c) 2015, Andrei Haidu, Georg Bartels
  *  Institute for Artificial Intelligence, Universität Bremen.
  *  All rights reserved.
  *
@@ -33,6 +33,8 @@
  *  ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
  *  POSSIBILITY OF SUCH DAMAGE.
  *********************************************************************/
+#include <gazebo/msgs/msgs.hh>
+#include <boost/bind.hpp>
 
 #include "iai_gazebo_controllers/WorldControlPlugin.hh"
 #include "iai_gazebo_controllers/gazebo_utils.hh"
@@ -74,6 +76,7 @@ void WorldControlPlugin::DelaySimulationStart()
   self_->SetPaused(false);
 }
 
+//////////////////////////////////////////////////
 void WorldControlPlugin::GetControlledModel()
 {
   std::string controlledModelName;
@@ -82,8 +85,37 @@ void WorldControlPlugin::GetControlledModel()
   assert(controlled_model_);
 }
 
+//////////////////////////////////////////////////
 void WorldControlPlugin::GetStartDelay()
 {
   GetSDFValue("startDelay", self_description_, startDelay, 0.0);
   assert(startDelay >= 0.0);
 }
+
+//////////////////////////////////////////////////
+
+void WorldControlPlugin::UpdateCallback(const common::UpdateInfo& info)
+{
+  // TODO: get me from the model plugin
+}
+
+//////////////////////////////////////////////////
+
+void WorldControlPlugin::SetupConnections()
+{
+  // regular update callback
+  updateConnection_ = event::Events::ConnectWorldUpdateBegin(
+      boost::bind(&WorldControlPlugin::UpdateCallback, this, _1));
+
+  // publisher to request gazebo shutdown
+  transport::NodePtr node = transport::NodePtr(new transport::Node());
+  node->Init(self_->GetName());
+  serverControlPublisher_ = node->Advertise<msgs::ServerControl>("/gazebo/server/control");
+}
+
+//////////////////////////////////////////////////
+
+
+//////////////////////////////////////////////////
+
+
