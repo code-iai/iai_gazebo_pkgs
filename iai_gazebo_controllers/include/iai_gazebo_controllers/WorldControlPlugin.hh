@@ -41,6 +41,12 @@
 #include <gazebo/common/common.hh>
 #include <gazebo/gazebo.hh>
 
+#include <fccl/control/CartesianConstraintController.h>
+
+#include <iai_gazebo_controllers/motion_description.hh>
+
+#include <vector>
+
 namespace iai_gazebo_controllers
 {
   /// \brief WorldControlPlugin class
@@ -61,7 +67,15 @@ namespace iai_gazebo_controllers
       gazebo::physics::WorldPtr self_;
       sdf::ElementPtr self_description_;
       gazebo::physics::ModelPtr controlled_model_;
- 
+
+      // VARIABLES OF POURING CONTROLLER
+      std::vector<MotionDescription> motions_;
+      fccl::control::CartesianConstraintController controller_;
+      fccl::utils::TransformMap transforms_;
+      double simulation_start_delay_;
+      gazebo::common::Time last_control_time_, accumulated_convergence_time_;
+      unsigned int current_motion_index_;
+
       // INIT FUNCTIONS
       void DelaySimulationStart();
       void GetControlledModel();
