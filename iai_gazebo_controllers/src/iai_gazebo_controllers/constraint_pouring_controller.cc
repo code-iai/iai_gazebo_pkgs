@@ -2,11 +2,8 @@
 #include <gazebo/util/LogRecord.hh>
 #include <iai_gazebo_controllers/constraint_pouring_controller.hh>
 #include <iai_gazebo_controllers/gazebo_utils.hh>
+#include <iai_gazebo_controllers/conversions.hh>
 #include <boost/bind.hpp>
-#include <fstream>
-#include <iostream>
-#include <fccl_conversions/YamlParser.h>
-#include <yaml-cpp/yaml.h>
 
 using namespace gazebo;
 using namespace fccl::base;
@@ -18,27 +15,6 @@ namespace iai_gazebo_controllers
   #define DELTA_DERIVATIVE 0.01
   #define DEFAULT_CYCLE_TIME 0.001
 
-  void operator>> (const YAML::Node& node, MotionDescription& m)
-  {
-    node["name"] >> m.name_;
-    node["finish-delay"] >> m.finish_delay_;
-    assert(m.finish_delay_ >= 0.0);
-    using fccl::conversions::operator>>;
-    node["constraints"] >> m.constraints_;
-  }
-
-  std::ostream& operator<<(std::ostream& os, const MotionDescription& m)
-  {
-    using fccl::base::operator<<;
-
-    os << "MotionDescription:\n";
-    os << "name: " << m.name_ << "\n";
-    os << "finish-delay: " << m.finish_delay_ << "\n";
-    os << "constraints: " << m.constraints_;
-
-    return os;
-  }
- 
   void ConstraintPouringController::Load(physics::ModelPtr self, 
       sdf::ElementPtr self_description)
   {
