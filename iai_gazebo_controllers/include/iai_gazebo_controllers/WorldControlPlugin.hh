@@ -57,11 +57,13 @@ namespace iai_gazebo_controllers
       virtual void Load(gazebo::physics::WorldPtr _parent, sdf::ElementPtr _sdf);
 
     private:
+      // POINTERS TO GAZEBO STRUCTURES
+      // \brief World pointer
+      gazebo::physics::WorldPtr self_;
+ 
       // \brief Update the controller
       void CheckStartDelayWorker();
-      // \brief World pointer
-      gazebo::physics::WorldPtr world;
-      // \brief Thread for checking the start delay of the simulation
+     // \brief Thread for checking the start delay of the simulation
       boost::thread* checkStartDelay;
       // \brief Delay timer
       double startDelay;

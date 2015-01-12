@@ -56,7 +56,7 @@ WorldControlPlugin::~WorldControlPlugin()
 void WorldControlPlugin::Load(physics::WorldPtr _parent, sdf::ElementPtr _sdf)
 {
 	// set the world ptr
-	this->world = _parent;
+	this->self_ = _parent;
 
 	// get the delay value
 	if (!_sdf->HasElement("startDelay"))
@@ -89,7 +89,7 @@ void WorldControlPlugin::Load(physics::WorldPtr _parent, sdf::ElementPtr _sdf)
 //////////////////////////////////////////////////
 void WorldControlPlugin::CheckStartDelayWorker()
 {
-	while(this->world->IsPaused())
+	while(this->self_->IsPaused())
 	{
 //		std::cout << "Sleeping for "
 //				<<  this->startDelay << " sec.." << std::endl;
@@ -101,6 +101,6 @@ void WorldControlPlugin::CheckStartDelayWorker()
 //				<<  this->startDelay << " sec.." << std::endl;
 
 		// unpause the world
-		this->world->SetPaused(false);
+		this->self_->SetPaused(false);
 	}
 }
