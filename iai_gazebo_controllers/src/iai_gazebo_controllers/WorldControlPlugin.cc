@@ -60,6 +60,7 @@ void WorldControlPlugin::Load(physics::WorldPtr _parent, sdf::ElementPtr _sdf)
 
         GetSDFValue("startDelay", _sdf, this->startDelay, 0.0);
 
+        GetControlledModel(_sdf);
 
 	// check if the world is paused
 	if (_parent->IsPaused())
@@ -97,4 +98,12 @@ void WorldControlPlugin::CheckStartDelayWorker()
 		// unpause the world
 		this->self_->SetPaused(false);
 	}
+}
+
+void WorldControlPlugin::GetControlledModel(sdf::ElementPtr _sdf)
+{
+  std::string controlledModelName;
+  assert(GetSDFValue("controlledModel", _sdf, controlledModelName));
+  controlled_model_ = self_->GetModel(controlledModelName);
+  assert(controlled_model_);
 }
