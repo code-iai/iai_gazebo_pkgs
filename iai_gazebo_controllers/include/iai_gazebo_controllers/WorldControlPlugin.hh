@@ -43,30 +43,28 @@
 
 namespace iai_gazebo_controllers
 {
-	/// \brief WorldControlPlugin class
-	class WorldControlPlugin : public gazebo::WorldPlugin
-	{
-		/// \brief Constructor
-		public: WorldControlPlugin();
+  /// \brief WorldControlPlugin class
+  class WorldControlPlugin : public gazebo::WorldPlugin
+  {
+    public:
+      // \brief Constructor
+      WorldControlPlugin();
+      // \brief Destructor
+      virtual ~WorldControlPlugin();
 
-		/// \brief Destructor
-		public: virtual ~WorldControlPlugin();
+    protected:
+      // \brief Load plugin
+      virtual void Load(gazebo::physics::WorldPtr _parent, sdf::ElementPtr _sdf);
 
-		/// \brief Load plugin
-		protected: virtual void Load(gazebo::physics::WorldPtr _parent, sdf::ElementPtr _sdf);
-
-	    /// \brief Update the controller
-	    private: void CheckStartDelayWorker();
-
-	    /// \brief World pointer
-	    private: gazebo::physics::WorldPtr world;
-
-		/// \brief Thread for checking the start delay of the simulation
-		private: boost::thread* checkStartDelay;
-
-		/// \brief Delay timer
-		private: double startDelay;
-
-	};
+    private:
+      // \brief Update the controller
+      void CheckStartDelayWorker();
+      // \brief World pointer
+      gazebo::physics::WorldPtr world;
+      // \brief Thread for checking the start delay of the simulation
+      boost::thread* checkStartDelay;
+      // \brief Delay timer
+      double startDelay;
+  };
 }
 #endif
