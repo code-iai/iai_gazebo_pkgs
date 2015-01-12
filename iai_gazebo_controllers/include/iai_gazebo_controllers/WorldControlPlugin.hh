@@ -102,6 +102,10 @@ namespace iai_gazebo_controllers
  
       // GAZEBO AUS FUNCTIONS
       gazebo::common::Time GetCycleTime(double default_cycle_time) const;
+      void StartLogging();
+      void StopLogging();
+      void RequestGazeboShutdown();
+      bool SimulationStartDelayOver() const;
  
       // \brief Thread for checking the start delay of the simulation
       boost::thread* checkStartDelay;

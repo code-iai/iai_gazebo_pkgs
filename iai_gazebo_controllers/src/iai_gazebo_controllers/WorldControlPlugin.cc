@@ -34,6 +34,8 @@
  *  POSSIBILITY OF SUCH DAMAGE.
  *********************************************************************/
 #include <gazebo/msgs/msgs.hh>
+#include <gazebo/util/LogRecord.hh>
+
 #include <boost/bind.hpp>
 
 #include "iai_gazebo_controllers/WorldControlPlugin.hh"
@@ -234,9 +236,38 @@ gazebo::common::Time WorldControlPlugin::GetCycleTime(double default_cycle_time)
 
 //////////////////////////////////////////////////
 
+void WorldControlPlugin::StartLogging()
+{
+  util::LogRecord::Instance()->SetBasePath("logs");
+  util::LogRecord::Instance()->Start("txt");
+}
+
 
 //////////////////////////////////////////////////
 
+void WorldControlPlugin::StopLogging()
+{
+  util::LogRecord::Instance()->Stop();
+}
+
+
+//////////////////////////////////////////////////
+
+void WorldControlPlugin::RequestGazeboShutdown()
+{
+  std::cout << "\n\nREQUESTING GAZEBO SERVER SHUTDOWN\n\n";
+  msgs::ServerControl server_msg;
+  server_msg.set_stop(true);
+  serverControlPublisher_->Publish(server_msg);
+}
+
+
+//////////////////////////////////////////////////
+
+bool WorldControlPlugin::SimulationStartDelayOver() const
+{
+  return self_->GetSimTime().Double() >= simulation_start_delay_;
+}
 
 //////////////////////////////////////////////////
 
