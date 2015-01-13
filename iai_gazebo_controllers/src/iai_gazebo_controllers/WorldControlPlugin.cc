@@ -112,22 +112,16 @@ void WorldControlPlugin::UpdateCallback(const common::UpdateInfo& info)
   // maybe wait for initial simulation delay
   if (!SimulationStartDelayOver())
   {
-    PerformVelocityControl(Twist());
+    fccl::kdl::Twist zero_twist;
+    zero_twist.semantics().init("Cup", "Cup");
+    PerformVelocityControl(zero_twist);
     return;
   }
 
   FillTransformMap();
   controller_.update(transforms_, DELTA_DERIVATIVE, GetCycleTime(DEFAULT_CYCLE_TIME).Double());
 
-  // rotate translational velocity in twist
-  // NOTE: this is not a proper twist transformtation, but gazebo requires it like this
-  fccl::kdl::Twist desired_twist = controller_.desiredTwist();
-  fccl::semantics::TransformSemantics transform_semantics;
-  transform_semantics.init("World", "Cup");
-  fccl::kdl::Transform transform = transforms_.getTransform(transform_semantics);
-  desired_twist.numerics().vel = transform.numerics().M * desired_twist.numerics().vel;
-
-  PerformVelocityControl(toGazebo(desired_twist.numerics()));
+  PerformVelocityControl(controller_.desiredTwist());
 
   last_control_time_ = self_->GetSimTime();
 
@@ -190,11 +184,20 @@ void WorldControlPlugin::ReadMotionDescriptions()
 
 //////////////////////////////////////////////////
 
-void WorldControlPlugin::PerformVelocityControl(const Twist& twist)
+void WorldControlPlugin::PerformVelocityControl(const fccl::kdl::Twist& twist)
 {
+  // rotate translational velocity in twist
+  // NOTE: this is not a proper twist transformtation, but gazebo requires it like this
+  fccl::kdl::Twist desired_twist = twist;
+  fccl::semantics::TransformSemantics transform_semantics;
+  transform_semantics.init("World", "Cup");
+  fccl::kdl::Transform transform = transforms_.getTransform(transform_semantics);
+  desired_twist.numerics().vel = transform.numerics().M * desired_twist.numerics().vel;
+
+  // setting the velocity commands to the link of the controlled model
   gazebo::physics::LinkPtr link = controlled_model_->GetLinks()[0];
-  link->SetLinearVel(twist.linear_velocity_);
-  link->SetAngularVel(twist.angular_velocity_);
+  link->SetLinearVel(toGazebo(desired_twist.numerics().vel));
+  link->SetAngularVel(toGazebo(desired_twist.numerics().rot));
 }
 
 //////////////////////////////////////////////////

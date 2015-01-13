@@ -94,7 +94,7 @@ namespace iai_gazebo_controllers
       void InitController(const std::vector<MotionDescription>& motions, unsigned int index);
  
       // AUX FUNCTIONS OF CONSTRAINT CONTROLLER
-      void PerformVelocityControl(const Twist& twist);
+      void PerformVelocityControl(const fccl::kdl::Twist& twist);
       void FillTransformMap();
       void SwitchToNextMotionPhase();
       bool CurrentMotionPhaseOver() const;
