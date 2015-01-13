@@ -34,8 +34,8 @@
  *  POSSIBILITY OF SUCH DAMAGE.
  *********************************************************************/
 
-#ifndef WORLD_CONTROL_PLUGIN_HH
-#define WORLD_CONTROL_PLUGIN_HH
+#ifndef CONSTRAINT_CONTROL_PLUGIN_HH
+#define CONSTRAINT_CONTROL_PLUGIN_HH
 
 #include <gazebo/physics/physics.hh>
 #include <gazebo/common/common.hh>
@@ -55,11 +55,11 @@ namespace iai_gazebo_controllers
   #define DELTA_DERIVATIVE 0.01
   #define DEFAULT_CYCLE_TIME 0.001
 
-  class WorldControlPlugin : public gazebo::WorldPlugin
+  class ConstraintControlPlugin : public gazebo::WorldPlugin
   {
     public:
-      WorldControlPlugin();
-      virtual ~WorldControlPlugin();
+      ConstraintControlPlugin();
+      virtual ~ConstraintControlPlugin();
 
     protected:
       virtual void Load(gazebo::physics::WorldPtr _parent, sdf::ElementPtr _sdf);
@@ -113,4 +113,4 @@ namespace iai_gazebo_controllers
       double startDelay;
   };
 }
-#endif
+#endif // CONSTRAINT_CONTROL_PLUGIN_HH

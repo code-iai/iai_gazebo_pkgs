@@ -28,9 +28,9 @@ include_directories(
 link_directories(
   ${GAZEBO_LIBRARY_DIRS})
 
-add_library(WorldControlPlugin
-  src/iai_gazebo_controllers/WorldControlPlugin.cc)
-target_link_libraries(WorldControlPlugin
+add_library(ConstraintControlPlugin
+  src/iai_gazebo_controllers/constraint_control_plugin.cc)
+target_link_libraries(ConstraintControlPlugin
   ${GAZEBO_LIBRARIES} 
   ${Boost_LIBRARIES} 
   ${catkin_LIBRARIES})

@@ -38,7 +38,7 @@
 
 #include <boost/bind.hpp>
 
-#include "iai_gazebo_controllers/WorldControlPlugin.hh"
+#include "iai_gazebo_controllers/constraint_control_plugin.hh"
 #include "iai_gazebo_controllers/gazebo_utils.hh"
 #include "iai_gazebo_controllers/conversions.hh"
 
@@ -47,20 +47,23 @@ using namespace iai_gazebo_controllers;
 using namespace gazebo;
 
 // Register this plugin with the simulator
-GZ_REGISTER_WORLD_PLUGIN(WorldControlPlugin)
+GZ_REGISTER_WORLD_PLUGIN(ConstraintControlPlugin)
 
 //////////////////////////////////////////////////
-WorldControlPlugin::WorldControlPlugin()
+
+ConstraintControlPlugin::ConstraintControlPlugin()
 {
 }
 
 //////////////////////////////////////////////////
-WorldControlPlugin::~WorldControlPlugin()
+
+ConstraintControlPlugin::~ConstraintControlPlugin()
 {
 }
 
 //////////////////////////////////////////////////
-void WorldControlPlugin::Load(physics::WorldPtr _parent, sdf::ElementPtr _sdf)
+
+void ConstraintControlPlugin::Load(physics::WorldPtr _parent, sdf::ElementPtr _sdf)
 {
   self_ = _parent;
   self_description_ = _sdf;
@@ -77,11 +80,12 @@ void WorldControlPlugin::Load(physics::WorldPtr _parent, sdf::ElementPtr _sdf)
 
   GetStartDelay();
   // start thread which delays start of simulation
-  checkStartDelay = new boost::thread(&WorldControlPlugin::DelaySimulationStart, this);
+  checkStartDelay = new boost::thread(&ConstraintControlPlugin::DelaySimulationStart, this);
 }
 
 //////////////////////////////////////////////////
-void WorldControlPlugin::DelaySimulationStart()
+
+void ConstraintControlPlugin::DelaySimulationStart()
 {
   self_->SetPaused(true);
   std::cout << "Paused the world, starting sim in " <<  startDelay << " sec..\n";
@@ -90,7 +94,8 @@ void WorldControlPlugin::DelaySimulationStart()
 }
 
 //////////////////////////////////////////////////
-void WorldControlPlugin::GetControlledModel()
+
+void ConstraintControlPlugin::GetControlledModel()
 {
   std::string controlledModelName;
   assert(GetSDFValue("controlledModel", self_description_, controlledModelName));
@@ -99,7 +104,8 @@ void WorldControlPlugin::GetControlledModel()
 }
 
 //////////////////////////////////////////////////
-void WorldControlPlugin::GetStartDelay()
+
+void ConstraintControlPlugin::GetStartDelay()
 {
   GetSDFValue("startDelay", self_description_, startDelay, 0.0);
   assert(startDelay >= 0.0);
@@ -107,7 +113,7 @@ void WorldControlPlugin::GetStartDelay()
 
 //////////////////////////////////////////////////
 
-void WorldControlPlugin::UpdateCallback(const common::UpdateInfo& info)
+void ConstraintControlPlugin::UpdateCallback(const common::UpdateInfo& info)
 {
   // maybe wait for initial simulation delay
   if (!SimulationStartDelayOver())
@@ -141,11 +147,11 @@ void WorldControlPlugin::UpdateCallback(const common::UpdateInfo& info)
 
 //////////////////////////////////////////////////
 
-void WorldControlPlugin::SetupConnections()
+void ConstraintControlPlugin::SetupConnections()
 {
   // regular update callback
   updateConnection_ = event::Events::ConnectWorldUpdateBegin(
-      boost::bind(&WorldControlPlugin::UpdateCallback, this, _1));
+      boost::bind(&ConstraintControlPlugin::UpdateCallback, this, _1));
 
   // publisher to request gazebo shutdown
   transport::NodePtr node = transport::NodePtr(new transport::Node());
@@ -155,7 +161,7 @@ void WorldControlPlugin::SetupConnections()
 
 //////////////////////////////////////////////////
 
-void WorldControlPlugin::ReadMotionDescriptions()
+void ConstraintControlPlugin::ReadMotionDescriptions()
 {
   std::string motion_file; // = "motions/sample-motion1.yaml";
   assert(GetSDFValue("motionFile", self_description_, motion_file));
@@ -184,7 +190,7 @@ void WorldControlPlugin::ReadMotionDescriptions()
 
 //////////////////////////////////////////////////
 
-void WorldControlPlugin::PerformVelocityControl(const fccl::kdl::Twist& twist)
+void ConstraintControlPlugin::PerformVelocityControl(const fccl::kdl::Twist& twist)
 {
   // rotate translational velocity in twist
   // NOTE: this is not a proper twist transformtation, but gazebo requires it like this
@@ -202,7 +208,7 @@ void WorldControlPlugin::PerformVelocityControl(const fccl::kdl::Twist& twist)
 
 //////////////////////////////////////////////////
 
-void WorldControlPlugin::FillTransformMap()
+void ConstraintControlPlugin::FillTransformMap()
 {
   physics::ModelPtr stove = self_->GetModel("PancakeMaker");
   math::Pose stove_pose = stove->GetLinks()[0]->GetWorldPose();
@@ -221,7 +227,7 @@ void WorldControlPlugin::FillTransformMap()
 
 //////////////////////////////////////////////////
 
-void WorldControlPlugin::SwitchToNextMotionPhase()
+void ConstraintControlPlugin::SwitchToNextMotionPhase()
 {
   std::cout << "Starting new motion at time: " << self_->GetSimTime().Double() << "\n";
   current_motion_index_ += 1;
@@ -231,7 +237,7 @@ void WorldControlPlugin::SwitchToNextMotionPhase()
 
 //////////////////////////////////////////////////
 
-bool WorldControlPlugin::CurrentMotionPhaseOver() const
+bool ConstraintControlPlugin::CurrentMotionPhaseOver() const
 {
   return controller_.constraints().areFulfilled() &&
       (accumulated_convergence_time_.Double() >= motions_[current_motion_index_].finish_delay_);
@@ -239,7 +245,7 @@ bool WorldControlPlugin::CurrentMotionPhaseOver() const
 
 //////////////////////////////////////////////////
 
-bool WorldControlPlugin::MoreMotionPhasesRemaining() const
+bool ConstraintControlPlugin::MoreMotionPhasesRemaining() const
 {
   return (current_motion_index_ + 1 < motions_.size());
 }
@@ -247,7 +253,7 @@ bool WorldControlPlugin::MoreMotionPhasesRemaining() const
 
 //////////////////////////////////////////////////
 
-void WorldControlPlugin::InitController(const std::vector<MotionDescription>& motions, unsigned int index)
+void ConstraintControlPlugin::InitController(const std::vector<MotionDescription>& motions, unsigned int index)
 {
   controlled_model_->SetGravityMode(false);
 
@@ -265,7 +271,7 @@ void WorldControlPlugin::InitController(const std::vector<MotionDescription>& mo
  
 //////////////////////////////////////////////////
 
-gazebo::common::Time WorldControlPlugin::GetCycleTime(double default_cycle_time) const
+gazebo::common::Time ConstraintControlPlugin::GetCycleTime(double default_cycle_time) const
 {
   common::Time cycle_time = self_->GetSimTime() - last_control_time_;
 
@@ -277,7 +283,7 @@ gazebo::common::Time WorldControlPlugin::GetCycleTime(double default_cycle_time)
 
 //////////////////////////////////////////////////
 
-void WorldControlPlugin::StartLogging()
+void ConstraintControlPlugin::StartLogging()
 {
   util::LogRecord::Instance()->SetBasePath("logs");
   util::LogRecord::Instance()->Start("txt");
@@ -286,7 +292,7 @@ void WorldControlPlugin::StartLogging()
 
 //////////////////////////////////////////////////
 
-void WorldControlPlugin::StopLogging()
+void ConstraintControlPlugin::StopLogging()
 {
   util::LogRecord::Instance()->Stop();
 }
@@ -294,7 +300,7 @@ void WorldControlPlugin::StopLogging()
 
 //////////////////////////////////////////////////
 
-void WorldControlPlugin::RequestGazeboShutdown()
+void ConstraintControlPlugin::RequestGazeboShutdown()
 {
   std::cout << "\n\nREQUESTING GAZEBO SERVER SHUTDOWN\n\n";
   msgs::ServerControl server_msg;
@@ -305,20 +311,9 @@ void WorldControlPlugin::RequestGazeboShutdown()
 
 //////////////////////////////////////////////////
 
-bool WorldControlPlugin::SimulationStartDelayOver() const
+bool ConstraintControlPlugin::SimulationStartDelayOver() const
 {
   return self_->GetSimTime().Double() >= simulation_start_delay_;
 }
 
 //////////////////////////////////////////////////
-
-
-//////////////////////////////////////////////////
-
-
-//////////////////////////////////////////////////
-
-
-//////////////////////////////////////////////////
-
-

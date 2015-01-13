@@ -69,7 +69,7 @@
       <bounce>0.0</bounce>
     </plugin>
 
-    <plugin name="WorldControlPlugin" filename="libWorldControlPlugin.so">
+    <plugin name="ConstraintControlPlugin" filename="libConstraintControlPlugin.so">
       <startDelay>3</startDelay>
       <controlledModel>Cup</controlledModel>
       <motionFile>motions/sample-motion1.yaml</motionFile>
