@@ -70,7 +70,8 @@
     </plugin>
 
     <plugin name="ConstraintControlPlugin" filename="libConstraintControlPlugin.so">
-      <startDelay>3</startDelay>
+      <startDelay>1</startDelay>
+      <logDelay>2</logDelay>
       <controlledModel>Cup</controlledModel>
       <motionFile>motions/sample-motion2.yaml</motionFile>
     </plugin>

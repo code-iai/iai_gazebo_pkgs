@@ -89,6 +89,7 @@ namespace iai_gazebo_controllers
       void DelaySimulationStart();
       void GetControlledModel();
       void GetStartDelay();
+      void GetLogDelay();
       void SetupConnections();
       void ReadMotionDescriptions();
       void InitController(const std::vector<MotionDescription>& motions, unsigned int index);
@@ -111,6 +112,7 @@ namespace iai_gazebo_controllers
       boost::thread* checkStartDelay;
       // \brief Delay timer
       double startDelay;
+      double logDelay;
   };
 }
 #endif // CONSTRAINT_CONTROL_PLUGIN_HH

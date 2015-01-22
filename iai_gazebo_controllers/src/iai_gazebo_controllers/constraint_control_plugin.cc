@@ -75,10 +75,9 @@ void ConstraintControlPlugin::Load(physics::WorldPtr _parent, sdf::ElementPtr _s
   ReadMotionDescriptions();
   current_motion_index_ = -1;
   SwitchToNextMotionPhase();
- 
-  StartLogging();
 
   GetStartDelay();
+  GetLogDelay();
   // start thread which delays start of simulation
   checkStartDelay = new boost::thread(&ConstraintControlPlugin::DelaySimulationStart, this);
 }
@@ -91,6 +90,8 @@ void ConstraintControlPlugin::DelaySimulationStart()
   std::cout << "Paused the world, starting sim in " <<  startDelay << " sec..\n";
   usleep(startDelay * 1000000);
   self_->SetPaused(false);
+  usleep(logDelay * 1000000);
+  StartLogging();
 }
 
 //////////////////////////////////////////////////
@@ -109,6 +110,14 @@ void ConstraintControlPlugin::GetStartDelay()
 {
   GetSDFValue("startDelay", self_description_, startDelay, 0.0);
   assert(startDelay >= 0.0);
+}
+
+//////////////////////////////////////////////////
+
+void ConstraintControlPlugin::GetLogDelay()
+{
+  GetSDFValue("logDelay", self_description_, logDelay, 0.0);
+  assert(logDelay >= 0.0);
 }
 
 //////////////////////////////////////////////////

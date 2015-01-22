@@ -21,7 +21,7 @@ stove-top-plane: &StoveTopPlane
 # HERE COMES THE ACTUAL COMMAND
 # SYNTAX: A LIST OF MOTIONS
 motion-command:
-  simulation-start-delay: 1.5
+  simulation-start-delay: 2.0
   motions:
   - name: Move above stove motion
     finish-delay: 0.0
