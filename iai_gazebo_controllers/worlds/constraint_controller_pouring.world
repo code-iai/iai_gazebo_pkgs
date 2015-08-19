@@ -69,12 +69,12 @@
       <bounce>0.0</bounce>
     </plugin>
 
-    <plugin name="ConstraintControlPlugin" filename="libConstraintControlPlugin.so">
+    <!--plugin name="ConstraintControlPlugin" filename="libConstraintControlPlugin.so">
       <startDelay>1</startDelay>
       <logDelay>2</logDelay>
       <controlledModel>Cup</controlledModel>
       <motionFile>motions/sample-motion2.yaml</motionFile>
-    </plugin>
+    </plugin-->
   
   </world>
 </sdf>
