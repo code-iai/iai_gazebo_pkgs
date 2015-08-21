@@ -3,6 +3,7 @@
 
 #include <gazebo/gazebo.hh>
 #include <kdl/frames.hpp>
+#include <Eigen/Dense>
 
 namespace iai_gazebo_controllers
 {
@@ -78,16 +79,16 @@ namespace iai_gazebo_controllers
     return Twist(toGazebo(twist.vel), toGazebo(twist.rot));
   }
 
-  inline std::vector<double> PoseToGiskardInputs(const gazebo::math::Pose& pose) 
+  inline Eigen::VectorXd PoseToGiskardInputs(const gazebo::math::Pose& pose) 
   {
-    std::vector<double> result;
+    Eigen::VectorXd result(6);
 
-    result.push_back(pose.pos.x);
-    result.push_back(pose.pos.y);
-    result.push_back(pose.pos.z);
-    result.push_back(pose.rot.GetAsEuler().x);
-    result.push_back(pose.rot.GetAsEuler().y);
-    result.push_back(pose.rot.GetAsEuler().z);
+    result(0) = pose.pos.x;
+    result(1) = pose.pos.y;
+    result(2) = pose.pos.z;
+    result(3) = pose.rot.GetAsEuler().x;
+    result(4) = pose.rot.GetAsEuler().y;
+    result(5) = pose.rot.GetAsEuler().z;
 
     return result;
   }

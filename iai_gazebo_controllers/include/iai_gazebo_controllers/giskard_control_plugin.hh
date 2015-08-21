@@ -42,6 +42,8 @@
 #include <gazebo/gazebo.hh>
 #include <gazebo/transport/transport.hh>
 
+#include <giskard/giskard.hpp>
+
 namespace iai_gazebo_controllers
 {
   class GiskardControlPlugin : public gazebo::WorldPlugin
@@ -62,12 +64,15 @@ namespace iai_gazebo_controllers
       // callbacks
       void UpdateCallback(const gazebo::common::UpdateInfo& info);
 
+      // helpers
+      Eigen::VectorXd GetObservables();
       // data we got upon init
       gazebo::physics::WorldPtr world_;
       sdf::ElementPtr self_description_;
 
       // internals
       gazebo::physics::ModelPtr controlled_model_;
+      giskard::QPController controller_;
 
       // regular update
       gazebo::event::ConnectionPtr updateConnection_;

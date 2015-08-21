@@ -35,7 +35,6 @@
  *********************************************************************/
 #include "iai_gazebo_controllers/giskard_control_plugin.hh"
 #include "iai_gazebo_controllers/gazebo_utils.hh"
-#include "giskard/giskard.hpp"
 
 using namespace iai_gazebo_controllers;
 using namespace gazebo;
@@ -91,19 +90,19 @@ void GiskardControlPlugin::InitController()
 {
   ReadMotionDescriptions();
   controlled_model_->SetGravityMode(false);
+  // TODO: get this number from somewhere
+  assert(controller_.start(GetObservables(), 10));
 }
 
 //////////////////////////////////////////////////
 
 void GiskardControlPlugin::ReadMotionDescriptions()
 {
-  std::string motion_file; // = "motions/sample-motion1.yaml";
+  std::string motion_file;
   assert(GetSDFValue("motionFile", self_description_, motion_file));
 
   YAML::Node node = YAML::LoadFile(motion_file);
-  giskard::QPControllerSpec spec = node.as<giskard::QPControllerSpec>();
-//  giskard::QPController controller = giskard::generate(spec);
-  
+  controller_ = giskard::generate(node.as<giskard::QPControllerSpec>());
 }
 
 //////////////////////////////////////////////////
@@ -119,16 +118,25 @@ void GiskardControlPlugin::InitGazeboCommunication()
 void GiskardControlPlugin::UpdateCallback(const common::UpdateInfo& info)
 {
   gazebo::physics::LinkPtr link = controlled_model_->GetLinks()[0];
-
-  std::vector<double> inputs = PoseToGiskardInputs(link->GetWorldPose());
-//  std::cout << "\n\n";
-//  for(size_t i=0; i<inputs.size(); ++i)
-//    std::cout << inputs[i] << " "; 
   
+  // TODO: get this number from somewhere
+  // TODO: to sth smarter than just dying
+  assert(controller_.update(GetObservables(), 10));
+
+  Eigen::VectorXd command = controller_.get_command();
+std::cout << "\n\nCOMMAND: ";
+for(size_t i=0; i<command.rows(); ++i)
+  std::cout << command(i) << " ";
   link->SetLinearVel(gazebo::math::Vector3(0, 0, 0));
   link->SetAngularVel(gazebo::math::Vector3(0, 0, 0));
 }
 
 //////////////////////////////////////////////////
 
+Eigen::VectorXd GiskardControlPlugin::GetObservables()
+{
+  gazebo::physics::LinkPtr link = controlled_model_->GetLinks()[0];
+
+  return PoseToGiskardInputs(link->GetWorldPose());
+}
 
