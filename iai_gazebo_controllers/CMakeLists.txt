@@ -3,9 +3,6 @@ project(iai_gazebo_controllers)
 
 find_package(catkin REQUIRED COMPONENTS)
 
-## Finding system dependencies which come with cmake
-#find_package(Boost REQUIRED COMPONENTS system)
-
 ## Finding system dependencies which come without cmake
 find_package(PkgConfig)
 
@@ -21,17 +18,12 @@ catkin_package()
 include_directories(
   include
   ${catkin_INCLUDE_DIRS}
-#  ${Boost_INCLUDE_DIRS}
-  ${GAZEBO_INCLUDE_DIRS}
-)
+  ${GAZEBO_INCLUDE_DIRS})
 #  ${YAML_CPP_INCLUDE_DIRS})
 
 link_directories(
   ${GAZEBO_LIBRARY_DIRS})
 
-#add_library(ConstraintControlPlugin
-#  src/iai_gazebo_controllers/constraint_control_plugin.cc)
-#target_link_libraries(ConstraintControlPlugin
-#  ${GAZEBO_LIBRARIES} 
-#  ${Boost_LIBRARIES} 
-#  ${catkin_LIBRARIES})
+add_library(GiskardControlPlugin
+  src/iai_gazebo_controllers/giskard_control_plugin)
+target_link_libraries(GiskardControlPlugin ${GAZEBO_LIBRARIES} ${catkin_LIBRARIES})

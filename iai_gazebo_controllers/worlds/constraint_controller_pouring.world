@@ -41,8 +41,8 @@
 
     <include>
         <uri>model://mug</uri>
-        <!--pose>0.2 0.1 1.855 0.0 0 0</pose-->
-        <pose>0.2 0.1 0.89 0 0 0</pose>
+        <pose>0.2 0.1 1.855 0.0 0 0</pose>
+        <!--pose>0.2 0.1 0.89 0 0 0</pose-->
     </include>
 
     <plugin name="SpawnLiquid" filename="libSpawnLiquid.so">
@@ -67,6 +67,10 @@
       <kp>100000000.8</kp>
       <kd>1.2</kd>
       <bounce>0.0</bounce>
+    </plugin>
+
+    <plugin name="GiskardControlPlugin" filename="libGiskardControlPlugin.so">
+      <controlledModel>Cup</controlledModel>
     </plugin>
 
     <!--plugin name="ConstraintControlPlugin" filename="libConstraintControlPlugin.so">
