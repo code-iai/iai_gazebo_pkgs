@@ -35,6 +35,7 @@
  *********************************************************************/
 #include "iai_gazebo_controllers/giskard_control_plugin.hh"
 #include "iai_gazebo_controllers/gazebo_utils.hh"
+#include "giskard/giskard.hpp"
 
 using namespace iai_gazebo_controllers;
 using namespace gazebo;
@@ -88,9 +89,22 @@ void GiskardControlPlugin::InitControlledModel()
 
 void GiskardControlPlugin::InitController()
 {
+  ReadMotionDescriptions();
   controlled_model_->SetGravityMode(false);
 }
 
+//////////////////////////////////////////////////
+
+void GiskardControlPlugin::ReadMotionDescriptions()
+{
+  std::string motion_file; // = "motions/sample-motion1.yaml";
+  assert(GetSDFValue("motionFile", self_description_, motion_file));
+
+  YAML::Node node = YAML::LoadFile(motion_file);
+  giskard::QPControllerSpec spec = node.as<giskard::QPControllerSpec>();
+//  giskard::QPController controller = giskard::generate(spec);
+  
+}
 
 //////////////////////////////////////////////////
 
@@ -105,6 +119,12 @@ void GiskardControlPlugin::InitGazeboCommunication()
 void GiskardControlPlugin::UpdateCallback(const common::UpdateInfo& info)
 {
   gazebo::physics::LinkPtr link = controlled_model_->GetLinks()[0];
+
+  std::vector<double> inputs = PoseToGiskardInputs(link->GetWorldPose());
+//  std::cout << "\n\n";
+//  for(size_t i=0; i<inputs.size(); ++i)
+//    std::cout << inputs[i] << " "; 
+  
   link->SetLinearVel(gazebo::math::Vector3(0, 0, 0));
   link->SetAngularVel(gazebo::math::Vector3(0, 0, 0));
 }

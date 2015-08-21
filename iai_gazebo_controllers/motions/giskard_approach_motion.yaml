@@ -1,0 +1,89 @@
+scope:
+  # definition of some nice short-cuts
+  - unit-x: {type: VECTOR3, inputs: [1, 0, 0]}
+  - unit-y: {type: VECTOR3, inputs: [0, 1, 0]}
+  - unit-z: {type: VECTOR3, inputs: [0, 0, 1]}
+  
+  # definition of input transforms
+  - mug_transform:
+      type: FRAME-MULTIPLICATION
+      inputs:
+      - type: FRAME
+        translation: 
+          type: VECTOR3
+          inputs: [{type: INPUT, input-number: 0}, 0, 0]
+        rotation:
+          type: ROTATION
+          axis: {type: VECTOR-REFERENCE, reference: unit-x}
+          angle: 0
+      - type: FRAME
+        translation: 
+          type: VECTOR3
+          inputs: [0, {type: INPUT, input-number: 1}, 0]
+        rotation:
+          type: ROTATION
+          axis: {type: VECTOR-REFERENCE, reference: unit-x}
+          angle: 0
+      - type: FRAME
+        translation: 
+          type: VECTOR3
+          inputs: [0, 0, {type: INPUT, input-number: 2}]
+        rotation:
+          type: ROTATION
+          axis: {type: VECTOR-REFERENCE, reference: unit-x}
+          angle: 0
+      - type: FRAME
+        translation: {type: VECTOR3, inputs: [0, 0, 0]}
+        rotation:
+          type: ROTATION
+          axis: {type: VECTOR-REFERENCE, reference: unit-x}
+          angle: {type: INPUT, input-number: 3}
+      - type: FRAME
+        translation: {type: VECTOR3, inputs: [0, 0, 0]}
+        rotation:
+          type: ROTATION
+          axis: {type: VECTOR-REFERENCE, reference: unit-y}
+          angle: {type: INPUT, input-number: 4}
+      - type: FRAME
+        translation: {type: VECTOR3, inputs: [0, 0, 0]}
+        rotation:
+          type: ROTATION
+          axis: {type: VECTOR-REFERENCE, reference: unit-z}
+          angle: {type: INPUT, input-number: 5}
+
+controllable-constraints:
+  - lower: -0.2
+    upper: 0.2
+    weight: 1.0
+    input-number: 0
+  - lower: -0.2
+    upper: 0.2
+    weight: 1.0
+    input-number: 1 
+  - lower: -0.2
+    upper: 0.2
+    weight: 1.0
+    input-number: 2
+  - lower: -0.1
+    upper: 0.1
+    weight: 1.0
+    input-number: 3
+  - lower: -0.1
+    upper: 0.1
+    weight: 1.0
+    input-number: 4 
+  - lower: -0.1
+    upper: 0.1
+    weight: 1.0
+    input-number: 5
+
+soft-constraints: []
+#  - expression: {type: DOUBLE-REFERENCE, reference: pr2_fk_error}
+#    lower: {type: DOUBLE-REFERENCE, reference: pr2_fk_control_law}
+#    upper: {type: DOUBLE-REFERENCE, reference: pr2_fk_control_law}
+#    weight: 10.0
+
+hard-constraints: []
+#  - expression: {type: DOUBLE-REFERENCE, reference: torso_lift_joint}
+#    lower: {type: DOUBLE-SUBTRACTION, inputs: [0.0115, {type: DOUBLE-REFERENCE, reference: torso_lift_joint}]}
+#    upper: {type: DOUBLE-SUBTRACTION, inputs: [0.325, {type: DOUBLE-REFERENCE, reference: torso_lift_joint}]}
