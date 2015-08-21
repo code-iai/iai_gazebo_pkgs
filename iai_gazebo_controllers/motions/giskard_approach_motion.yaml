@@ -4,14 +4,15 @@ scope:
   - unit-y: {type: VECTOR3, inputs: [0, 1, 0]}
   - unit-z: {type: VECTOR3, inputs: [0, 0, 1]}
   
-  # definition of input transforms
-  - mug_transform:
+  # definition of input transforms 
+  - mug-trans-x: {type: INPUT, input-number: 0}
+  - mug-transform:
       type: FRAME-MULTIPLICATION
       inputs:
       - type: FRAME
         translation: 
           type: VECTOR3
-          inputs: [{type: INPUT, input-number: 0}, 0, 0]
+          inputs: [{type: DOUBLE-REFERENCE, reference: mug-trans-x}, 0, 0]
         rotation:
           type: ROTATION
           axis: {type: VECTOR-REFERENCE, reference: unit-x}
@@ -50,6 +51,7 @@ scope:
           type: ROTATION
           axis: {type: VECTOR-REFERENCE, reference: unit-z}
           angle: {type: INPUT, input-number: 5}
+  - control-law: {type: DOUBLE-SUBTRACTION, inputs: [0.75, {type: DOUBLE-REFERENCE, reference: mug-trans-x}]}
 
 controllable-constraints:
   - lower: -0.2
@@ -77,11 +79,11 @@ controllable-constraints:
     weight: 1.0
     input-number: 5
 
-soft-constraints: []
-#  - expression: {type: DOUBLE-REFERENCE, reference: pr2_fk_error}
-#    lower: {type: DOUBLE-REFERENCE, reference: pr2_fk_control_law}
-#    upper: {type: DOUBLE-REFERENCE, reference: pr2_fk_control_law}
-#    weight: 10.0
+soft-constraints: 
+  - expression: {type: DOUBLE-REFERENCE, reference: mug-trans-x}
+    lower: {type: DOUBLE-REFERENCE, reference: control-law}
+    upper: {type: DOUBLE-REFERENCE, reference: control-law}
+    weight: 10.0
 
 hard-constraints: []
 #  - expression: {type: DOUBLE-REFERENCE, reference: torso_lift_joint}

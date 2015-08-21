@@ -124,10 +124,8 @@ void GiskardControlPlugin::UpdateCallback(const common::UpdateInfo& info)
   assert(controller_.update(GetObservables(), 10));
 
   Eigen::VectorXd command = controller_.get_command();
-std::cout << "\n\nCOMMAND: ";
-for(size_t i=0; i<command.rows(); ++i)
-  std::cout << command(i) << " ";
-  link->SetLinearVel(gazebo::math::Vector3(0, 0, 0));
+  // TODO: make helper function for this
+  link->SetLinearVel(gazebo::math::Vector3(command(0), command(1), command(2)));
   link->SetAngularVel(gazebo::math::Vector3(0, 0, 0));
 }
 
