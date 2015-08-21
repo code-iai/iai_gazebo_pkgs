@@ -77,5 +77,19 @@ namespace iai_gazebo_controllers
   {
     return Twist(toGazebo(twist.vel), toGazebo(twist.rot));
   }
+
+  inline std::vector<double> PoseToGiskardInputs(const gazebo::math::Pose& pose) 
+  {
+    std::vector<double> result;
+
+    result.push_back(pose.pos.x);
+    result.push_back(pose.pos.y);
+    result.push_back(pose.pos.z);
+    result.push_back(pose.rot.GetAsEuler().x);
+    result.push_back(pose.rot.GetAsEuler().y);
+    result.push_back(pose.rot.GetAsEuler().z);
+
+    return result;
+  }
 }
 #endif //IAI_GAZEBO_CONTROLLERS_GAZEBO_UTILS_HH 
