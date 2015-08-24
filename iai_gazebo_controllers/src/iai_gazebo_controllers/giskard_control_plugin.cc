@@ -71,6 +71,7 @@ void GiskardControlPlugin::InitInternals(gazebo::physics::WorldPtr world, sdf::E
   self_description_ = self_description;
 
   InitControlledModel();
+  InitObservedModel();
   InitController();
 }
 
@@ -82,6 +83,16 @@ void GiskardControlPlugin::InitControlledModel()
   assert(GetSDFValue("controlledModel", self_description_, controlledModelName));
   controlled_model_ = world_->GetModel(controlledModelName);
   assert(controlled_model_.get());
+}
+
+//////////////////////////////////////////////////
+
+void GiskardControlPlugin::InitObservedModel()
+{
+  std::string model_name;
+  assert(GetSDFValue("observedModel", self_description_, model_name));
+  observed_model_ = world_->GetModel(model_name);
+  assert(observed_model_.get());
 }
 
 //////////////////////////////////////////////////
@@ -123,18 +134,39 @@ void GiskardControlPlugin::UpdateCallback(const common::UpdateInfo& info)
   // TODO: to sth smarter than just dying
   assert(controller_.update(GetObservables(), 10));
 
+//std::cout << "\n\nsoft-expressions:\n";
+//for(size_t i=0; i<controller_.get_soft_expressions().size(); ++i)
+//  std::cout << controller_.get_soft_expressions()[i]->value() << "\n";
+//std::cout << "\nlower bounds:\n";
+//for(size_t i=0; i<controller_.get_soft_lower_bounds().size(); ++i)
+//  std::cout << controller_.get_soft_lower_bounds()[i]->value() << "\n";
+//std::cout << "\nupper bounds:\n";
+//for(size_t i=0; i<controller_.get_soft_upper_bounds().size(); ++i)
+//  std::cout << controller_.get_soft_upper_bounds()[i]->value() << "\n";
+//std::cout << "\nweights:\n";
+//for(size_t i=0; i<controller_.get_soft_weights().size(); ++i)
+//  std::cout << controller_.get_soft_weights()[i]->value() << "\n";
+//
+//std::cout << "\n\n";
+//
+//using Eigen::operator<<;
+//std::cout << "A_:\n" << controller_.get_qp_builder().get_A() << "\n";
+//std::cout << "H_:\n" << controller_.get_qp_builder().get_H() << "\n";
+
   Eigen::VectorXd command = controller_.get_command();
   // TODO: make helper function for this
   link->SetLinearVel(gazebo::math::Vector3(command(0), command(1), command(2)));
-  link->SetAngularVel(gazebo::math::Vector3(0, 0, 0));
+  link->SetAngularVel(gazebo::math::Vector3(command(3), command(4), command(5)));
 }
 
 //////////////////////////////////////////////////
 
 Eigen::VectorXd GiskardControlPlugin::GetObservables()
 {
-  gazebo::physics::LinkPtr link = controlled_model_->GetLinks()[0];
+  Eigen::VectorXd result(12);
 
-  return PoseToGiskardInputs(link->GetWorldPose());
+  result.segment(0, 6) = PoseToGiskardInputs(controlled_model_->GetLinks()[0]->GetWorldPose());
+  result.segment(6, 6) = PoseToGiskardInputs(observed_model_->GetLinks()[0]->GetWorldPose());
+
+  return result;
 }
-

@@ -57,6 +57,7 @@ namespace iai_gazebo_controllers
       virtual void Load(gazebo::physics::WorldPtr world, sdf::ElementPtr self_description);
       void InitInternals(gazebo::physics::WorldPtr world, sdf::ElementPtr self_description);
       void InitControlledModel();
+      void InitObservedModel();
       void InitController();
       void ReadMotionDescriptions();
       void InitGazeboCommunication();
@@ -66,12 +67,13 @@ namespace iai_gazebo_controllers
 
       // helpers
       Eigen::VectorXd GetObservables();
+
       // data we got upon init
       gazebo::physics::WorldPtr world_;
       sdf::ElementPtr self_description_;
 
       // internals
-      gazebo::physics::ModelPtr controlled_model_;
+      gazebo::physics::ModelPtr controlled_model_, observed_model_;
       giskard::QPController controller_;
 
       // regular update
