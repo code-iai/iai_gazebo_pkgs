@@ -65,9 +65,15 @@ namespace iai_gazebo_controllers
       void ReadMotionDescriptions();
       void InitGazeboCommunication();
 
-      // helpers
+      // state machine
+      bool MotionFinished() const;
+      void RequestGazeboShutdown();
+
+      // control helpers
       Eigen::VectorXd GetObservables();
       void SetCommand(const Eigen::VectorXd& command);
+
+      // gazebo aux
 
       // data we got upon init
       gazebo::physics::WorldPtr world_;
@@ -77,8 +83,9 @@ namespace iai_gazebo_controllers
       gazebo::physics::ModelPtr controlled_model_, observed_model_;
       giskard::QPController controller_;
 
-      // regular update
+      // gazebo communication
       gazebo::event::ConnectionPtr updateConnection_;
+      gazebo::transport::PublisherPtr serverControlPublisher_;
 
   };
 }

@@ -35,6 +35,7 @@
  *********************************************************************/
 #include "iai_gazebo_controllers/giskard_control_plugin.hh"
 #include "iai_gazebo_controllers/gazebo_utils.hh"
+#include <gazebo/msgs/msgs.hh>
 
 using namespace iai_gazebo_controllers;
 using namespace gazebo;
@@ -69,9 +70,14 @@ void GiskardControlPlugin::UpdateCallback(const common::UpdateInfo& info)
 {
   // TODO: get this number from somewhere
   // TODO: to sth smarter than just dying
-  assert(controller_.update(GetObservables(), 10));
+  if(!MotionFinished())
+  {
+    assert(controller_.update(GetObservables(), 10));
 
-  SetCommand(controller_.get_command());
+    SetCommand(controller_.get_command());
+  }
+  else
+    RequestGazeboShutdown();  
 }
 
 //////////////////////////////////////////////////
@@ -133,6 +139,29 @@ void GiskardControlPlugin::InitGazeboCommunication()
 {
   updateConnection_ = event::Events::ConnectWorldUpdateBegin(
       boost::bind(&GiskardControlPlugin::UpdateCallback, this, _1));
+
+  transport::NodePtr node = transport::NodePtr(new transport::Node());
+  node->Init(world_->GetName());
+  serverControlPublisher_ = node->Advertise<msgs::ServerControl>("/gazebo/server/control");
+}
+
+//////////////////////////////////////////////////
+
+bool GiskardControlPlugin::MotionFinished() const
+{
+  // TODO: implement me
+  return false;
+}
+
+//////////////////////////////////////////////////
+
+void GiskardControlPlugin::RequestGazeboShutdown()
+{
+  std::cout << "\n\nREQUESTING GAZEBO SERVER SHUTDOWN\n\n";
+  msgs::ServerControl server_msg;
+  server_msg.set_stop(true);
+  serverControlPublisher_->Publish(server_msg);
+
 }
 
 //////////////////////////////////////////////////
