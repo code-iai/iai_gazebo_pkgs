@@ -30,6 +30,8 @@ scope:
   - maker-top: {origin-of: maker-frame}
 
   # expressions used in constraints 
+  - mug-behind-maker: {double-sub: [{x-coord: mug-bottom}, {x-coord: maker-top}]}
+  - mug-left-maker: {double-sub: [{y-coord: mug-bottom}, {y-coord: maker-top}]}
   - mug-above-maker: {double-sub: [{z-coord: mug-bottom}, {z-coord: maker-top}]}
   - mug-upright: {double-sub: [{z-coord: mug-top}, {z-coord: mug-bottom}]}
 
@@ -46,6 +48,16 @@ controllable-constraints:
   - controllable-constraint: [-0.5, 0.5, controllable-weight, 5]
 
 soft-constraints: 
+  - soft-constraint: 
+      - {double-sub: [-0.03, mug-behind-maker]} # control law for lower boundary
+      - {double-sub: [0.03, mug-behind-maker]} # control law for upper boundary
+      - constraint-weight # weight of this constraint
+      - mug-behind-maker # expression used for Jacobian calcuation
+  - soft-constraint: 
+      - {double-sub: [-0.03, mug-left-maker]} # control law for lower boundary
+      - {double-sub: [0.03, mug-left-maker]} # control law for upper boundary
+      - constraint-weight # weight of this constraint
+      - mug-left-maker # expression used for Jacobian calcuation
   - soft-constraint: 
       - {double-sub: [0.3, mug-above-maker]} # control law for lower boundary
       - {double-sub: [0.35, mug-above-maker]} # control law for upper boundary
