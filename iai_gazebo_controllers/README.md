@@ -41,6 +41,12 @@ Finally, use your bashrc to add the lib-subdirectory of your devel-space to the 
   ```
 
 ## Start-up
-We use ROS only to build the gazebo plugins. From now on, we just call on gazebo to run the plugin:
+### Install custom Gazebo models and plugins
+To run the sample worlds, you will need to install two more repositories with Gazebo models and plugins. Please follow the install instructions on them:
+  * https://bitbucket.org/zyfang/gz_models
+  * https://bitbucket.org/zyfang/sim_cas
+
+### Start simulation
+Use a regular call to Gazebo to start the simulation. Note: Select any of the worlds in the sub-directory ```worlds```:
   * ```roscd iai_gazebo_controllers```
   * ```gazebo worlds/constraint_controller_pouring_01.world --verbose -u```
