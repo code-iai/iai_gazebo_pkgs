@@ -53,8 +53,11 @@ namespace iai_gazebo_controllers
       virtual ~GiskardControlPlugin();
 
     protected:
-      // inits
+      // main interface of this plugin
       virtual void Load(gazebo::physics::WorldPtr world, sdf::ElementPtr self_description);
+      void UpdateCallback(const gazebo::common::UpdateInfo& info);
+
+      // inits
       void InitInternals(gazebo::physics::WorldPtr world, sdf::ElementPtr self_description);
       void InitControlledModel();
       void InitObservedModel();
@@ -62,11 +65,9 @@ namespace iai_gazebo_controllers
       void ReadMotionDescriptions();
       void InitGazeboCommunication();
 
-      // callbacks
-      void UpdateCallback(const gazebo::common::UpdateInfo& info);
-
       // helpers
       Eigen::VectorXd GetObservables();
+      void SetCommand(const Eigen::VectorXd& command);
 
       // data we got upon init
       gazebo::physics::WorldPtr world_;
