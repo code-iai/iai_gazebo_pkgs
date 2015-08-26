@@ -1,159 +1,60 @@
 scope:
   # definition of some nice short-cuts
-  - unit-x: {type: VECTOR3, inputs: [1, 0, 0]}
-  - unit-y: {type: VECTOR3, inputs: [0, 1, 0]}
-  - unit-z: {type: VECTOR3, inputs: [0, 0, 1]}
+  - unit-x: {vector3: [1, 0, 0]}
+  - unit-y: {vector3: [0, 1, 0]}
+  - unit-z: {vector3: [0, 0, 1]}
+  - identity-rot: {axis-angle: [unit-x, 0]} 
+  - zero-vec: {vector3: [0, 0, 0]}
   
   # definition of input transforms 
   - mug-frame:
-      type: FRAME-MULTIPLICATION
-      inputs:
-      - type: FRAME
-        translation: 
-          type: VECTOR3
-          inputs: [{type: INPUT, input-number: 0}, 0, 0]
-        rotation:
-          type: ROTATION
-          axis: {type: VECTOR-REFERENCE, reference: unit-x}
-          angle: 0
-      - type: FRAME
-        translation: 
-          type: VECTOR3
-          inputs: [0, {type: INPUT, input-number: 1}, 0]
-        rotation:
-          type: ROTATION
-          axis: {type: VECTOR-REFERENCE, reference: unit-x}
-          angle: 0
-      - type: FRAME
-        translation: 
-          type: VECTOR3
-          inputs: [0, 0, {type: INPUT, input-number: 2}]
-        rotation:
-          type: ROTATION
-          axis: {type: VECTOR-REFERENCE, reference: unit-x}
-          angle: 0
-      - type: FRAME
-        translation: {type: VECTOR3, inputs: [0, 0, 0]}
-        rotation:
-          type: ROTATION
-          axis: {type: VECTOR-REFERENCE, reference: unit-x}
-          angle: {type: INPUT, input-number: 3}
-      - type: FRAME
-        translation: {type: VECTOR3, inputs: [0, 0, 0]}
-        rotation:
-          type: ROTATION
-          axis: {type: VECTOR-REFERENCE, reference: unit-y}
-          angle: {type: INPUT, input-number: 4}
-      - type: FRAME
-        translation: {type: VECTOR3, inputs: [0, 0, 0]}
-        rotation:
-          type: ROTATION
-          axis: {type: VECTOR-REFERENCE, reference: unit-z}
-          angle: {type: INPUT, input-number: 5}
+      frame-mul:
+        - frame: [identity-rot, {vector3: [{input-var: 0}, 0, 0]}]
+        - frame: [identity-rot, {vector3: [0, {input-var: 1}, 0]}]
+        - frame: [identity-rot, {vector3: [0, 0, {input-var: 2}]}]
+        - frame: [{axis-angle: [unit-x, {input-var: 3}]}, zero-vec]
+        - frame: [{axis-angle: [unit-y, {input-var: 4}]}, zero-vec]
+        - frame: [{axis-angle: [unit-z, {input-var: 5}]}, zero-vec]
   - maker-frame:
-      type: FRAME-MULTIPLICATION
-      inputs:
-      - type: FRAME
-        translation: 
-          type: VECTOR3
-          inputs: [{type: INPUT, input-number: 6}, 0, 0]
-        rotation:
-          type: ROTATION
-          axis: {type: VECTOR-REFERENCE, reference: unit-x}
-          angle: 0
-      - type: FRAME
-        translation: 
-          type: VECTOR3
-          inputs: [0, {type: INPUT, input-number: 7}, 0]
-        rotation:
-          type: ROTATION
-          axis: {type: VECTOR-REFERENCE, reference: unit-x}
-          angle: 0
-      - type: FRAME
-        translation: 
-          type: VECTOR3
-          inputs: [0, 0, {type: INPUT, input-number: 8}]
-        rotation:
-          type: ROTATION
-          axis: {type: VECTOR-REFERENCE, reference: unit-x}
-          angle: 0
-      - type: FRAME
-        translation: {type: VECTOR3, inputs: [0, 0, 0]}
-        rotation:
-          type: ROTATION
-          axis: {type: VECTOR-REFERENCE, reference: unit-x}
-          angle: {type: INPUT, input-number: 9}
-      - type: FRAME
-        translation: {type: VECTOR3, inputs: [0, 0, 0]}
-        rotation:
-          type: ROTATION
-          axis: {type: VECTOR-REFERENCE, reference: unit-y}
-          angle: {type: INPUT, input-number: 10}
-      - type: FRAME
-        translation: {type: VECTOR3, inputs: [0, 0, 0]}
-        rotation:
-          type: ROTATION
-          axis: {type: VECTOR-REFERENCE, reference: unit-z}
-          angle: {type: INPUT, input-number: 11}
+      frame-mul:
+        - frame: [identity-rot, {vector3: [{input-var: 6}, 0, 0]}]
+        - frame: [identity-rot, {vector3: [0, {input-var: 7}, 0]}]
+        - frame: [identity-rot, {vector3: [0, 0, {input-var: 8}]}]
+        - frame: [{axis-angle: [unit-x, {input-var: 9}]}, zero-vec]
+        - frame: [{axis-angle: [unit-y, {input-var: 10}]}, zero-vec]
+        - frame: [{axis-angle: [unit-z, {input-var: 11}]}, zero-vec]
 
   # definition of features
-  - mug-bottom: {type: ORIGIN-OF, frame: {type: FRAME-REFERENCE, reference: mug-frame}}
-  - mug-top: 
-      type: MULTIPLICATION
-      frame: {type: FRAME-REFERENCE, reference: mug-frame}
-      vector: {type: VECTOR3, inputs: [0.02, 0.02, 0.1]}
-  - maker-top: {type: ORIGIN-OF, frame: {type: FRAME-REFERENCE, reference: maker-frame}}
+  - mug-bottom: {origin-of: mug-frame}
+  - mug-top: {transform-vector: [mug-frame, {vector3: [0, 0, 0.1]}]}
+  - maker-top: {origin-of: maker-frame}
 
   # expressions used in constraints 
-  - mug-above-maker: 
-      type: DOUBLE-SUBTRACTION
-      inputs: 
-        - {type: Z-COORD-OF, vector: {type: VECTOR-REFERENCE, reference: mug-bottom}}
-        - {type: Z-COORD-OF, vector: {type: VECTOR-REFERENCE, reference: maker-top}}
+  - mug-above-maker: {double-sub: [{z-coord: mug-bottom}, {z-coord: maker-top}]}
+  - mug-upright: {double-sub: [{z-coord: mug-top}, {z-coord: mug-bottom}]}
 
-  - mug-upright:
-      type: DOUBLE-SUBTRACTION
-      inputs:
-        - {type: Z-COORD-OF, vector: {type: VECTOR-REFERENCE, reference: mug-top}}
-        - {type: Z-COORD-OF, vector: {type: VECTOR-REFERENCE, reference: mug-bottom}}
+  # some constants
+  - controllable-weight: 0.001 # mu * 1
+  - constraint-weight: 10.001 # mu + 10
 
 controllable-constraints:
-  - lower: -0.3
-    upper: 0.3
-    weight: 0.001 # mu * 1.0
-    input-number: 0
-  - lower: -0.3
-    upper: 0.3
-    weight: 0.001 # mu * 1.0
-    input-number: 1 
-  - lower: -0.3
-    upper: 0.3
-    weight:  0.001 # mu * 1.0
-    input-number: 2
-  - lower: -0.5
-    upper: 0.5
-    weight:  0.001 # mu * 1.0
-    input-number: 3
-  - lower: -0.5
-    upper: 0.5
-    weight:  0.001 # mu * 1.0
-    input-number: 4 
-  - lower: -0.5
-    upper: 0.5
-    weight:  0.001 # mu * 1.0
-    input-number: 5
+  - controllable-constraint: [-0.3, 0.3, controllable-weight, 0]
+  - controllable-constraint: [-0.3, 0.3, controllable-weight, 1]
+  - controllable-constraint: [-0.3, 0.3, controllable-weight, 2]
+  - controllable-constraint: [-0.5, 0.5, controllable-weight, 3]
+  - controllable-constraint: [-0.5, 0.5, controllable-weight, 4]
+  - controllable-constraint: [-0.5, 0.5, controllable-weight, 5]
 
 soft-constraints: 
-  - expression: {type: DOUBLE-REFERENCE, reference: mug-above-maker}
-    lower: {type: DOUBLE-SUBTRACTION, inputs: [0.3, {type: DOUBLE-REFERENCE, reference: mug-above-maker}]}
-    upper: {type: DOUBLE-SUBTRACTION, inputs: [0.35, {type: DOUBLE-REFERENCE, reference: mug-above-maker}]}
-    weight: 10.001 # mu + 10.0
-  - expression: {type: DOUBLE-REFERENCE, reference: mug-upright}
-    lower: {type: DOUBLE-SUBTRACTION, inputs: [0.02, {type: DOUBLE-REFERENCE, reference: mug-upright}]}
-    upper: {type: DOUBLE-SUBTRACTION, inputs: [0.04, {type: DOUBLE-REFERENCE, reference: mug-upright}]}
-    weight: 10.001 # mu + 10.0
+  - soft-constraint: 
+      - {double-sub: [0.3, mug-above-maker]} # control law for lower boundary
+      - {double-sub: [0.35, mug-above-maker]} # control law for upper boundary
+      - constraint-weight # weight of this constraint
+      - mug-above-maker # expression used for Jacobian calcuation
+  - soft-constraint: 
+      - {double-sub: [0.02, mug-upright]} # control law for lower boundary
+      - {double-sub: [0.04, mug-upright]} # control law for upper boundary
+      - constraint-weight # weight of this constraint
+      - mug-upright # expression used for Jacobian calcuation
 
-hard-constraints: []
-#  - expression: {type: DOUBLE-REFERENCE, reference: torso_lift_joint}
-#    lower: {type: DOUBLE-SUBTRACTION, inputs: [0.0115, {type: DOUBLE-REFERENCE, reference: torso_lift_joint}]}
-#    upper: {type: DOUBLE-SUBTRACTION, inputs: [0.325, {type: DOUBLE-REFERENCE, reference: torso_lift_joint}]}
+hard-constraints: [] # no hard constraints used in this motion
