@@ -38,14 +38,18 @@ scope:
   # some constants
   - controllable-weight: 0.001 # mu * 1
   - constraint-weight: 10.001 # mu + 10
+  - min-trans-vel: -0.3 # in m/s
+  - max-trans-vel: 0.3 # in m/s
+  - min-rot-vel: -0.5 # in rad/s
+  - max-rot-vel: 0.5 # in rad/s
 
 controllable-constraints:
-  - controllable-constraint: [-0.3, 0.3, controllable-weight, 0]
-  - controllable-constraint: [-0.3, 0.3, controllable-weight, 1]
-  - controllable-constraint: [-0.3, 0.3, controllable-weight, 2]
-  - controllable-constraint: [-0.5, 0.5, controllable-weight, 3]
-  - controllable-constraint: [-0.5, 0.5, controllable-weight, 4]
-  - controllable-constraint: [-0.5, 0.5, controllable-weight, 5]
+  - controllable-constraint: [min-trans-vel, max-trans-vel, controllable-weight, 0]
+  - controllable-constraint: [min-trans-vel, max-trans-vel, controllable-weight, 1]
+  - controllable-constraint: [min-trans-vel, max-trans-vel, controllable-weight, 2]
+  - controllable-constraint: [min-rot-vel, max-rot-vel, controllable-weight, 3]
+  - controllable-constraint: [min-rot-vel, max-rot-vel, controllable-weight, 4]
+  - controllable-constraint: [min-rot-vel, max-rot-vel, controllable-weight, 5]
 
 soft-constraints: 
   - soft-constraint: 
