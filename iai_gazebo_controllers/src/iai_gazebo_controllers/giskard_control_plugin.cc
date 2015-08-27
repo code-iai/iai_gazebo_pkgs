@@ -117,6 +117,7 @@ void GiskardControlPlugin::InitObservedModel()
 void GiskardControlPlugin::InitController()
 {
   ReadMotionDescriptions();
+  controller_ = giskard::generate(controller_specs_[0]);
   controlled_model_->SetGravityMode(false);
   // TODO: get these number from somewhere
   maxCmdBufferSize_ = 100;
@@ -127,11 +128,18 @@ void GiskardControlPlugin::InitController()
 
 void GiskardControlPlugin::ReadMotionDescriptions()
 {
+  // getting file name out of SDF
   std::string motion_file;
   assert(GetSDFValue("motionFile", self_description_, motion_file));
 
+  // parsing yaml-file
   YAML::Node node = YAML::LoadFile(motion_file);
-  controller_ = giskard::generate(node.as<giskard::QPControllerSpec>());
+  controller_specs_ = node.as< std::vector< giskard::QPControllerSpec > >();
+
+  // making sure that we got at least one spec, and that all of them compile
+  assert(controller_specs_.size() > 0);
+  for(size_t i=0; i<controller_specs_.size(); ++i)
+    giskard::generate(controller_specs_[i]);
 }
 
 //////////////////////////////////////////////////

@@ -44,6 +44,7 @@
 
 #include <giskard/giskard.hpp>
 #include <deque>
+#include <vector>
 
 namespace iai_gazebo_controllers
 {
@@ -84,6 +85,7 @@ namespace iai_gazebo_controllers
 
       // internals
       gazebo::physics::ModelPtr controlled_model_, observed_model_;
+      std::vector<giskard::QPControllerSpec> controller_specs_;
       giskard::QPController controller_;
 
       // gazebo communication

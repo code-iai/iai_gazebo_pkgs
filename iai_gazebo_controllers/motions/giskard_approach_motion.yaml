@@ -1,76 +1,77 @@
-scope:
-  # definition of some nice short-cuts
-  - unit-x: {vector3: [1, 0, 0]}
-  - unit-y: {vector3: [0, 1, 0]}
-  - unit-z: {vector3: [0, 0, 1]}
-  - identity-rot: {axis-angle: [unit-x, 0]} 
-  - zero-vec: {vector3: [0, 0, 0]}
+# MOTION PHASE #1
+- scope:
+    # definition of some nice short-cuts
+    - unit-x: {vector3: [1, 0, 0]}
+    - unit-y: {vector3: [0, 1, 0]}
+    - unit-z: {vector3: [0, 0, 1]}
+    - identity-rot: {axis-angle: [unit-x, 0]} 
+    - zero-vec: {vector3: [0, 0, 0]}
+    
+    # definition of input transforms 
+    - mug-frame:
+        frame-mul:
+          - frame: [identity-rot, {vector3: [{input-var: 0}, 0, 0]}]
+          - frame: [identity-rot, {vector3: [0, {input-var: 1}, 0]}]
+          - frame: [identity-rot, {vector3: [0, 0, {input-var: 2}]}]
+          - frame: [{axis-angle: [unit-x, {input-var: 3}]}, zero-vec]
+          - frame: [{axis-angle: [unit-y, {input-var: 4}]}, zero-vec]
+          - frame: [{axis-angle: [unit-z, {input-var: 5}]}, zero-vec]
+    - maker-frame:
+        frame-mul:
+          - frame: [identity-rot, {vector3: [{input-var: 6}, 0, 0]}]
+          - frame: [identity-rot, {vector3: [0, {input-var: 7}, 0]}]
+          - frame: [identity-rot, {vector3: [0, 0, {input-var: 8}]}]
+          - frame: [{axis-angle: [unit-x, {input-var: 9}]}, zero-vec]
+          - frame: [{axis-angle: [unit-y, {input-var: 10}]}, zero-vec]
+          - frame: [{axis-angle: [unit-z, {input-var: 11}]}, zero-vec]
   
-  # definition of input transforms 
-  - mug-frame:
-      frame-mul:
-        - frame: [identity-rot, {vector3: [{input-var: 0}, 0, 0]}]
-        - frame: [identity-rot, {vector3: [0, {input-var: 1}, 0]}]
-        - frame: [identity-rot, {vector3: [0, 0, {input-var: 2}]}]
-        - frame: [{axis-angle: [unit-x, {input-var: 3}]}, zero-vec]
-        - frame: [{axis-angle: [unit-y, {input-var: 4}]}, zero-vec]
-        - frame: [{axis-angle: [unit-z, {input-var: 5}]}, zero-vec]
-  - maker-frame:
-      frame-mul:
-        - frame: [identity-rot, {vector3: [{input-var: 6}, 0, 0]}]
-        - frame: [identity-rot, {vector3: [0, {input-var: 7}, 0]}]
-        - frame: [identity-rot, {vector3: [0, 0, {input-var: 8}]}]
-        - frame: [{axis-angle: [unit-x, {input-var: 9}]}, zero-vec]
-        - frame: [{axis-angle: [unit-y, {input-var: 10}]}, zero-vec]
-        - frame: [{axis-angle: [unit-z, {input-var: 11}]}, zero-vec]
-
-  # definition of features
-  - mug-bottom: {origin-of: mug-frame}
-  - mug-top: {transform-vector: [mug-frame, {vector3: [0, 0, 0.1]}]}
-  - maker-top: {origin-of: maker-frame}
-
-  # expressions used in constraints 
-  - mug-behind-maker: {double-sub: [{x-coord: mug-bottom}, {x-coord: maker-top}]}
-  - mug-left-maker: {double-sub: [{y-coord: mug-bottom}, {y-coord: maker-top}]}
-  - mug-above-maker: {double-sub: [{z-coord: mug-bottom}, {z-coord: maker-top}]}
-  - mug-upright: {double-sub: [{z-coord: mug-top}, {z-coord: mug-bottom}]}
-
-  # some constants
-  - controllable-weight: 0.001 # mu * 1
-  - constraint-weight: 10.001 # mu + 10
-  - min-trans-vel: -0.3 # in m/s
-  - max-trans-vel: 0.3 # in m/s
-  - min-rot-vel: -0.5 # in rad/s
-  - max-rot-vel: 0.5 # in rad/s
-
-controllable-constraints:
-  - controllable-constraint: [min-trans-vel, max-trans-vel, controllable-weight, 0]
-  - controllable-constraint: [min-trans-vel, max-trans-vel, controllable-weight, 1]
-  - controllable-constraint: [min-trans-vel, max-trans-vel, controllable-weight, 2]
-  - controllable-constraint: [min-rot-vel, max-rot-vel, controllable-weight, 3]
-  - controllable-constraint: [min-rot-vel, max-rot-vel, controllable-weight, 4]
-  - controllable-constraint: [min-rot-vel, max-rot-vel, controllable-weight, 5]
-
-soft-constraints: 
-  - soft-constraint: 
-      - {double-sub: [-0.03, mug-behind-maker]} # control law for lower boundary
-      - {double-sub: [0.03, mug-behind-maker]} # control law for upper boundary
-      - constraint-weight # weight of this constraint
-      - mug-behind-maker # expression used for Jacobian calcuation
-  - soft-constraint: 
-      - {double-sub: [-0.03, mug-left-maker]} # control law for lower boundary
-      - {double-sub: [0.03, mug-left-maker]} # control law for upper boundary
-      - constraint-weight # weight of this constraint
-      - mug-left-maker # expression used for Jacobian calcuation
-  - soft-constraint: 
-      - {double-sub: [0.3, mug-above-maker]} # control law for lower boundary
-      - {double-sub: [0.35, mug-above-maker]} # control law for upper boundary
-      - constraint-weight # weight of this constraint
-      - mug-above-maker # expression used for Jacobian calcuation
-  - soft-constraint: 
-      - {double-sub: [0.02, mug-upright]} # control law for lower boundary
-      - {double-sub: [0.04, mug-upright]} # control law for upper boundary
-      - constraint-weight # weight of this constraint
-      - mug-upright # expression used for Jacobian calcuation
-
-hard-constraints: [] # no hard constraints used in this motion
+    # definition of features
+    - mug-bottom: {origin-of: mug-frame}
+    - mug-top: {transform-vector: [mug-frame, {vector3: [0, 0, 0.1]}]}
+    - maker-top: {origin-of: maker-frame}
+  
+    # expressions used in constraints 
+    - mug-behind-maker: {double-sub: [{x-coord: mug-bottom}, {x-coord: maker-top}]}
+    - mug-left-maker: {double-sub: [{y-coord: mug-bottom}, {y-coord: maker-top}]}
+    - mug-above-maker: {double-sub: [{z-coord: mug-bottom}, {z-coord: maker-top}]}
+    - mug-upright: {double-sub: [{z-coord: mug-top}, {z-coord: mug-bottom}]}
+  
+    # some constants
+    - controllable-weight: 0.001 # mu * 1
+    - constraint-weight: 10.001 # mu + 10
+    - min-trans-vel: -0.3 # in m/s
+    - max-trans-vel: 0.3 # in m/s
+    - min-rot-vel: -0.5 # in rad/s
+    - max-rot-vel: 0.5 # in rad/s
+  
+  controllable-constraints:
+    - controllable-constraint: [min-trans-vel, max-trans-vel, controllable-weight, 0]
+    - controllable-constraint: [min-trans-vel, max-trans-vel, controllable-weight, 1]
+    - controllable-constraint: [min-trans-vel, max-trans-vel, controllable-weight, 2]
+    - controllable-constraint: [min-rot-vel, max-rot-vel, controllable-weight, 3]
+    - controllable-constraint: [min-rot-vel, max-rot-vel, controllable-weight, 4]
+    - controllable-constraint: [min-rot-vel, max-rot-vel, controllable-weight, 5]
+  
+  soft-constraints: 
+    - soft-constraint: 
+        - {double-sub: [-0.03, mug-behind-maker]} # control law for lower boundary
+        - {double-sub: [0.03, mug-behind-maker]} # control law for upper boundary
+        - constraint-weight # weight of this constraint
+        - mug-behind-maker # expression used for Jacobian calcuation
+    - soft-constraint: 
+        - {double-sub: [-0.03, mug-left-maker]} # control law for lower boundary
+        - {double-sub: [0.03, mug-left-maker]} # control law for upper boundary
+        - constraint-weight # weight of this constraint
+        - mug-left-maker # expression used for Jacobian calcuation
+    - soft-constraint: 
+        - {double-sub: [0.3, mug-above-maker]} # control law for lower boundary
+        - {double-sub: [0.35, mug-above-maker]} # control law for upper boundary
+        - constraint-weight # weight of this constraint
+        - mug-above-maker # expression used for Jacobian calcuation
+    - soft-constraint: 
+        - {double-sub: [0.02, mug-upright]} # control law for lower boundary
+        - {double-sub: [0.04, mug-upright]} # control law for upper boundary
+        - constraint-weight # weight of this constraint
+        - mug-upright # expression used for Jacobian calcuation
+  
+  hard-constraints: [] # no hard constraints used in this motion
