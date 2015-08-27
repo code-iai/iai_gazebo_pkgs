@@ -35,6 +35,7 @@
  *********************************************************************/
 #include "iai_gazebo_controllers/giskard_control_plugin.hh"
 #include "iai_gazebo_controllers/gazebo_utils.hh"
+#include <iai_gazebo_controllers/yaml_parsing.hh>
 #include <gazebo/msgs/msgs.hh>
 
 using namespace iai_gazebo_controllers;
@@ -90,7 +91,7 @@ void GiskardControlPlugin::InitInternals(gazebo::physics::WorldPtr world, sdf::E
 
   InitControlledModel();
   InitObservedModel();
-  ReadMotionDescriptions();
+  ReadExperimentSpec();
   InitNextController();
 }
 
@@ -122,30 +123,42 @@ void GiskardControlPlugin::InitNextController()
   assert(controller_specs_.size() > 0);
   controller_ = giskard::generate(controller_specs_[0]);
   controller_specs_.erase(controller_specs_.begin());
+
+  cmd_buffer_.clear();
+  max_cmd_buffer_size_ = max_cmd_buffer_sizes_[0];
+  max_cmd_buffer_sizes_.erase(max_cmd_buffer_sizes_.begin());
+
   // TODO: get this number from somewhere
   assert(controller_.start(GetObservables(), 10));
-
-  cmdBuffer_.clear();
-  // TODO: get this number from somewhere
-  maxCmdBufferSize_ = 100;
 }
 
 //////////////////////////////////////////////////
 
-void GiskardControlPlugin::ReadMotionDescriptions()
+void GiskardControlPlugin::ReadExperimentSpec()
 {
   // getting file name out of SDF
-  std::string motion_file;
-  assert(GetSDFValue("motionFile", self_description_, motion_file));
+  std::string experiment_file;
+  assert(GetSDFValue("experimentFile", self_description_, experiment_file));
 
-  // parsing yaml-file
-  YAML::Node node = YAML::LoadFile(motion_file);
-  controller_specs_ = node.as< std::vector< giskard::QPControllerSpec > >();
+  // parsing experiment specs
+  YAML::Node node = YAML::LoadFile(experiment_file);
+  ExperimentSpec exp_spec = node.as< ExperimentSpec >();
 
-  // making sure that we got at least one spec, and that all of them compile
-  assert(controller_specs_.size() > 0);
-  for(size_t i=0; i<controller_specs_.size(); ++i)
-    giskard::generate(controller_specs_[i]);
+  // making sure we got at least one spec
+  assert(exp_spec.controller_specs_.size() > 0);
+
+  // parsing all controller specs
+  for(size_t i=0; i<exp_spec.controller_specs_.size(); ++i)
+  {
+    node = YAML::LoadFile(exp_spec.controller_specs_[i].controller_file_);
+    
+    // parsing controller spec and making sure it compiles
+    giskard::QPControllerSpec controller_spec = node.as<giskard::QPControllerSpec>();
+    giskard::generate(controller_spec);
+    controller_specs_.push_back(controller_spec);
+
+    max_cmd_buffer_sizes_.push_back(exp_spec.controller_specs_[i].max_cmd_buffer_size_);
+  }
 }
 
 //////////////////////////////////////////////////
@@ -164,12 +177,12 @@ void GiskardControlPlugin::InitGazeboCommunication()
 
 bool GiskardControlPlugin::MotionFinished() const
 {
-  assert(maxCmdBufferSize_ > 0);
+  assert(max_cmd_buffer_size_ > 0);
 
-  if(cmdBuffer_.size() != maxCmdBufferSize_)
+  if(cmd_buffer_.size() != max_cmd_buffer_size_)
     return false;
 
-  for(std::deque<Eigen::VectorXd>::const_iterator it = cmdBuffer_.begin(); it!=cmdBuffer_.end(); ++it)
+  for(std::deque<Eigen::VectorXd>::const_iterator it = cmd_buffer_.begin(); it!=cmd_buffer_.end(); ++it)
     for(size_t row = 0; row < it->rows(); ++row)
       // TODO: sth more sophisticated here, please
       // TODO: get this number from somewhere
@@ -211,9 +224,9 @@ void GiskardControlPlugin::SetCommand(const Eigen::VectorXd& command)
   controlled_model_->GetLinks()[0]->SetAngularVel(gazebo::math::Vector3(command(3), command(4), command(5)));
 
   // remembering command
-  assert(maxCmdBufferSize_ > 0);
-  if(cmdBuffer_.size() >= maxCmdBufferSize_)
-    cmdBuffer_.pop_back();
+  assert(max_cmd_buffer_size_ > 0);
+  if(cmd_buffer_.size() >= max_cmd_buffer_size_)
+    cmd_buffer_.pop_back();
 
-  cmdBuffer_.push_front(command);
+  cmd_buffer_.push_front(command);
 }

@@ -63,7 +63,7 @@ namespace iai_gazebo_controllers
       void InitInternals(gazebo::physics::WorldPtr world, sdf::ElementPtr self_description);
       void InitControlledModel();
       void InitObservedModel();
-      void ReadMotionDescriptions();
+      void ReadExperimentSpec();
       void InitNextController();
       void InitGazeboCommunication();
 
@@ -75,10 +75,6 @@ namespace iai_gazebo_controllers
       Eigen::VectorXd GetObservables();
       void SetCommand(const Eigen::VectorXd& command);
 
-      // buffers
-      std::deque<Eigen::VectorXd> cmdBuffer_;
-      size_t maxCmdBufferSize_;
-
       // data we got upon init
       gazebo::physics::WorldPtr world_;
       sdf::ElementPtr self_description_;
@@ -86,7 +82,10 @@ namespace iai_gazebo_controllers
       // internals
       gazebo::physics::ModelPtr controlled_model_, observed_model_;
       std::vector<giskard::QPControllerSpec> controller_specs_;
+      std::vector<size_t> max_cmd_buffer_sizes_;
       giskard::QPController controller_;
+      std::deque<Eigen::VectorXd> cmd_buffer_;
+      size_t max_cmd_buffer_size_;
 
       // gazebo communication
       gazebo::event::ConnectionPtr updateConnection_;

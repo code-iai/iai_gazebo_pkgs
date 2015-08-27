@@ -71,7 +71,7 @@
     <plugin name="GiskardControlPlugin" filename="libGiskardControlPlugin.so">
       <controlledModel>Cup</controlledModel>
       <observedModel>PancakeMaker</observedModel>
-      <motionFile>motions/giskard_approach_motion.yaml</motionFile>
+      <experimentFile>experiments/pouring-from-left-experiment.yaml</motionFile>
     </plugin>
 
     <!--plugin name="ConstraintControlPlugin" filename="libConstraintControlPlugin.so">

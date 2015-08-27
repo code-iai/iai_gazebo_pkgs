@@ -1,0 +1,15 @@
+# how long to wait before starting the entire simulation
+# REASON: gazebo needs time spawn all objects
+sim-start-delay: 1.5
+
+# how long to wait after simulation start and before first movement
+# REASON: the simulated liquid needs to settle
+move-start-delay: 1.0
+
+# for how many simulation iterations shall we wait before finishing each motion phase
+# REASON: after finishing a motion, we might have to wait for an effect to happen, i.e. liquid falling
+controller-specs:
+ - controller-file: motions/pouring-from-left-approach.yaml
+   max-cmd-buffer-size: 100
+ - controller-file: motions/pouring-from-left-tilt.yaml
+   max-cmd-buffer-size: 3000
