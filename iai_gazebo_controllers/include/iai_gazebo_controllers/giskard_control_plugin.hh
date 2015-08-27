@@ -69,6 +69,7 @@ namespace iai_gazebo_controllers
 
       // state machine
       bool MotionFinished() const;
+      void DelaySimStart();
       void RequestGazeboShutdown();
 
       // control helpers
@@ -79,19 +80,19 @@ namespace iai_gazebo_controllers
       gazebo::physics::WorldPtr world_;
       sdf::ElementPtr self_description_;
 
-      // internals
+      // internals of controller
       gazebo::physics::ModelPtr controlled_model_, observed_model_;
       std::vector<giskard::QPControllerSpec> controller_specs_;
       std::vector<size_t> max_cmd_buffer_sizes_;
       giskard::QPController controller_;
       std::deque<Eigen::VectorXd> cmd_buffer_;
       size_t max_cmd_buffer_size_;
-      double move_start_delay_;
+      double sim_start_delay_, move_start_delay_;
 
-      // gazebo communication
+      // gazebo communication and infrastructure
       gazebo::event::ConnectionPtr updateConnection_;
       gazebo::transport::PublisherPtr serverControlPublisher_;
-
+      boost::shared_ptr<boost::thread> delay_sim_start_thread_;
   };
 }
 #endif // GISKARD_CONTROL_PLUGIN_HH

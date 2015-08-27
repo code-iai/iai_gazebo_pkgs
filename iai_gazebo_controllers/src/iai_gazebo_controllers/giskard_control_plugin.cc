@@ -63,6 +63,9 @@ void GiskardControlPlugin::Load(physics::WorldPtr world, sdf::ElementPtr self_de
   InitInternals(world, self_description);
 
   InitGazeboCommunication();
+
+  delay_sim_start_thread_ = boost::shared_ptr<boost::thread>(
+      new boost::thread(&GiskardControlPlugin::DelaySimStart, this));
 }
 
 //////////////////////////////////////////////////
@@ -155,6 +158,10 @@ void GiskardControlPlugin::ReadExperimentSpec()
   move_start_delay_ = exp_spec.move_start_delay_;
   assert(move_start_delay_ >= 0.0);
 
+  // making sure sim-start-delay is valid
+  sim_start_delay_ = exp_spec.sim_start_delay_;
+  assert(sim_start_delay_ >= 0.0);
+
   // making sure we got at least one spec
   assert(exp_spec.controller_specs_.size() > 0);
 
@@ -201,6 +208,18 @@ bool GiskardControlPlugin::MotionFinished() const
         return false;
 
   return true;
+}
+
+//////////////////////////////////////////////////
+
+void GiskardControlPlugin::DelaySimStart()
+{
+  world_->SetPaused(true);
+  std::cout << "Paused the world, starting sim in " << sim_start_delay_ << " sec..\n";
+  usleep(sim_start_delay_ * 1000000);
+  world_->SetPaused(false);
+//  usleep(logDelay * 1000000);
+//  StartLogging();
 }
 
 //////////////////////////////////////////////////
