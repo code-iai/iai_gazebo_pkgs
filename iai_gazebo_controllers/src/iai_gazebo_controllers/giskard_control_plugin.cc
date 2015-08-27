@@ -37,6 +37,7 @@
 #include "iai_gazebo_controllers/gazebo_utils.hh"
 #include <iai_gazebo_controllers/yaml_parsing.hh>
 #include <gazebo/msgs/msgs.hh>
+#include <gazebo/util/LogRecord.hh>
 
 using namespace iai_gazebo_controllers;
 using namespace gazebo;
@@ -81,7 +82,10 @@ void GiskardControlPlugin::UpdateCallback(const common::UpdateInfo& info)
 
   if(MotionFinished())
     if(controller_specs_.empty())
+    {
+      StopLogging();
       RequestGazeboShutdown();  
+    }
     else
       InitNextController();
 
@@ -205,7 +209,22 @@ void GiskardControlPlugin::DelaySimStart()
   usleep(sim_start_delay_ * 1000000);
   world_->SetPaused(false);
 //  usleep(logDelay * 1000000);
-//  StartLogging();
+  StartLogging();
+}
+
+//////////////////////////////////////////////////
+
+void GiskardControlPlugin::StartLogging()
+{
+  util::LogRecord::Instance()->SetBasePath("logs");
+  util::LogRecord::Instance()->Start("txt");
+}
+
+//////////////////////////////////////////////////
+
+void GiskardControlPlugin::StopLogging()
+{
+  util::LogRecord::Instance()->Stop();
 }
 
 //////////////////////////////////////////////////

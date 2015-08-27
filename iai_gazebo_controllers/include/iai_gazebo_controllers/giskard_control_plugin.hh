@@ -70,6 +70,8 @@ namespace iai_gazebo_controllers
       // state machine
       bool MotionFinished() const;
       void DelaySimStart();
+      void StartLogging();
+      void StopLogging();
       void RequestGazeboShutdown();
 
       // control helpers
