@@ -69,6 +69,13 @@ void GiskardControlPlugin::Load(physics::WorldPtr world, sdf::ElementPtr self_de
 
 void GiskardControlPlugin::UpdateCallback(const common::UpdateInfo& info)
 {
+  // delaying start of first motion
+  if(world_->GetSimTime().Double() <= move_start_delay_)
+  {
+    SetCommand(Eigen::VectorXd::Zero(6), false);
+    return;
+  }
+
   if(MotionFinished())
     if(controller_specs_.empty())
       RequestGazeboShutdown();  
@@ -144,6 +151,10 @@ void GiskardControlPlugin::ReadExperimentSpec()
   YAML::Node node = YAML::LoadFile(experiment_file);
   ExperimentSpec exp_spec = node.as< ExperimentSpec >();
 
+  // making sure move-start-delay is valid
+  move_start_delay_ = exp_spec.move_start_delay_;
+  assert(move_start_delay_ >= 0.0);
+
   // making sure we got at least one spec
   assert(exp_spec.controller_specs_.size() > 0);
 
@@ -217,16 +228,19 @@ Eigen::VectorXd GiskardControlPlugin::GetObservables()
 
 //////////////////////////////////////////////////
 
-void GiskardControlPlugin::SetCommand(const Eigen::VectorXd& command)
+void GiskardControlPlugin::SetCommand(const Eigen::VectorXd& command, bool with_logging)
 {
   // actually setting command
   controlled_model_->GetLinks()[0]->SetLinearVel(gazebo::math::Vector3(command(0), command(1), command(2)));
   controlled_model_->GetLinks()[0]->SetAngularVel(gazebo::math::Vector3(command(3), command(4), command(5)));
 
   // remembering command
-  assert(max_cmd_buffer_size_ > 0);
-  if(cmd_buffer_.size() >= max_cmd_buffer_size_)
-    cmd_buffer_.pop_back();
+  if(with_logging)
+  {
+    assert(max_cmd_buffer_size_ > 0);
+    if(cmd_buffer_.size() >= max_cmd_buffer_size_)
+      cmd_buffer_.pop_back();
 
-  cmd_buffer_.push_front(command);
+    cmd_buffer_.push_front(command);
+  }
 }

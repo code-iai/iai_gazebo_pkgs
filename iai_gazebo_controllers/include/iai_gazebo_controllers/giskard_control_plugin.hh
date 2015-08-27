@@ -73,7 +73,7 @@ namespace iai_gazebo_controllers
 
       // control helpers
       Eigen::VectorXd GetObservables();
-      void SetCommand(const Eigen::VectorXd& command);
+      void SetCommand(const Eigen::VectorXd& command, bool with_logging=true);
 
       // data we got upon init
       gazebo::physics::WorldPtr world_;
@@ -86,6 +86,7 @@ namespace iai_gazebo_controllers
       giskard::QPController controller_;
       std::deque<Eigen::VectorXd> cmd_buffer_;
       size_t max_cmd_buffer_size_;
+      double move_start_delay_;
 
       // gazebo communication
       gazebo::event::ConnectionPtr updateConnection_;
