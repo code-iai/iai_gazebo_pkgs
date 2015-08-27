@@ -6,6 +6,12 @@ sim-start-delay: 4.0
 # REASON: the simulated liquid needs to settle
 move-start-delay: 2.0
 
+# name of object model controlled by controller
+controlled-model: Cup
+
+# name of addtional object model observed by controller
+observed-model: PancakeMaker
+
 # for how many simulation iterations shall we wait before finishing each motion phase
 # REASON: after finishing a motion, we might have to wait for an effect to happen, i.e. liquid falling
 controller-specs:

@@ -69,8 +69,6 @@
     </plugin>
 
     <plugin name="GiskardControlPlugin" filename="libGiskardControlPlugin.so">
-      <controlledModel>Cup</controlledModel>
-      <observedModel>PancakeMaker</observedModel>
       <experimentFile>experiments/pouring-from-left-experiment.yaml</motionFile>
     </plugin>
 

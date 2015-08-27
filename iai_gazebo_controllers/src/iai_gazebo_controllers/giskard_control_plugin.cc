@@ -99,31 +99,8 @@ void GiskardControlPlugin::InitInternals(gazebo::physics::WorldPtr world, sdf::E
   world_ = world;
   self_description_ = self_description;
 
-  InitControlledModel();
-  InitObservedModel();
   ReadExperimentSpec();
   InitNextController();
-}
-
-//////////////////////////////////////////////////
-
-void GiskardControlPlugin::InitControlledModel()
-{
-  std::string controlledModelName;
-  assert(GetSDFValue("controlledModel", self_description_, controlledModelName));
-  controlled_model_ = world_->GetModel(controlledModelName);
-  assert(controlled_model_.get());
-  controlled_model_->SetGravityMode(false);
-}
-
-//////////////////////////////////////////////////
-
-void GiskardControlPlugin::InitObservedModel()
-{
-  std::string model_name;
-  assert(GetSDFValue("observedModel", self_description_, model_name));
-  observed_model_ = world_->GetModel(model_name);
-  assert(observed_model_.get());
 }
 
 //////////////////////////////////////////////////
@@ -162,7 +139,16 @@ void GiskardControlPlugin::ReadExperimentSpec()
   sim_start_delay_ = exp_spec.sim_start_delay_;
   assert(sim_start_delay_ >= 0.0);
 
-  // making sure we got at least one spec
+  // making sure controlled model is valid
+  controlled_model_ = world_->GetModel(exp_spec.controlled_model_);
+  assert(controlled_model_.get());
+  controlled_model_->SetGravityMode(false);
+
+  // making sure observed model is valid
+  observed_model_ = world_->GetModel(exp_spec.observed_model_);
+  assert(observed_model_.get());
+
+  // making sure we got at least one controller spec
   assert(exp_spec.controller_specs_.size() > 0);
 
   // parsing all controller specs

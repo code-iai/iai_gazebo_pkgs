@@ -15,9 +15,11 @@ namespace YAML
 
   inline bool is_experiment_spec(const Node& node)
   {
-    return node.IsMap() && (node.size() == 3) && node["sim-start-delay"] &&
+    return node.IsMap() && (node.size() == 5) && node["sim-start-delay"] &&
         node["sim-start-delay"].IsScalar() && node["move-start-delay"] && 
-        node["move-start-delay"].IsScalar() && node["controller-specs"] &&
+        node["move-start-delay"].IsScalar() && node["controlled-model"] && 
+        node["controlled-model"].IsScalar() && node["observed-model"] && 
+        node["observed-model"].IsScalar() && node["controller-specs"] &&
         node["controller-specs"].IsSequence();
   }
 
@@ -55,6 +57,8 @@ namespace YAML
       node["controller-specs"] = rhs.controller_specs_;
       node["sim-start-delay"] = rhs.sim_start_delay_;
       node["move-start-delay"] = rhs.move_start_delay_;
+      node["controlled-model"] = rhs.controlled_model_;
+      node["observed-model"] = rhs.observed_model_;
 
       return node; 
     } 
@@ -67,7 +71,9 @@ namespace YAML
       rhs.controller_specs_ = node["controller-specs"].as<std::vector <iai_gazebo_controllers::ControllerSpec> >();
       rhs.sim_start_delay_ = node["sim-start-delay"].as<double>();
       rhs.move_start_delay_ = node["move-start-delay"].as<double>();
- 
+      rhs.controlled_model_ = node["controlled-model"].as<std::string>();
+      rhs.observed_model_ = node["observed-model"].as<std::string>();
+
       return true; 
     } 
   };
