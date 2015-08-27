@@ -63,8 +63,8 @@ namespace iai_gazebo_controllers
       void InitInternals(gazebo::physics::WorldPtr world, sdf::ElementPtr self_description);
       void InitControlledModel();
       void InitObservedModel();
-      void InitController();
       void ReadMotionDescriptions();
+      void InitNextController();
       void InitGazeboCommunication();
 
       // state machine

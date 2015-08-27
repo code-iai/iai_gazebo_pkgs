@@ -68,16 +68,17 @@ void GiskardControlPlugin::Load(physics::WorldPtr world, sdf::ElementPtr self_de
 
 void GiskardControlPlugin::UpdateCallback(const common::UpdateInfo& info)
 {
+  if(MotionFinished())
+    if(controller_specs_.empty())
+      RequestGazeboShutdown();  
+    else
+      InitNextController();
+
   // TODO: get this number from somewhere
   // TODO: to sth smarter than just dying
-  if(!MotionFinished())
-  {
-    assert(controller_.update(GetObservables(), 10));
+  assert(controller_.update(GetObservables(), 10));
 
-    SetCommand(controller_.get_command());
-  }
-  else
-    RequestGazeboShutdown();  
+  SetCommand(controller_.get_command());
 }
 
 //////////////////////////////////////////////////
@@ -89,7 +90,8 @@ void GiskardControlPlugin::InitInternals(gazebo::physics::WorldPtr world, sdf::E
 
   InitControlledModel();
   InitObservedModel();
-  InitController();
+  ReadMotionDescriptions();
+  InitNextController();
 }
 
 //////////////////////////////////////////////////
@@ -100,6 +102,7 @@ void GiskardControlPlugin::InitControlledModel()
   assert(GetSDFValue("controlledModel", self_description_, controlledModelName));
   controlled_model_ = world_->GetModel(controlledModelName);
   assert(controlled_model_.get());
+  controlled_model_->SetGravityMode(false);
 }
 
 //////////////////////////////////////////////////
@@ -114,14 +117,17 @@ void GiskardControlPlugin::InitObservedModel()
 
 //////////////////////////////////////////////////
 
-void GiskardControlPlugin::InitController()
+void GiskardControlPlugin::InitNextController()
 {
-  ReadMotionDescriptions();
+  assert(controller_specs_.size() > 0);
   controller_ = giskard::generate(controller_specs_[0]);
-  controlled_model_->SetGravityMode(false);
-  // TODO: get these number from somewhere
-  maxCmdBufferSize_ = 100;
+  controller_specs_.erase(controller_specs_.begin());
+  // TODO: get this number from somewhere
   assert(controller_.start(GetObservables(), 10));
+
+  cmdBuffer_.clear();
+  // TODO: get this number from somewhere
+  maxCmdBufferSize_ = 100;
 }
 
 //////////////////////////////////////////////////
