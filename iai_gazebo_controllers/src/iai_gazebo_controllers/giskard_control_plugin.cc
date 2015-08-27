@@ -118,7 +118,8 @@ void GiskardControlPlugin::InitController()
 {
   ReadMotionDescriptions();
   controlled_model_->SetGravityMode(false);
-  // TODO: get this number from somewhere
+  // TODO: get these number from somewhere
+  maxCmdBufferSize_ = 100;
   assert(controller_.start(GetObservables(), 10));
 }
 
@@ -149,8 +150,19 @@ void GiskardControlPlugin::InitGazeboCommunication()
 
 bool GiskardControlPlugin::MotionFinished() const
 {
-  // TODO: implement me
-  return false;
+  assert(maxCmdBufferSize_ > 0);
+
+  if(cmdBuffer_.size() != maxCmdBufferSize_)
+    return false;
+
+  for(std::deque<Eigen::VectorXd>::const_iterator it = cmdBuffer_.begin(); it!=cmdBuffer_.end(); ++it)
+    for(size_t row = 0; row < it->rows(); ++row)
+      // TODO: sth more sophisticated here, please
+      // TODO: get this number from somewhere
+      if(it->operator()(row) > 0.03)
+        return false;
+
+  return true;
 }
 
 //////////////////////////////////////////////////
@@ -180,6 +192,14 @@ Eigen::VectorXd GiskardControlPlugin::GetObservables()
 
 void GiskardControlPlugin::SetCommand(const Eigen::VectorXd& command)
 {
+  // actually setting command
   controlled_model_->GetLinks()[0]->SetLinearVel(gazebo::math::Vector3(command(0), command(1), command(2)));
   controlled_model_->GetLinks()[0]->SetAngularVel(gazebo::math::Vector3(command(3), command(4), command(5)));
+
+  // remembering command
+  assert(maxCmdBufferSize_ > 0);
+  if(cmdBuffer_.size() >= maxCmdBufferSize_)
+    cmdBuffer_.pop_back();
+
+  cmdBuffer_.push_front(command);
 }

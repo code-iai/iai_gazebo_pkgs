@@ -43,6 +43,7 @@
 #include <gazebo/transport/transport.hh>
 
 #include <giskard/giskard.hpp>
+#include <deque>
 
 namespace iai_gazebo_controllers
 {
@@ -73,7 +74,9 @@ namespace iai_gazebo_controllers
       Eigen::VectorXd GetObservables();
       void SetCommand(const Eigen::VectorXd& command);
 
-      // gazebo aux
+      // buffers
+      std::deque<Eigen::VectorXd> cmdBuffer_;
+      size_t maxCmdBufferSize_;
 
       // data we got upon init
       gazebo::physics::WorldPtr world_;
