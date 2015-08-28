@@ -29,6 +29,15 @@ scope:
   - mug-top: {transform-vector: [mug-frame, {vector3: [0, 0, 0.1]}]}
   - maker-top: {origin-of: maker-frame}
 
+  # closest rim point to maker-center 
+  - mug-rim-radius: 0.02 # TODO: verify
+  - unit-normal: {scale-vector: [{double-div: [{vector-norm: mug-top}]}, mug-top]}
+  - perp-distance: {double-sub: [{vector-dot: [unit-normal, maker-top]}, {vector-dot: [unit-normal, mug-top]}]}
+  - projected-point: {vector-sub: [maker-top, {scale-vector: [perp-distance, unit-normal]}]}
+  - direction: {vector-sub: [projected-point, mug-top]}
+  - unit-direction: {scale-vector: [{double-div: [{vector-norm: direction}]}, direction]}
+  - closest-rim-point: {vector-add: [{scale-vector: [mug-rim-radius, unit-direction]}, mug-top]}
+
   # expressions used in constraints 
   - mug-behind-maker: {double-sub: [{x-coord: mug-bottom}, {x-coord: maker-top}]}
   - mug-left-maker: {double-sub: [{y-coord: mug-bottom}, {y-coord: maker-top}]}
