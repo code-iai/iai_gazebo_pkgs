@@ -93,6 +93,8 @@ void GiskardControlPlugin::UpdateCallback(const common::UpdateInfo& info)
   // TODO: to sth smarter than just dying
   assert(controller_.update(GetObservables(), 10));
 
+  Visualize(GetObservables());
+
   SetCommand(controller_.get_command());
 }
 
@@ -113,6 +115,9 @@ void GiskardControlPlugin::InitNextController()
 {
   assert(controller_specs_.size() > 0);
   controller_ = giskard::generate(controller_specs_[0]);
+  giskard::Scope scope = giskard::generate(controller_specs_[0].scope_);
+  scope_ = giskard::generate(controller_specs_[0].scope_);
+  rim_point_ = scope.find_vector_expression("closest-rim-point");
   controller_specs_.erase(controller_specs_.begin());
 
   cmd_buffer_.clear();
@@ -179,6 +184,7 @@ void GiskardControlPlugin::InitGazeboCommunication()
   transport::NodePtr node = transport::NodePtr(new transport::Node());
   node->Init(world_->GetName());
   serverControlPublisher_ = node->Advertise<msgs::ServerControl>("/gazebo/server/control");
+  visualizationPublisher_ = node->Advertise<msgs::Vector3d>("/giskard/visualization", 1);
 }
 
 //////////////////////////////////////////////////
@@ -236,6 +242,41 @@ void GiskardControlPlugin::RequestGazeboShutdown()
   server_msg.set_stop(true);
   serverControlPublisher_->Publish(server_msg);
 
+}
+
+//////////////////////////////////////////////////
+
+void GiskardControlPlugin::Visualize(const Eigen::VectorXd& observables)
+{
+  std::vector<int> ids;
+  for(size_t i=0; i<observables.rows(); ++i)
+    ids.push_back(i);
+
+  rim_point_->setInputValues(ids, observables);
+
+  msgs::Vector3d msg;
+  msg.set_x(rim_point_->value().x());
+  msg.set_y(rim_point_->value().y());
+  msg.set_z(rim_point_->value().z());
+
+  visualizationPublisher_->Publish(msg);
+
+//  KDL::Expression<KDL::Vector>::Ptr mug_top = scope_.find_vector_expression("mug-top");
+//  KDL::Expression<KDL::Vector>::Ptr unit_normal = scope_.find_vector_expression("unit-normal");
+//  KDL::Expression<double>::Ptr perp_dist = scope_.find_double_expression("perp-distance");
+//  KDL::Expression<KDL::Vector>::Ptr proj_p = scope_.find_vector_expression("projected-point");
+//
+//  mug_top->setInputValues(ids, observables);
+//  unit_normal->setInputValues(ids, observables);
+//  perp_dist->setInputValues(ids, observables);
+//  proj_p->setInputValues(ids, observables);
+//
+//  std::cout << "\n\n\n";
+//  std::cout << "mug-top: " << mug_top->value() << "\n";
+//  std::cout << "unit-normal: " << unit_normal->value() << "\n";
+//  std::cout << "perp-distance: " << perp_dist->value() << "\n";
+//  std::cout << "projected-point: " << proj_p->value() << "\n";
+//  std::cout << "\n\n\n";
 }
 
 //////////////////////////////////////////////////

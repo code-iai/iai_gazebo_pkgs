@@ -68,16 +68,23 @@
       <bounce>0.0</bounce>
     </plugin>
 
+    <!-- Visualization plugin to display geometric features used by controller -->
+    <model name="controllerVisualization">
+      <link name="link">
+        <visual name="visualPlugin">
+          <plugin name="GiskardVisualizationPlugin" filename="libGiskardVisualizationPlugin.so"/>
+          <geometry>
+            <box>
+              <size>0.01 0.01 0.01</size>
+            </box>
+          </geometry>          
+        </visual>
+      </link>
+    </model>
+
     <plugin name="GiskardControlPlugin" filename="libGiskardControlPlugin.so">
       <experimentFile>experiments/pouring-from-left-experiment.yaml</motionFile>
     </plugin>
 
-    <!--plugin name="ConstraintControlPlugin" filename="libConstraintControlPlugin.so">
-      <startDelay>1</startDelay>
-      <logDelay>2</logDelay>
-      <controlledModel>Cup</controlledModel>
-      <motionFile>motions/sample-motion2.yaml</motionFile>
-    </plugin-->
-  
   </world>
 </sdf>

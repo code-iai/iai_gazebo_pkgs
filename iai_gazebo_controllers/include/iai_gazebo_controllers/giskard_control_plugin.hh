@@ -70,9 +70,11 @@ namespace iai_gazebo_controllers
       // state machine
       bool MotionFinished() const;
       void DelaySimStart();
+
       void StartLogging();
       void StopLogging();
       void RequestGazeboShutdown();
+      void Visualize(const Eigen::VectorXd& observables);
 
       // control helpers
       Eigen::VectorXd GetObservables();
@@ -91,9 +93,12 @@ namespace iai_gazebo_controllers
       size_t max_cmd_buffer_size_;
       double sim_start_delay_, move_start_delay_;
 
+      KDL::Expression<KDL::Vector>::Ptr rim_point_;
+      giskard::Scope scope_;
+
       // gazebo communication and infrastructure
       gazebo::event::ConnectionPtr updateConnection_;
-      gazebo::transport::PublisherPtr serverControlPublisher_;
+      gazebo::transport::PublisherPtr serverControlPublisher_, visualizationPublisher_;
       boost::shared_ptr<boost::thread> delay_sim_start_thread_;
   };
 }
