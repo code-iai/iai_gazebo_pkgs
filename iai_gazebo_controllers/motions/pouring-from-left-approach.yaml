@@ -38,12 +38,16 @@ scope:
   - projected-point: {vector-sub: [maker-top, {scale-vector: [perp-distance, unit-normal]}]}
   - direction: {vector-sub: [projected-point, mug-top]}
   - unit-direction: {scale-vector: [{double-div: [{vector-norm: direction}]}, direction]}
-  - closest-rim-point: {vector-add: [{scale-vector: [mug-rim-radius, unit-direction]}, mug-top]}
+  - closest-rim-point: 
+      cached-vector: {vector-add: [{scale-vector: [mug-rim-radius, unit-direction]}, mug-top]}
+
+  - rim-to-maker-top:
+      cached-vector: {vector-sub: [mug-bottom, maker-top]}
 
   # expressions used in constraints 
-  - mug-behind-maker: {double-sub: [{x-coord: mug-bottom}, {x-coord: maker-top}]}
-  - mug-left-maker: {double-sub: [{y-coord: mug-bottom}, {y-coord: maker-top}]}
-  - mug-above-maker: {double-sub: [{z-coord: mug-bottom}, {z-coord: maker-top}]}
+  - mug-behind-maker: {x-coord: rim-to-maker-top}
+  - mug-left-maker: {y-coord: rim-to-maker-top}
+  - mug-above-maker: {z-coord: rim-to-maker-top}
   - mug-upright: {double-sub: [{z-coord: mug-top}, {z-coord: mug-bottom}]}
 
   # some constants
