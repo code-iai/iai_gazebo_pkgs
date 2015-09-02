@@ -32,22 +32,24 @@ scope:
   - maker-top: {origin-of: maker-frame}
 
   # closest rim point to maker-center 
-  - mug-rim-radius: 0.05
-  - unit-normal: {scale-vector: [{double-div: [{vector-norm: mug-top}]}, mug-top]}
-  - perp-distance: {double-sub: [{vector-dot: [unit-normal, maker-top]}, {vector-dot: [unit-normal, mug-top]}]}
-  - projected-point: {vector-sub: [maker-top, {scale-vector: [perp-distance, unit-normal]}]}
-  - direction: {vector-sub: [projected-point, mug-top]}
-  - unit-direction: {scale-vector: [{double-div: [{vector-norm: direction}]}, direction]}
-  - closest-rim-point: 
-      cached-vector: {vector-add: [{scale-vector: [mug-rim-radius, unit-direction]}, mug-top]}
+#  - mug-rim-radius: 0.05
+#  - unit-normal: {scale-vector: [{double-div: [{vector-norm: mug-top}]}, mug-top]}
+#  - perp-distance: {double-sub: [{vector-dot: [unit-normal, maker-top]}, {vector-dot: [unit-normal, mug-top]}]}
+#  - projected-point: {vector-sub: [maker-top, {scale-vector: [perp-distance, unit-normal]}]}
+#  - direction: {vector-sub: [projected-point, mug-top]}
+#  - unit-direction: {scale-vector: [{double-div: [{vector-norm: direction}]}, direction]}
+#  - closest-rim-point: 
+#      cached-vector: {vector-add: [{scale-vector: [mug-rim-radius, unit-direction]}, mug-top]}
 
-  - rim-to-maker-top:
+  - mug-bottom-to-maker-top:
       cached-vector: {vector-sub: [mug-bottom, maker-top]}
+  - mug-top-to-maker-top:
+      cached-vector: {vector-sub: [mug-top, maker-top]}
 
   # expressions used in constraints 
-  - mug-behind-maker: {x-coord: rim-to-maker-top}
-  - mug-left-maker: {y-coord: rim-to-maker-top}
-  - mug-above-maker: {z-coord: rim-to-maker-top}
+  - mug-behind-maker: {x-coord: mug-top-to-maker-top}
+  - mug-left-maker: {y-coord: mug-top-to-maker-top}
+  - mug-above-maker: {z-coord: mug-top-to-maker-top}
   - mug-upright: {double-sub: [{z-coord: mug-top}, {z-coord: mug-bottom}]}
 
   # some constants
@@ -55,8 +57,8 @@ scope:
   - constraint-weight: 10.001 # mu + 10
   - min-trans-vel: -0.3 # in m/s
   - max-trans-vel: 0.3 # in m/s
-  - min-rot-vel: -0.5 # in rad/s
-  - max-rot-vel: 0.5 # in rad/s
+  - min-rot-vel: -0.7 # in rad/s
+  - max-rot-vel: 0.7 # in rad/s
 
 controllable-constraints:
   - controllable-constraint: [min-trans-vel, max-trans-vel, controllable-weight, 0]
@@ -68,23 +70,23 @@ controllable-constraints:
 
 soft-constraints: 
   - soft-constraint: 
-      - {double-sub: [-0.03, mug-behind-maker]} # control law for lower boundary
-      - {double-sub: [0.03, mug-behind-maker]} # control law for upper boundary
+      - {double-sub: [-0.01, mug-behind-maker]} # control law for lower boundary
+      - {double-sub: [0.01, mug-behind-maker]} # control law for upper boundary
       - constraint-weight # weight of this constraint
       - mug-behind-maker # expression used for Jacobian calcuation
   - soft-constraint: 
-      - {double-sub: [-0.03, mug-left-maker]} # control law for lower boundary
-      - {double-sub: [0.03, mug-left-maker]} # control law for upper boundary
+      - {double-sub: [-0.01, mug-left-maker]} # control law for lower boundary
+      - {double-sub: [0.01, mug-left-maker]} # control law for upper boundary
       - constraint-weight # weight of this constraint
       - mug-left-maker # expression used for Jacobian calcuation
   - soft-constraint: 
-      - {double-sub: [0.3, mug-above-maker]} # control law for lower boundary
-      - {double-sub: [0.35, mug-above-maker]} # control law for upper boundary
+      - {double-sub: [0.15, mug-above-maker]} # control law for lower boundary
+      - {double-sub: [0.2, mug-above-maker]} # control law for upper boundary
       - constraint-weight # weight of this constraint
       - mug-above-maker # expression used for Jacobian calcuation
   - soft-constraint: 
-      - {double-sub: [-0.05, mug-upright]} # control law for lower boundary
-      - {double-sub: [-0.03, mug-upright]} # control law for upper boundary
+      - {double-sub: [-0.08, mug-upright]} # control law for lower boundary
+      - {double-sub: [-0.06, mug-upright]} # control law for upper boundary
       - constraint-weight # weight of this constraint
       - mug-upright # expression used for Jacobian calcuation
 

@@ -18,4 +18,6 @@ controller-specs:
  - controller-file: motions/pouring-from-left-approach.yaml
    max-cmd-buffer-size: 100
  - controller-file: motions/pouring-from-left-tilt.yaml
-   max-cmd-buffer-size: 3000
+   max-cmd-buffer-size: 2000
+ - controller-file: motions/pouring-from-left-approach.yaml
+   max-cmd-buffer-size: 500
