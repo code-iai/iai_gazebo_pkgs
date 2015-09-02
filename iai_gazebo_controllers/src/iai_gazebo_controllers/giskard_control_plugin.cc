@@ -93,7 +93,7 @@ void GiskardControlPlugin::UpdateCallback(const common::UpdateInfo& info)
   // TODO: to sth smarter than just dying
   assert(controller_.update(GetObservables(), 10));
 
-  Visualize(GetObservables());
+//  Visualize(GetObservables());
 
   SetCommand(controller_.get_command());
 }
@@ -115,9 +115,9 @@ void GiskardControlPlugin::InitNextController()
 {
   assert(controller_specs_.size() > 0);
   controller_ = giskard::generate(controller_specs_[0]);
-  giskard::Scope scope = giskard::generate(controller_specs_[0].scope_);
-  scope_ = giskard::generate(controller_specs_[0].scope_);
-  rim_point_ = scope.find_vector_expression("closest-rim-point");
+//  giskard::Scope scope = giskard::generate(controller_specs_[0].scope_);
+//  scope_ = giskard::generate(controller_specs_[0].scope_);
+//  rim_point_ = scope.find_vector_expression("closest-rim-point");
   controller_specs_.erase(controller_specs_.begin());
 
   cmd_buffer_.clear();
@@ -200,7 +200,7 @@ bool GiskardControlPlugin::MotionFinished() const
     for(size_t row = 0; row < it->rows(); ++row)
       // TODO: sth more sophisticated here, please
       // TODO: get this number from somewhere
-      if(it->operator()(row) > 0.03)
+      if(it->operator()(row) > 0.02)
         return false;
 
   return true;
