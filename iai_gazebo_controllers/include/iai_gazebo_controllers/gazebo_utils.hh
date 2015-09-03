@@ -62,19 +62,35 @@ namespace iai_gazebo_controllers
       gazebo::math::Vector3 linear_velocity_, angular_velocity_;
   };
 
-  KDL::Frame toKDL(const gazebo::math::Pose& pose)
+  inline KDL::Rotation toKDL(const gazebo::math::Quaternion& rot)
   {
-    KDL::Rotation rot = KDL::Rotation::Quaternion(pose.rot.x, pose.rot.y, pose.rot.z, pose.rot.w);
-    KDL::Vector pos = KDL::Vector(pose.pos.x, pose.pos.y, pose.pos.z); 
-    return KDL::Frame(rot, pos);
+    return KDL::Rotation::Quaternion(rot.x, rot.y, rot.z, rot.w);
   }
 
-  gazebo::math::Vector3 toGazebo(const KDL::Vector& v)
+  inline KDL::Vector toKDL(const gazebo::math::Vector3& pos)
+  {
+    return KDL::Vector(pos.x, pos.y, pos.z); 
+  }
+
+  inline KDL::Frame toKDL(const gazebo::math::Pose& pose)
+  {
+    return KDL::Frame(toKDL(pose.rot), toKDL(pose.pos));
+  }
+
+  inline gazebo::math::Vector3 toGazebo(const KDL::Vector& v)
   {
     return gazebo::math::Vector3(v.x(), v.y(), v.z());
   }
 
-  Twist toGazebo(const KDL::Twist& twist)
+  inline gazebo::math::Quaternion toGazebo(const KDL::Rotation& rot)
+  {
+    double x, y, z, w;
+    rot.GetQuaternion(x, y, z, w);
+    return gazebo::math::Quaternion(w, x, y, z);
+  }
+
+
+  inline Twist toGazebo(const KDL::Twist& twist)
   {
     return Twist(toGazebo(twist.vel), toGazebo(twist.rot));
   }
@@ -86,9 +102,12 @@ namespace iai_gazebo_controllers
     result(0) = pose.pos.x;
     result(1) = pose.pos.y;
     result(2) = pose.pos.z;
-    result(3) = pose.rot.GetAsEuler().x;
-    result(4) = pose.rot.GetAsEuler().y;
-    result(5) = pose.rot.GetAsEuler().z;
+
+    toKDL(pose.rot).GetEulerZYX(result(3), result(4), result(5));
+
+//    result(3) = pose.rot.GetAsEuler().x;
+//    result(4) = pose.rot.GetAsEuler().y;
+//    result(5) = pose.rot.GetAsEuler().z;
 
     return result;
   }
