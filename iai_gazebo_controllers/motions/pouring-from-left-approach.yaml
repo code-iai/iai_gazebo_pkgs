@@ -13,18 +13,18 @@ scope:
           - frame: [identity-rot, {vector3: [{input-var: 0}, 0, 0]}]
           - frame: [identity-rot, {vector3: [0, {input-var: 1}, 0]}]
           - frame: [identity-rot, {vector3: [0, 0, {input-var: 2}]}]
-          - frame: [{axis-angle: [unit-x, {input-var: 3}]}, zero-vec]
+          - frame: [{axis-angle: [unit-z, {input-var: 3}]}, zero-vec]
           - frame: [{axis-angle: [unit-y, {input-var: 4}]}, zero-vec]
-          - frame: [{axis-angle: [unit-z, {input-var: 5}]}, zero-vec]
+          - frame: [{axis-angle: [unit-x, {input-var: 5}]}, zero-vec]
   - maker-frame:
       cached-frame:
         frame-mul:
           - frame: [identity-rot, {vector3: [{input-var: 6}, 0, 0]}]
           - frame: [identity-rot, {vector3: [0, {input-var: 7}, 0]}]
           - frame: [identity-rot, {vector3: [0, 0, {input-var: 8}]}]
-          - frame: [{axis-angle: [unit-x, {input-var: 9}]}, zero-vec]
+          - frame: [{axis-angle: [unit-z, {input-var: 9}]}, zero-vec]
           - frame: [{axis-angle: [unit-y, {input-var: 10}]}, zero-vec]
-          - frame: [{axis-angle: [unit-z, {input-var: 11}]}, zero-vec]
+          - frame: [{axis-angle: [unit-x, {input-var: 11}]}, zero-vec]
 
   # definition of features
   - mug-bottom: {origin-of: mug-frame}
