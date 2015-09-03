@@ -210,17 +210,6 @@ bool GiskardControlPlugin::MotionFinished() const
       else if ((3<row) && (row<6) && (std::abs(it->operator()(row)) > min_ang_vel))
         return false;
 
-//  std::cout << "\nLast 10 commands\n";
-//  assert(cmd_buffer_.size() >= 10);
-//  for(size_t i=0; i<10; ++i)
-//  {
-//    std::cout << "\n[";
-//    for(size_t row=0; row<6; ++row)
-//      std::cout << " " << cmd_buffer_[cmd_buffer_.size() - (9 - i)](row);
-//    std::cout << " ]";
-//  }
-//  std::cout << "\n";
-
   return true;
 }
 
@@ -317,46 +306,13 @@ void GiskardControlPlugin::Visualize(const Eigen::VectorXd& observables)
   PrintVectorExpression("mug-top", ids, observables, 6);
   PrintVectorExpression("mug-bottom", ids, observables, 6);
   PrintVectorExpression("maker-top", ids, observables, 6);
+  PrintFrameExpression("mug-frame", ids, observables, 6);
+  std::cout << controlled_model_->GetLinks()[0]->GetWorldPose().pos;
+  std::cout << "\n" << controlled_model_->GetLinks()[0]->GetWorldPose().rot.GetAsMatrix3();
+
   std::cout << "\ncommand: ";
   for(size_t i=0; i< controller_.get_command().size(); ++i)
     std::cout << controller_.get_command()(i) << " ";
-//  KDL::Expression<double>::Ptr behind = 
-//      scope_.find_double_expression("mug-behind-maker");
-//
-//
-//  behind->setInputValues(ids, observables);
-//  
-//  
-//  std::cout << "\n\nBEHIND: " << behind->value() << "\n[";
-//  for(size_t i=0; i<behind->number_of_derivatives(); ++i)
-//    std::cout << " " << behind->derivative(i);
-//  std::cout << " ]";
-
-//  rim_point_->setInputValues(ids, observables);
-//
-//  msgs::Vector3d msg;
-//  msg.set_x(rim_point_->value().x());
-//  msg.set_y(rim_point_->value().y());
-//  msg.set_z(rim_point_->value().z());
-//
-//  visualizationPublisher_->Publish(msg);
-
-//  KDL::Expression<KDL::Vector>::Ptr mug_top = scope_.find_vector_expression("mug-top");
-//  KDL::Expression<KDL::Vector>::Ptr unit_normal = scope_.find_vector_expression("unit-normal");
-//  KDL::Expression<double>::Ptr perp_dist = scope_.find_double_expression("perp-distance");
-//  KDL::Expression<KDL::Vector>::Ptr proj_p = scope_.find_vector_expression("projected-point");
-//
-//  mug_top->setInputValues(ids, observables);
-//  unit_normal->setInputValues(ids, observables);
-//  perp_dist->setInputValues(ids, observables);
-//  proj_p->setInputValues(ids, observables);
-//
-//  std::cout << "\n\n\n";
-//  std::cout << "mug-top: " << mug_top->value() << "\n";
-//  std::cout << "unit-normal: " << unit_normal->value() << "\n";
-//  std::cout << "perp-distance: " << perp_dist->value() << "\n";
-//  std::cout << "projected-point: " << proj_p->value() << "\n";
-//  std::cout << "\n\n\n";
 }
 
 //////////////////////////////////////////////////
