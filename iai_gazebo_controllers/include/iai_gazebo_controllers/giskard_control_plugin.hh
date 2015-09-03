@@ -75,6 +75,10 @@ namespace iai_gazebo_controllers
       void StopLogging();
       void RequestGazeboShutdown();
       void Visualize(const Eigen::VectorXd& observables);
+      void PrintDoubleExpression(const std::string& name, const std::vector<int>& ids, 
+          const Eigen::VectorXd& observables, size_t num_of_derivatives);
+      void PrintVectorExpression(const std::string& name, const std::vector<int>& ids, 
+          const Eigen::VectorXd& observables, size_t num_of_derivatives);
 
       // control helpers
       Eigen::VectorXd GetObservables();

@@ -93,7 +93,7 @@ void GiskardControlPlugin::UpdateCallback(const common::UpdateInfo& info)
   // TODO: to sth smarter than just dying
   assert(controller_.update(GetObservables(), 10));
 
-//  Visualize(GetObservables());
+  Visualize(GetObservables());
 
   SetCommand(controller_.get_command());
 }
@@ -116,7 +116,7 @@ void GiskardControlPlugin::InitNextController()
   assert(controller_specs_.size() > 0);
   controller_ = giskard::generate(controller_specs_[0]);
 //  giskard::Scope scope = giskard::generate(controller_specs_[0].scope_);
-//  scope_ = giskard::generate(controller_specs_[0].scope_);
+  scope_ = giskard::generate(controller_specs_[0].scope_);
 //  rim_point_ = scope.find_vector_expression("closest-rim-point");
   controller_specs_.erase(controller_specs_.begin());
 
@@ -126,6 +126,8 @@ void GiskardControlPlugin::InitNextController()
 
   // TODO: get this number from somewhere
   assert(controller_.start(GetObservables(), 10));
+
+  std::cout << "\n\nSWITCHED CONTROLLERS\n\n";
 }
 
 //////////////////////////////////////////////////
@@ -196,12 +198,28 @@ bool GiskardControlPlugin::MotionFinished() const
   if(cmd_buffer_.size() != max_cmd_buffer_size_)
     return false;
 
+  double min_trans_vel = 0.01;
+  double min_ang_vel = 0.02;
+
   for(std::deque<Eigen::VectorXd>::const_iterator it = cmd_buffer_.begin(); it!=cmd_buffer_.end(); ++it)
     for(size_t row = 0; row < it->rows(); ++row)
       // TODO: sth more sophisticated here, please
       // TODO: get this number from somewhere
-      if(it->operator()(row) > 0.02)
+      if((0<row) && (row<3) && (std::abs(it->operator()(row)) > min_trans_vel))
         return false;
+      else if ((3<row) && (row<6) && (std::abs(it->operator()(row)) > min_ang_vel))
+        return false;
+
+//  std::cout << "\nLast 10 commands\n";
+//  assert(cmd_buffer_.size() >= 10);
+//  for(size_t i=0; i<10; ++i)
+//  {
+//    std::cout << "\n[";
+//    for(size_t row=0; row<6; ++row)
+//      std::cout << " " << cmd_buffer_[cmd_buffer_.size() - (9 - i)](row);
+//    std::cout << " ]";
+//  }
+//  std::cout << "\n";
 
   return true;
 }
@@ -246,20 +264,73 @@ void GiskardControlPlugin::RequestGazeboShutdown()
 
 //////////////////////////////////////////////////
 
+void GiskardControlPlugin::PrintDoubleExpression(const std::string& name, const std::vector<int>& ids,
+    const Eigen::VectorXd& observables, size_t num_of_derivatives)
+{
+  KDL::Expression<double>::Ptr exp = scope_.find_double_expression(name);
+
+  exp->setInputValues(ids, observables);
+  
+  std::cout << "\n" << name << ": " << exp->value() << "\n[";
+  for(size_t i=0; i<num_of_derivatives; ++i)
+    std::cout << " " << exp->derivative(i);
+  std::cout << " ]";
+
+}
+
+void GiskardControlPlugin::PrintVectorExpression(const std::string& name, const std::vector<int>& ids,
+    const Eigen::VectorXd& observables, size_t num_of_derivatives)
+{
+  KDL::Expression<KDL::Vector>::Ptr exp = scope_.find_vector_expression(name);
+
+  exp->setInputValues(ids, observables);
+  
+  std::cout << "\n" << name << ": " << exp->value() << "\n";
+//  for(size_t i=0; i<exp->number_of_derivatives(); ++i)
+//    std::cout << " " << exp->derivative(i);
+//  std::cout << " ]";
+
+}
 void GiskardControlPlugin::Visualize(const Eigen::VectorXd& observables)
 {
   std::vector<int> ids;
   for(size_t i=0; i<observables.rows(); ++i)
     ids.push_back(i);
 
-  rim_point_->setInputValues(ids, observables);
+  std::cout << "\n\n";
+  std::cout << "\nObservables: ";
+  for(size_t i=0; i<6; ++i)
+    std::cout << observables(i) << " ";
+  PrintDoubleExpression("mug-behind-maker", ids, observables, 6);
+  PrintDoubleExpression("mug-left-maker", ids, observables, 6);
+  PrintDoubleExpression("mug-above-maker", ids, observables, 6);
+  PrintDoubleExpression("mug-upright", ids, observables, 6);
+  PrintVectorExpression("mug-top", ids, observables, 6);
+  PrintVectorExpression("mug-bottom", ids, observables, 6);
+  PrintVectorExpression("maker-top", ids, observables, 6);
+  std::cout << "\ncommand: ";
+  for(size_t i=0; i< controller_.get_command().size(); ++i)
+    std::cout << controller_.get_command()(i) << " ";
+//  KDL::Expression<double>::Ptr behind = 
+//      scope_.find_double_expression("mug-behind-maker");
+//
+//
+//  behind->setInputValues(ids, observables);
+//  
+//  
+//  std::cout << "\n\nBEHIND: " << behind->value() << "\n[";
+//  for(size_t i=0; i<behind->number_of_derivatives(); ++i)
+//    std::cout << " " << behind->derivative(i);
+//  std::cout << " ]";
 
-  msgs::Vector3d msg;
-  msg.set_x(rim_point_->value().x());
-  msg.set_y(rim_point_->value().y());
-  msg.set_z(rim_point_->value().z());
-
-  visualizationPublisher_->Publish(msg);
+//  rim_point_->setInputValues(ids, observables);
+//
+//  msgs::Vector3d msg;
+//  msg.set_x(rim_point_->value().x());
+//  msg.set_y(rim_point_->value().y());
+//  msg.set_z(rim_point_->value().z());
+//
+//  visualizationPublisher_->Publish(msg);
 
 //  KDL::Expression<KDL::Vector>::Ptr mug_top = scope_.find_vector_expression("mug-top");
 //  KDL::Expression<KDL::Vector>::Ptr unit_normal = scope_.find_vector_expression("unit-normal");
@@ -295,17 +366,56 @@ Eigen::VectorXd GiskardControlPlugin::GetObservables()
 
 void GiskardControlPlugin::SetCommand(const Eigen::VectorXd& command, bool with_logging)
 {
-  // actually setting command
-  double dt = 0.001;
-  math::Pose old_pose = controlled_model_->GetLinks()[0]->GetWorldPose();
-  math::Pose new_pose = math::Pose(
-      old_pose.pos + dt * math::Vector3(command(0), command(1), command(2)),
-      math::Quaternion(old_pose.rot.GetAsEuler() + dt * math::Vector3(command(3), command(4), command(5))));
 
-  controlled_model_->GetLinks()[0]->SetWorldPose(new_pose);
+// FAULTY METHOD 1:
+//
+//  math::Vector3 rot_axis;
+//  double rot_angle;
+//  math::Quaternion(command(3), command(4), command(5)).GetAsAxis(rot_axis, rot_angle);
+//  math::Vector3 rot = rot_axis * rot_angle;
+//  
+//std::cout << "\n\ndelta rpy: " << command(3) << ", " << command(4) << ", " << command(5);
+//std::cout << "\nangular vel: " << rot.x << ", " << rot.y << ", " << rot.z << "\n\n";
+//
+//
+//  controlled_model_->GetLinks()[0]->SetLinearVel(gazebo::math::Vector3(command(0), command(1), command(2)));
+//  controlled_model_->GetLinks()[0]->SetAngularVel(rot);
 
+
+// FAULTY METHOD 2:
+//
 //  controlled_model_->GetLinks()[0]->SetLinearVel(gazebo::math::Vector3(command(0), command(1), command(2)));
 //  controlled_model_->GetLinks()[0]->SetAngularVel(gazebo::math::Vector3(command(3), command(4), command(5)));
+
+
+// FAULTY METHOD 3:
+//
+  math::Quaternion R1 = controlled_model_->GetLinks()[0]->GetWorldPose().rot;
+  math::Quaternion R2 = math::Quaternion(command(3), command(4), command(5));
+  math::Quaternion R = R1 * R2;
+
+  math::Vector3 rot_axis;
+  double rot_angle;
+  R.GetAsAxis(rot_axis, rot_angle);
+  math::Vector3 r = rot_angle * rot_axis;
+  R1.GetAsAxis(rot_axis, rot_angle);
+  math::Vector3 r1 = rot_angle * rot_axis;
+  math::Vector3 r2 = r - r1;
+
+  controlled_model_->GetLinks()[0]->SetLinearVel(gazebo::math::Vector3(command(0), command(1), command(2)));
+  controlled_model_->GetLinks()[0]->SetAngularVel(r2);
+
+// FAULTY METHOD 4
+//
+//  double dt = 0.001;
+//  gazebo::math::Pose old_pose = controlled_model_->GetLinks()[0]->GetWorldPose();
+//  gazebo::math::Pose new_pose = gazebo::math::Pose(
+//      old_pose.pos + dt * gazebo::math::Vector3(command(0), command(1), command(2)),
+//      old_pose.rot * gazebo::math::Quaternion(dt*command(3), dt*command(4), dt*command(5)));
+//  controlled_model_->GetLinks()[0]->SetWorldPose(gazebo::math::Pose(new_pose));
+//      
+//  controlled_model_->GetLinks()[0]->SetLinearVel(gazebo::math::Vector3(0,0,0));
+//  controlled_model_->GetLinks()[0]->SetAngularVel(gazebo::math::Vector3(0,0,0));
 
   // remembering command
   if(with_logging)

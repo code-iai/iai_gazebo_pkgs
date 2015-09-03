@@ -1,10 +1,10 @@
 # how long to wait before starting the entire simulation
 # REASON: gazebo needs time spawn all objects
-sim-start-delay: 4.0
+sim-start-delay: 1.0
 
 # how long to wait after simulation start and before first movement
 # REASON: the simulated liquid needs to settle
-move-start-delay: 2.0
+move-start-delay: 1.0
 
 # name of object model controlled by controller
 controlled-model: Cup
@@ -20,4 +20,4 @@ controller-specs:
  - controller-file: motions/pouring-from-left-tilt.yaml
    max-cmd-buffer-size: 2000
  - controller-file: motions/pouring-from-left-approach.yaml
-   max-cmd-buffer-size: 500
+   max-cmd-buffer-size: 1000
