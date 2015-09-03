@@ -83,7 +83,7 @@
     </model-->
 
     <plugin name="GiskardControlPlugin" filename="libGiskardControlPlugin.so">
-      <experimentFile>experiments/pouring-from-left-experiment.yaml</motionFile>
+      <experimentFile>experiments/pouring-from-left-experiment.yaml</experimentFile>
     </plugin>
 
   </world>
