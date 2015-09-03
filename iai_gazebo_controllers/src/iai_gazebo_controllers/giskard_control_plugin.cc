@@ -331,6 +331,23 @@ Eigen::VectorXd GiskardControlPlugin::GetObservables()
 
 void GiskardControlPlugin::SetCommand(const Eigen::VectorXd& command, bool with_logging)
 {
+//  TODO: look at old tagged version and how we did the twist conversion at that time!!
+
+
+
+//  ANOTHER METHOD 0:
+//
+//  double dt = 0.001;
+//  Eigen::VectorXd scaled_cmd = dt * command;
+//
+//  math::Vector3 displacement(scaled_cmd(0), scaled_cmd(1), scaled_cmd(2));
+//  math::Quaternion rotation =
+//      toGazebo(KDL::Rotation::EulerZYX(command(3), command(4), command(5)));
+//
+//  math::Pose old_pose = controlled_model_->GetLinks()[0]->GetWorldPose();
+//  controlled_model_->GetLinks()[0]->SetWorldPose(old_pose * math::Pose(displacement, rotation));
+//  controlled_model_->GetLinks()[0]->SetLinearVel(gazebo::math::Vector3(0,0,0));
+//  controlled_model_->GetLinks()[0]->SetAngularVel(gazebo::math::Vector3(0,0,0));
 
 // FAULTY METHOD 1:
 //
