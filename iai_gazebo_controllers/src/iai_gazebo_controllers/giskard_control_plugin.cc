@@ -296,8 +296,16 @@ Eigen::VectorXd GiskardControlPlugin::GetObservables()
 void GiskardControlPlugin::SetCommand(const Eigen::VectorXd& command, bool with_logging)
 {
   // actually setting command
-  controlled_model_->GetLinks()[0]->SetLinearVel(gazebo::math::Vector3(command(0), command(1), command(2)));
-  controlled_model_->GetLinks()[0]->SetAngularVel(gazebo::math::Vector3(command(3), command(4), command(5)));
+  double dt = 0.001;
+  math::Pose old_pose = controlled_model_->GetLinks()[0]->GetWorldPose();
+  math::Pose new_pose = math::Pose(
+      old_pose.pos + dt * math::Vector3(command(0), command(1), command(2)),
+      math::Quaternion(old_pose.rot.GetAsEuler() + dt * math::Vector3(command(3), command(4), command(5))));
+
+  controlled_model_->GetLinks()[0]->SetWorldPose(new_pose);
+
+//  controlled_model_->GetLinks()[0]->SetLinearVel(gazebo::math::Vector3(command(0), command(1), command(2)));
+//  controlled_model_->GetLinks()[0]->SetAngularVel(gazebo::math::Vector3(command(3), command(4), command(5)));
 
   // remembering command
   if(with_logging)
