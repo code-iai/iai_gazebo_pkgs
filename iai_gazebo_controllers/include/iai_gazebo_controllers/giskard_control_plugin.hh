@@ -79,6 +79,8 @@ namespace iai_gazebo_controllers
           const Eigen::VectorXd& observables, size_t num_of_derivatives);
       void PrintVectorExpression(const std::string& name, const std::vector<int>& ids, 
           const Eigen::VectorXd& observables, size_t num_of_derivatives);
+      void PrintFrameExpression(const std::string& name, const std::vector<int>& ids, 
+          const Eigen::VectorXd& observables, size_t num_of_derivatives);
 
       // control helpers
       Eigen::VectorXd GetObservables();

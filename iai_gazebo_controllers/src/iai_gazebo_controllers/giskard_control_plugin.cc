@@ -286,11 +286,20 @@ void GiskardControlPlugin::PrintVectorExpression(const std::string& name, const 
   exp->setInputValues(ids, observables);
   
   std::cout << "\n" << name << ": " << exp->value() << "\n";
-//  for(size_t i=0; i<exp->number_of_derivatives(); ++i)
-//    std::cout << " " << exp->derivative(i);
-//  std::cout << " ]";
-
 }
+
+void GiskardControlPlugin::PrintFrameExpression(const std::string& name, const std::vector<int>& ids,
+    const Eigen::VectorXd& observables, size_t num_of_derivatives)
+{
+  KDL::Expression<KDL::Frame>::Ptr exp = scope_.find_frame_expression(name);
+
+  exp->setInputValues(ids, observables);
+  
+  std::cout << "\n" << name << ":\n";
+  std::cout << exp->value().p << "\n";
+  std::cout << exp->value().M << "\n";
+}
+
 void GiskardControlPlugin::Visualize(const Eigen::VectorXd& observables)
 {
   std::vector<int> ids;
