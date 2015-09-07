@@ -31,18 +31,7 @@ scope:
   - mug-top: {transform-vector: [mug-frame, {vector3: [0, 0, 0.108]}]}
   - maker-top: {origin-of: maker-frame}
 
-  # closest rim point to maker-center 
-#  - mug-rim-radius: 0.05
-#  - unit-normal: {scale-vector: [{double-div: [{vector-norm: mug-top}]}, mug-top]}
-#  - perp-distance: {double-sub: [{vector-dot: [unit-normal, maker-top]}, {vector-dot: [unit-normal, mug-top]}]}
-#  - projected-point: {vector-sub: [maker-top, {scale-vector: [perp-distance, unit-normal]}]}
-#  - direction: {vector-sub: [projected-point, mug-top]}
-#  - unit-direction: {scale-vector: [{double-div: [{vector-norm: direction}]}, direction]}
-#  - closest-rim-point: 
-#      cached-vector: {vector-add: [{scale-vector: [mug-rim-radius, unit-direction]}, mug-top]}
-
-  - mug-bottom-to-maker-top:
-      cached-vector: {vector-sub: [mug-bottom, maker-top]}
+  # distance vector between top of maker and top of mug
   - mug-top-to-maker-top:
       cached-vector: {vector-sub: [mug-top, maker-top]}
 
