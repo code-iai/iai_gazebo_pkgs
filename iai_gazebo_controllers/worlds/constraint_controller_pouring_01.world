@@ -42,7 +42,6 @@
     <include>
         <uri>model://mug</uri>
         <pose>0.2 0.1 1.855 0.0 0 0</pose>
-        <!--pose>0.2 0.1 0.89 0 0 0</pose-->
     </include>
 
     <plugin name="SpawnLiquid" filename="libSpawnLiquid.so">
@@ -70,17 +69,8 @@
     </plugin>
 
     <plugin name="GiskardControlPlugin" filename="libGiskardControlPlugin.so">
-      <controlledModel>Cup</controlledModel>
-      <observedModel>PancakeMaker</observedModel>
-      <motionFile>motions/giskard_approach_motion.yaml</motionFile>
+      <experimentFile>experiments/pouring-from-left-experiment.yaml</experimentFile>
     </plugin>
 
-    <!--plugin name="ConstraintControlPlugin" filename="libConstraintControlPlugin.so">
-      <startDelay>1</startDelay>
-      <logDelay>2</logDelay>
-      <controlledModel>Cup</controlledModel>
-      <motionFile>motions/sample-motion2.yaml</motionFile>
-    </plugin-->
-  
   </world>
 </sdf>
