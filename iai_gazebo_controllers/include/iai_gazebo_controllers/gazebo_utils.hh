@@ -105,9 +105,14 @@ namespace iai_gazebo_controllers
 
     toKDL(pose.rot).GetEulerZYX(result(3), result(4), result(5));
 
-//    result(3) = pose.rot.GetAsEuler().x;
-//    result(4) = pose.rot.GetAsEuler().y;
-//    result(5) = pose.rot.GetAsEuler().z;
+    return result;
+  }
+
+  inline std::vector<double> toSTL(const Eigen::VectorXd& v)
+  {
+    std::vector<double> result;
+    for(size_t i=0; i<v.rows(); ++i)
+      result.push_back(v(i));
 
     return result;
   }

@@ -74,16 +74,10 @@ namespace iai_gazebo_controllers
       void StartLogging();
       void StopLogging();
       void RequestGazeboShutdown();
-      void Visualize(const Eigen::VectorXd& observables);
-      void PrintDoubleExpression(const std::string& name, const std::vector<int>& ids, 
-          const Eigen::VectorXd& observables, size_t num_of_derivatives);
-      void PrintVectorExpression(const std::string& name, const std::vector<int>& ids, 
-          const Eigen::VectorXd& observables, size_t num_of_derivatives);
-      void PrintFrameExpression(const std::string& name, const std::vector<int>& ids, 
-          const Eigen::VectorXd& observables, size_t num_of_derivatives);
 
       // control helpers
       Eigen::VectorXd GetObservables();
+      KDL::Jacobian GetControlledJacobian();
       void SetCommand(const Eigen::VectorXd& command, bool with_logging=true);
 
       // data we got upon init
@@ -99,7 +93,7 @@ namespace iai_gazebo_controllers
       size_t max_cmd_buffer_size_;
       double sim_start_delay_, move_start_delay_;
 
-      KDL::Expression<KDL::Vector>::Ptr rim_point_;
+      KDL::Expression<KDL::Frame>::Ptr controlled_frame_;
       giskard::Scope scope_;
 
       // gazebo communication and infrastructure

@@ -93,9 +93,7 @@ void GiskardControlPlugin::UpdateCallback(const common::UpdateInfo& info)
   // TODO: to sth smarter than just dying
   assert(controller_.update(GetObservables(), 10));
 
-//  Visualize(GetObservables());
-
-  SetCommand(controller_.get_command());
+  SetCommand(GetControlledJacobian().data * controller_.get_command());
 }
 
 //////////////////////////////////////////////////
@@ -115,9 +113,9 @@ void GiskardControlPlugin::InitNextController()
 {
   assert(controller_specs_.size() > 0);
   controller_ = giskard::generate(controller_specs_[0]);
-//  giskard::Scope scope = giskard::generate(controller_specs_[0].scope_);
   scope_ = giskard::generate(controller_specs_[0].scope_);
-//  rim_point_ = scope.find_vector_expression("closest-rim-point");
+  // TODO: get this string from somewhere
+  controlled_frame_ = scope_.find_frame_expression("mug-frame");
   controller_specs_.erase(controller_specs_.begin());
 
   cmd_buffer_.clear();
@@ -253,70 +251,6 @@ void GiskardControlPlugin::RequestGazeboShutdown()
 
 //////////////////////////////////////////////////
 
-void GiskardControlPlugin::PrintDoubleExpression(const std::string& name, const std::vector<int>& ids,
-    const Eigen::VectorXd& observables, size_t num_of_derivatives)
-{
-  KDL::Expression<double>::Ptr exp = scope_.find_double_expression(name);
-
-  exp->setInputValues(ids, observables);
-  
-  std::cout << "\n" << name << ": " << exp->value() << "\n[";
-  for(size_t i=0; i<num_of_derivatives; ++i)
-    std::cout << " " << exp->derivative(i);
-  std::cout << " ]";
-
-}
-
-void GiskardControlPlugin::PrintVectorExpression(const std::string& name, const std::vector<int>& ids,
-    const Eigen::VectorXd& observables, size_t num_of_derivatives)
-{
-  KDL::Expression<KDL::Vector>::Ptr exp = scope_.find_vector_expression(name);
-
-  exp->setInputValues(ids, observables);
-  
-  std::cout << "\n" << name << ": " << exp->value() << "\n";
-}
-
-void GiskardControlPlugin::PrintFrameExpression(const std::string& name, const std::vector<int>& ids,
-    const Eigen::VectorXd& observables, size_t num_of_derivatives)
-{
-  KDL::Expression<KDL::Frame>::Ptr exp = scope_.find_frame_expression(name);
-
-  exp->setInputValues(ids, observables);
-  
-  std::cout << "\n" << name << ":\n";
-  std::cout << exp->value().p << "\n";
-  std::cout << exp->value().M << "\n";
-}
-
-void GiskardControlPlugin::Visualize(const Eigen::VectorXd& observables)
-{
-  std::vector<int> ids;
-  for(size_t i=0; i<observables.rows(); ++i)
-    ids.push_back(i);
-
-  std::cout << "\n\n";
-  std::cout << "\nObservables: ";
-  for(size_t i=0; i<6; ++i)
-    std::cout << observables(i) << " ";
-  PrintDoubleExpression("mug-behind-maker", ids, observables, 6);
-  PrintDoubleExpression("mug-left-maker", ids, observables, 6);
-  PrintDoubleExpression("mug-above-maker", ids, observables, 6);
-  PrintDoubleExpression("mug-upright", ids, observables, 6);
-  PrintVectorExpression("mug-top", ids, observables, 6);
-  PrintVectorExpression("mug-bottom", ids, observables, 6);
-  PrintVectorExpression("maker-top", ids, observables, 6);
-  PrintFrameExpression("mug-frame", ids, observables, 6);
-  std::cout << controlled_model_->GetLinks()[0]->GetWorldPose().pos;
-  std::cout << "\n" << controlled_model_->GetLinks()[0]->GetWorldPose().rot.GetAsMatrix3();
-
-  std::cout << "\ncommand: ";
-  for(size_t i=0; i< controller_.get_command().size(); ++i)
-    std::cout << controller_.get_command()(i) << " ";
-}
-
-//////////////////////////////////////////////////
-
 Eigen::VectorXd GiskardControlPlugin::GetObservables()
 {
   Eigen::VectorXd result(12);
@@ -329,23 +263,24 @@ Eigen::VectorXd GiskardControlPlugin::GetObservables()
 
 //////////////////////////////////////////////////
 
-void GiskardControlPlugin::SetCommand(const Eigen::VectorXd& command, bool with_logging)
+KDL::Jacobian GiskardControlPlugin::GetControlledJacobian()
 {
-  KDL::Expression<KDL::Frame>::Ptr mug_frame = scope_.find_frame_expression("mug-frame");
-  std::vector<int> ids;
-  for(size_t i=0; i<12; ++i)
-    ids.push_back(i);
-  mug_frame->setInputValues(ids, GetObservables());
-  mug_frame->value();
+  controlled_frame_->setInputValues(toSTL(GetObservables()));
+  controlled_frame_->value();
   
   KDL::Jacobian jac(6);
   for(size_t i=0; i<6; ++i)
-    jac.setColumn(i, mug_frame->derivative(i));
+    jac.setColumn(i, controlled_frame_->derivative(i));
  
-  Eigen::VectorXd twist = jac.data * command;
+  return jac;
+}
 
-  controlled_model_->GetLinks()[0]->SetLinearVel(gazebo::math::Vector3(twist(0), twist(1), twist(2)));
-  controlled_model_->GetLinks()[0]->SetAngularVel(gazebo::math::Vector3(twist(3), twist(4), twist(5)));
+//////////////////////////////////////////////////
+
+void GiskardControlPlugin::SetCommand(const Eigen::VectorXd& command, bool with_logging)
+{
+  controlled_model_->GetLinks()[0]->SetLinearVel(gazebo::math::Vector3(command(0), command(1), command(2)));
+  controlled_model_->GetLinks()[0]->SetAngularVel(gazebo::math::Vector3(command(3), command(4), command(5)));
 
   // remembering command
   if(with_logging)
@@ -357,3 +292,5 @@ void GiskardControlPlugin::SetCommand(const Eigen::VectorXd& command, bool with_
     cmd_buffer_.push_front(command);
   }
 }
+
+//////////////////////////////////////////////////
