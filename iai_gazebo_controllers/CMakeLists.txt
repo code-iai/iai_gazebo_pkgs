@@ -46,6 +46,3 @@ link_directories(${GAZEBO_LIBRARY_DIRS} ${OGRE_LIBRARY_DIRS})
 
 add_library(GiskardControlPlugin src/iai_gazebo_controllers/giskard_control_plugin)
 target_link_libraries(GiskardControlPlugin ${GAZEBO_LIBRARIES} ${catkin_LIBRARIES} ${YAML_CPP_LIBRARIES})
-
-#add_library(GiskardVisualizationPlugin src/iai_gazebo_controllers/giskard_visualization_plugin)
-#target_link_libraries(GiskardVisualizationPlugin ${GAZEBO_LIBRARIES} ${catkin_LIBRARIES})
