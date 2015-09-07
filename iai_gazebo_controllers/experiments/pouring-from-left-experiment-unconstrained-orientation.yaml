@@ -1,0 +1,23 @@
+# how long to wait before starting the entire simulation
+# REASON: gazebo needs time spawn all objects
+sim-start-delay: 1.0
+
+# how long to wait after simulation start and before first movement
+# REASON: the simulated liquid needs to settle
+move-start-delay: 1.0
+
+# name of object model controlled by controller
+controlled-model: Cup
+
+# name of addtional object model observed by controller
+observed-model: PancakeMaker
+
+# for how many simulation iterations shall we wait before finishing each motion phase
+# REASON: after finishing a motion, we might have to wait for an effect to happen, i.e. liquid falling
+controller-specs:
+ - controller-file: motions/pouring-from-left-approach-unconstrained-orientation.yaml
+   max-cmd-buffer-size: 100
+ - controller-file: motions/pouring-from-left-tilt-unconstrained-orientation.yaml
+   max-cmd-buffer-size: 2000
+ - controller-file: motions/pouring-from-left-approach-unconstrained-orientation.yaml
+   max-cmd-buffer-size: 1000
