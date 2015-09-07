@@ -93,7 +93,7 @@ void GiskardControlPlugin::UpdateCallback(const common::UpdateInfo& info)
   // TODO: to sth smarter than just dying
   assert(controller_.update(GetObservables(), 10));
 
-  Visualize(GetObservables());
+//  Visualize(GetObservables());
 
   SetCommand(controller_.get_command());
 }
@@ -331,73 +331,21 @@ Eigen::VectorXd GiskardControlPlugin::GetObservables()
 
 void GiskardControlPlugin::SetCommand(const Eigen::VectorXd& command, bool with_logging)
 {
-//  TODO: look at old tagged version and how we did the twist conversion at that time!!
+  KDL::Expression<KDL::Frame>::Ptr mug_frame = scope_.find_frame_expression("mug-frame");
+  std::vector<int> ids;
+  for(size_t i=0; i<12; ++i)
+    ids.push_back(i);
+  mug_frame->setInputValues(ids, GetObservables());
+  mug_frame->value();
+  
+  KDL::Jacobian jac(6);
+  for(size_t i=0; i<6; ++i)
+    jac.setColumn(i, mug_frame->derivative(i));
+ 
+  Eigen::VectorXd twist = jac.data * command;
 
-
-
-//  ANOTHER METHOD 0:
-//
-//  double dt = 0.001;
-//  Eigen::VectorXd scaled_cmd = dt * command;
-//
-//  math::Vector3 displacement(scaled_cmd(0), scaled_cmd(1), scaled_cmd(2));
-//  math::Quaternion rotation =
-//      toGazebo(KDL::Rotation::EulerZYX(command(3), command(4), command(5)));
-//
-//  math::Pose old_pose = controlled_model_->GetLinks()[0]->GetWorldPose();
-//  controlled_model_->GetLinks()[0]->SetWorldPose(old_pose * math::Pose(displacement, rotation));
-//  controlled_model_->GetLinks()[0]->SetLinearVel(gazebo::math::Vector3(0,0,0));
-//  controlled_model_->GetLinks()[0]->SetAngularVel(gazebo::math::Vector3(0,0,0));
-
-// FAULTY METHOD 1:
-//
-//  math::Vector3 rot_axis;
-//  double rot_angle;
-//  math::Quaternion(command(3), command(4), command(5)).GetAsAxis(rot_axis, rot_angle);
-//  math::Vector3 rot = rot_axis * rot_angle;
-//  
-//std::cout << "\n\ndelta rpy: " << command(3) << ", " << command(4) << ", " << command(5);
-//std::cout << "\nangular vel: " << rot.x << ", " << rot.y << ", " << rot.z << "\n\n";
-//
-//
-//  controlled_model_->GetLinks()[0]->SetLinearVel(gazebo::math::Vector3(command(0), command(1), command(2)));
-//  controlled_model_->GetLinks()[0]->SetAngularVel(rot);
-
-
-// FAULTY METHOD 2:
-//
-//  controlled_model_->GetLinks()[0]->SetLinearVel(gazebo::math::Vector3(command(0), command(1), command(2)));
-//  controlled_model_->GetLinks()[0]->SetAngularVel(gazebo::math::Vector3(command(3), command(4), command(5)));
-
-
-// FAULTY METHOD 3:
-//
-  math::Quaternion R1 = controlled_model_->GetLinks()[0]->GetWorldPose().rot;
-  math::Quaternion R2 = math::Quaternion(command(3), command(4), command(5));
-  math::Quaternion R = R1 * R2;
-
-  math::Vector3 rot_axis;
-  double rot_angle;
-  R.GetAsAxis(rot_axis, rot_angle);
-  math::Vector3 r = rot_angle * rot_axis;
-  R1.GetAsAxis(rot_axis, rot_angle);
-  math::Vector3 r1 = rot_angle * rot_axis;
-  math::Vector3 r2 = r - r1;
-
-  controlled_model_->GetLinks()[0]->SetLinearVel(gazebo::math::Vector3(command(0), command(1), command(2)));
-  controlled_model_->GetLinks()[0]->SetAngularVel(r2);
-
-// FAULTY METHOD 4
-//
-//  double dt = 0.001;
-//  gazebo::math::Pose old_pose = controlled_model_->GetLinks()[0]->GetWorldPose();
-//  gazebo::math::Pose new_pose = gazebo::math::Pose(
-//      old_pose.pos + dt * gazebo::math::Vector3(command(0), command(1), command(2)),
-//      old_pose.rot * gazebo::math::Quaternion(dt*command(3), dt*command(4), dt*command(5)));
-//  controlled_model_->GetLinks()[0]->SetWorldPose(gazebo::math::Pose(new_pose));
-//      
-//  controlled_model_->GetLinks()[0]->SetLinearVel(gazebo::math::Vector3(0,0,0));
-//  controlled_model_->GetLinks()[0]->SetAngularVel(gazebo::math::Vector3(0,0,0));
+  controlled_model_->GetLinks()[0]->SetLinearVel(gazebo::math::Vector3(twist(0), twist(1), twist(2)));
+  controlled_model_->GetLinks()[0]->SetAngularVel(gazebo::math::Vector3(twist(3), twist(4), twist(5)));
 
   // remembering command
   if(with_logging)
