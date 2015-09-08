@@ -100,6 +100,7 @@ namespace iai_gazebo_controllers
       gazebo::event::ConnectionPtr updateConnection_;
       gazebo::transport::PublisherPtr serverControlPublisher_, visualizationPublisher_;
       boost::shared_ptr<boost::thread> delay_sim_start_thread_;
+      bool requested_shutdown_;
   };
 }
 #endif // GISKARD_CONTROL_PLUGIN_HH

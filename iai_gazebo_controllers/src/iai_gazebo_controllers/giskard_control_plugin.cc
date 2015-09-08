@@ -83,8 +83,12 @@ void GiskardControlPlugin::UpdateCallback(const common::UpdateInfo& info)
   if(MotionFinished())
     if(controller_specs_.empty())
     {
-      StopLogging();
-      RequestGazeboShutdown();  
+      if(!requested_shutdown_)
+      {
+        StopLogging();
+        RequestGazeboShutdown();  
+        requested_shutdown_ = true;
+      }
     }
     else
       InitNextController();
@@ -102,7 +106,8 @@ void GiskardControlPlugin::InitInternals(gazebo::physics::WorldPtr world, sdf::E
 {
   world_ = world;
   self_description_ = self_description;
-
+  
+  requested_shutdown_ = false;
   ReadExperimentSpec();
   InitNextController();
 }
@@ -125,7 +130,7 @@ void GiskardControlPlugin::InitNextController()
   // TODO: get this number from somewhere
   assert(controller_.start(GetObservables(), 10));
 
-  std::cout << "\n\nSWITCHED CONTROLLERS\n\n";
+  std::cout << "SWITCHED CONTROLLERS" << std::endl;
 }
 
 //////////////////////////////////////////////////
@@ -216,7 +221,7 @@ bool GiskardControlPlugin::MotionFinished() const
 void GiskardControlPlugin::DelaySimStart()
 {
   world_->SetPaused(true);
-  std::cout << "Paused the world, starting sim in " << sim_start_delay_ << " sec..\n";
+  std::cout << "Paused the world, starting sim in " << sim_start_delay_ << " sec.." << std::endl;
   usleep(sim_start_delay_ * 1000000);
   world_->SetPaused(false);
 //  usleep(logDelay * 1000000);
@@ -242,11 +247,10 @@ void GiskardControlPlugin::StopLogging()
 
 void GiskardControlPlugin::RequestGazeboShutdown()
 {
-  std::cout << "\n\nREQUESTING GAZEBO SERVER SHUTDOWN\n\n";
+  std::cout << "REQUESTING GAZEBO SERVER SHUTDOWN" << std::endl;
   msgs::ServerControl server_msg;
   server_msg.set_stop(true);
   serverControlPublisher_->Publish(server_msg);
-
 }
 
 //////////////////////////////////////////////////
