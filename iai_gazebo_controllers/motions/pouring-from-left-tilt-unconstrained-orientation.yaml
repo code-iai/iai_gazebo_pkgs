@@ -38,12 +38,12 @@ scope:
       cached-vector: {vector-sub: [mug-top, mug-bottom]}
 
   # expressions used in constraints 
-  - mug-behind-maker: {x-coord: mug-top-to-maker-top}
-  - mug-left-maker: {y-coord: mug-top-to-maker-top}
-  - mug-above-maker: {z-coord: mug-top-to-maker-top}
-  - mug-behind: {x-coord: mug-top-to-mug-bottom}
-  - mug-left: {y-coord: mug-top-to-mug-bottom}
-  - mug-upright: {z-coord: mug-top-to-mug-bottom}
+  - mug-top-behind-maker: {x-coord: mug-top-to-maker-top}
+  - mug-top-left-maker: {y-coord: mug-top-to-maker-top}
+  - mug-top-above-maker: {z-coord: mug-top-to-maker-top}
+  - mug-behind-itself: {x-coord: mug-top-to-mug-bottom}
+  - mug-left-itself: {y-coord: mug-top-to-mug-bottom}
+  - mug-above-itself: {z-coord: mug-top-to-mug-bottom}
 
   # some constants
   - controllable-weight: 0.001 # mu * 1
@@ -63,34 +63,34 @@ controllable-constraints:
 
 soft-constraints: 
   - soft-constraint: 
-      - {double-sub: [-0.01, mug-behind-maker]} # control law for lower boundary
-      - {double-sub: [0.01, mug-behind-maker]} # control law for upper boundary
+      - {double-sub: [-0.01, mug-top-behind-maker]} # control law for lower boundary
+      - {double-sub: [0.01, mug-top-behind-maker]} # control law for upper boundary
       - constraint-weight # weight of this constraint
-      - mug-behind-maker # expression used for Jacobian calcuation
+      - mug-top-behind-maker # expression used for Jacobian calcuation
   - soft-constraint: 
-      - {double-sub: [-0.01, mug-left-maker]} # control law for lower boundary
-      - {double-sub: [0.01, mug-left-maker]} # control law for upper boundary
+      - {double-sub: [-0.01, mug-top-left-maker]} # control law for lower boundary
+      - {double-sub: [0.01, mug-top-left-maker]} # control law for upper boundary
       - constraint-weight # weight of this constraint
-      - mug-left-maker # expression used for Jacobian calcuation
+      - mug-top-left-maker # expression used for Jacobian calcuation
   - soft-constraint: 
-      - {double-sub: [0.15, mug-above-maker]} # control law for lower boundary
-      - {double-sub: [0.2, mug-above-maker]} # control law for upper boundary
+      - {double-sub: [0.15, mug-top-above-maker]} # control law for lower boundary
+      - {double-sub: [0.2, mug-top-above-maker]} # control law for upper boundary
       - constraint-weight # weight of this constraint
-      - mug-above-maker # expression used for Jacobian calcuation
+      - mug-top-above-maker # expression used for Jacobian calcuation
   - soft-constraint: 
-      - {double-sub: [-0.08, mug-upright]} # control law for lower boundary
-      - {double-sub: [-0.06, mug-upright]} # control law for upper boundary
+      - {double-sub: [-0.11, mug-behind-itself]} # control law for lower boundary
+      - {double-sub: [0.11, mug-behind-itself]} # control law for upper boundary
       - constraint-weight # weight of this constraint
-      - mug-upright # expression used for Jacobian calcuation
+      - mug-behind-itself # expression used for Jacobian calcuation
   - soft-constraint: 
-      - {double-sub: [-0.11, mug-left]} # control law for lower boundary
-      - {double-sub: [0.11, mug-left]} # control law for upper boundary
+      - {double-sub: [-0.11, mug-left-itself]} # control law for lower boundary
+      - {double-sub: [0.11, mug-left-itself]} # control law for upper boundary
       - constraint-weight # weight of this constraint
-      - mug-left # expression used for Jacobian calcuation
+      - mug-left-itself # expression used for Jacobian calcuation
   - soft-constraint: 
-      - {double-sub: [-0.11, mug-behind]} # control law for lower boundary
-      - {double-sub: [0.11, mug-behind]} # control law for upper boundary
+      - {double-sub: [-0.08, mug-above-itself]} # control law for lower boundary
+      - {double-sub: [-0.06, mug-above-itself]} # control law for upper boundary
       - constraint-weight # weight of this constraint
-      - mug-behind # expression used for Jacobian calcuation
+      - mug-above-itself # expression used for Jacobian calcuation
 
 hard-constraints: [] # no hard constraints used in this motion

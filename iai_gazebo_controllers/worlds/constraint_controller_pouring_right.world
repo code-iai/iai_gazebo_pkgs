@@ -69,8 +69,8 @@
     </plugin>
 
     <plugin name="GiskardControlPlugin" filename="libGiskardControlPlugin.so">
-      <experimentFile>experiments/pouring-from-left-experiment.yaml</experimentFile>
-      <!--experimentFile>experiments/pouring-from-left-experiment-unconstrained-orientation.yaml</experimentFile-->
+      <!--experimentFile>experiments/pouring-from-left-experiment.yaml</experimentFile-->
+      <experimentFile>experiments/pouring-from-left-experiment-unconstrained-orientation.yaml</experimentFile>
     </plugin>
 
   </world>
