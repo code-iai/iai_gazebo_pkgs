@@ -1,0 +1,50 @@
+# definition of some nice short-cuts
+- unit-x: {vector3: [1, 0, 0]}
+- unit-y: {vector3: [0, 1, 0]}
+- unit-z: {vector3: [0, 0, 1]}
+- identity-rot: {axis-angle: [unit-x, 0]} 
+- zero-vec: {vector3: [0, 0, 0]}
+
+# definition of input transforms 
+- mug-frame:
+    cached-frame:
+      frame-mul:
+        - frame: [identity-rot, {vector3: [{input-var: 0}, 0, 0]}]
+        - frame: [identity-rot, {vector3: [0, {input-var: 1}, 0]}]
+        - frame: [identity-rot, {vector3: [0, 0, {input-var: 2}]}]
+        - frame: [{axis-angle: [unit-z, {input-var: 3}]}, zero-vec]
+        - frame: [{axis-angle: [unit-y, {input-var: 4}]}, zero-vec]
+        - frame: [{axis-angle: [unit-x, {input-var: 5}]}, zero-vec]
+- maker-frame:
+    cached-frame:
+      frame-mul:
+        - frame: [identity-rot, {vector3: [{input-var: 6}, 0, 0]}]
+        - frame: [identity-rot, {vector3: [0, {input-var: 7}, 0]}]
+        - frame: [identity-rot, {vector3: [0, 0, {input-var: 8}]}]
+        - frame: [{axis-angle: [unit-z, {input-var: 9}]}, zero-vec]
+        - frame: [{axis-angle: [unit-y, {input-var: 10}]}, zero-vec]
+        - frame: [{axis-angle: [unit-x, {input-var: 11}]}, zero-vec]
+
+# definition of features
+- mug-bottom: {origin-of: mug-frame}
+- mug-top: {transform-vector: [mug-frame, {vector3: [0, 0, 0.108]}]}
+- maker-top: {origin-of: maker-frame}
+
+# distance vector between top of maker and bottom of mug
+- mug-bottom-to-maker-top:
+    cached-vector: {vector-sub: [mug-bottom, maker-top]}
+- mug-top-to-maker-top:
+    cached-vector: {vector-sub: [mug-top, maker-top]}
+- mug-top-to-mug-bottom:
+    cached-vector: {vector-sub: [mug-top, mug-bottom]}
+
+# expressions used in constraints 
+- mug-bottom-behind-maker: {x-coord: mug-bottom-to-maker-top}
+- mug-bottom-left-maker: {y-coord: mug-bottom-to-maker-top}
+- mug-bottom-above-maker: {z-coord: mug-bottom-to-maker-top}
+- mug-top-behind-maker: {x-coord: mug-top-to-maker-top}
+- mug-top-left-maker: {y-coord: mug-top-to-maker-top}
+- mug-top-above-maker: {z-coord: mug-top-to-maker-top}
+- mug-behind-itself: {x-coord: mug-top-to-mug-bottom}
+- mug-left-itself: {y-coord: mug-top-to-mug-bottom}
+- mug-above-itself: {z-coord: mug-top-to-mug-bottom}

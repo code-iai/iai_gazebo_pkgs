@@ -4,7 +4,7 @@ sim-start-delay: 1.0
 
 # how long to wait after simulation start and before first movement
 # REASON: the simulated liquid needs to settle
-move-start-delay: 1.0
+move-start-delay: 5.0
 
 # name of object model controlled by controller
 controlled-model: Cup
