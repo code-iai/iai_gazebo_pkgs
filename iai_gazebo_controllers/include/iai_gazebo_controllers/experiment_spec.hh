@@ -16,8 +16,7 @@ namespace iai_gazebo_controllers
   class ExperimentSpec
   { 
     public:
-      double sim_start_delay_;
-      double move_start_delay_;
+      double sim_start_delay_, move_start_delay_, log_delay_;
       std::string controlled_model_, observed_model_;
       std::vector<ControllerSpec> controller_specs_;
   };

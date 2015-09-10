@@ -153,6 +153,10 @@ void GiskardControlPlugin::ReadExperimentSpec()
   sim_start_delay_ = exp_spec.sim_start_delay_;
   assert(sim_start_delay_ >= 0.0);
 
+  // making sure log-delay is valid
+  log_delay_ = exp_spec.log_delay_;
+  assert(log_delay_ >= 0.0);
+
   // making sure controlled model is valid
   controlled_model_ = world_->GetModel(exp_spec.controlled_model_);
   assert(controlled_model_.get());
@@ -224,7 +228,8 @@ void GiskardControlPlugin::DelaySimStart()
   std::cout << "Paused the world, starting sim in " << sim_start_delay_ << " sec.." << std::endl;
   usleep(sim_start_delay_ * 1000000);
   world_->SetPaused(false);
-//  usleep(logDelay * 1000000);
+  std::cout << "Restarted the world, start logging in " << log_delay_ << " sec.." << std::endl;
+  usleep(log_delay_ * 1000000);
   StartLogging();
 }
 
@@ -232,6 +237,7 @@ void GiskardControlPlugin::DelaySimStart()
 
 void GiskardControlPlugin::StartLogging()
 {
+  std::cout << "Start logging." << std::endl;
   util::LogRecord::Instance()->SetBasePath("logs");
   util::LogRecord::Instance()->Start("txt");
 }

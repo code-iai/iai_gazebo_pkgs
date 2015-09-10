@@ -1,10 +1,15 @@
 # how long to wait before starting the entire simulation
 # REASON: gazebo needs time spawn all objects
-sim-start-delay: 1.0
+sim-start-delay: 1.0 # in s
 
 # how long to wait after simulation start and before first movement
 # REASON: the simulated liquid needs to settle
-move-start-delay: 5.0
+move-start-delay: 3.0 # in s
+
+# how long to wait after simulation start and before start of logging
+# REASON: with a lot of simulated liquid it might cause collision events
+#         when settling; these events could corrupt the logs
+log-delay: 2.0 # in s
 
 # name of object model controlled by controller
 controlled-model: Cup

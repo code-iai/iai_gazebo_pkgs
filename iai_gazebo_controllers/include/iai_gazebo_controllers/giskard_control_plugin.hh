@@ -91,7 +91,7 @@ namespace iai_gazebo_controllers
       giskard::QPController controller_;
       std::deque<Eigen::VectorXd> cmd_buffer_;
       size_t max_cmd_buffer_size_;
-      double sim_start_delay_, move_start_delay_;
+      double sim_start_delay_, move_start_delay_, log_delay_;
 
       KDL::Expression<KDL::Frame>::Ptr controlled_frame_;
       giskard::Scope scope_;
