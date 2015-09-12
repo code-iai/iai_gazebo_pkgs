@@ -140,6 +140,7 @@ void GiskardControlPlugin::ReadExperimentSpec()
   // getting file name out of SDF
   std::string experiment_file;
   assert(GetSDFValue("experimentFile", self_description_, experiment_file));
+  std::cout << "Reading experiment file: " << experiment_file << std::endl;
 
   // parsing experiment specs
   YAML::Node node = YAML::LoadFile(experiment_file);
@@ -172,6 +173,7 @@ void GiskardControlPlugin::ReadExperimentSpec()
   // parsing all controller specs
   for(size_t i=0; i<exp_spec.controller_specs_.size(); ++i)
   {
+    std::cout << "Reading motion file: " << exp_spec.controller_specs_[i].controller_file_ << std::endl;
     node = YAML::LoadFile(exp_spec.controller_specs_[i].controller_file_);
     
     // parsing controller spec and making sure it compiles
