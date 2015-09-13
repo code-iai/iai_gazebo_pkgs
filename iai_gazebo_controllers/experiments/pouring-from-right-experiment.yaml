@@ -1,7 +1,7 @@
 controlled-model: Cup
 controller-specs:
 - {controller-file: motions/tiltback.yaml, max-cmd-buffer-size: 100}
-- {controller-file: motions/tiltbottle.yaml, max-cmd-buffer-size: 858}
+- {controller-file: motions/tiltbottle.yaml, max-cmd-buffer-size: 2060}
 - {controller-file: motions/tiltback.yaml, max-cmd-buffer-size: 100}
 log-delay: 2.0
 move-start-delay: 3.0
