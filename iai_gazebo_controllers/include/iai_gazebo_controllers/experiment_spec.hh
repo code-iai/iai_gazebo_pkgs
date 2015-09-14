@@ -11,6 +11,7 @@ namespace iai_gazebo_controllers
     public:
       std::string controller_file_;
       size_t max_twist_buffer_size_;
+      double min_angular_vel_threshold_, min_translational_vel_threshold_;
   };
 
   class ExperimentSpec

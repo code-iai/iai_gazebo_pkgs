@@ -117,6 +117,10 @@ void GiskardControlPlugin::InitInternals(gazebo::physics::WorldPtr world, sdf::E
 void GiskardControlPlugin::InitNextController()
 {
   assert(controller_specs_.size() > 0);
+  assert(max_twist_buffer_sizes_.size() >0);
+  assert(min_angular_vel_thresholds_.size() > 0);
+  assert(min_translational_vel_thresholds_.size() > 0);
+
   controller_ = giskard::generate(controller_specs_[0]);
   scope_ = giskard::generate(controller_specs_[0].scope_);
   // TODO: get this string from somewhere
@@ -126,6 +130,12 @@ void GiskardControlPlugin::InitNextController()
   twist_buffer_.clear();
   max_twist_buffer_size_ = max_twist_buffer_sizes_[0];
   max_twist_buffer_sizes_.erase(max_twist_buffer_sizes_.begin());
+
+  min_angular_vel_threshold_ = min_angular_vel_thresholds_[0];
+  min_angular_vel_thresholds_.erase(min_angular_vel_thresholds_.begin());
+
+  min_translational_vel_threshold_ = min_translational_vel_thresholds_[0];
+  min_translational_vel_thresholds_.erase(min_translational_vel_thresholds_.begin());
 
   // TODO: get this number from somewhere
   assert(controller_.start(GetObservables(), 10));
@@ -182,6 +192,9 @@ void GiskardControlPlugin::ReadExperimentSpec()
     controller_specs_.push_back(controller_spec);
 
     max_twist_buffer_sizes_.push_back(exp_spec.controller_specs_[i].max_twist_buffer_size_);
+
+    min_angular_vel_thresholds_.push_back(exp_spec.controller_specs_[i].min_angular_vel_threshold_);
+    min_translational_vel_thresholds_.push_back(exp_spec.controller_specs_[i].min_translational_vel_threshold_);
   }
 }
 
@@ -203,23 +216,21 @@ void GiskardControlPlugin::InitGazeboCommunication()
 bool GiskardControlPlugin::MotionFinished() const
 {
   assert(max_twist_buffer_size_ > 0);
+  assert(min_angular_vel_threshold_ > 0.0);
+  assert(min_translational_vel_threshold_ > 0.0);
 
   if(twist_buffer_.size() != max_twist_buffer_size_)
     return false;
 
-  // TODO: get these numbers from somewhere
-  double min_translational_velocity = 0.01;
-  double min_angular_velocity = 0.05;
-
   for(std::deque<iai_gazebo_controllers::Twist>::const_iterator it = twist_buffer_.begin(); 
       it!=twist_buffer_.end(); ++it)
-    if ((std::abs(it->linear_velocity_.x) > std::abs(min_translational_velocity)) ||
-        (std::abs(it->linear_velocity_.y) > std::abs(min_translational_velocity)) ||
-        (std::abs(it->linear_velocity_.z) > std::abs(min_translational_velocity)))
+    if ((std::abs(it->linear_velocity_.x) > std::abs(min_translational_vel_threshold_)) ||
+        (std::abs(it->linear_velocity_.y) > std::abs(min_translational_vel_threshold_)) ||
+        (std::abs(it->linear_velocity_.z) > std::abs(min_translational_vel_threshold_)))
       return false;
-    else if ((std::abs(it->angular_velocity_.x) > std::abs(min_angular_velocity)) ||
-             (std::abs(it->angular_velocity_.y) > std::abs(min_angular_velocity)) ||
-             (std::abs(it->angular_velocity_.z) > std::abs(min_angular_velocity)))
+    else if ((std::abs(it->angular_velocity_.x) > std::abs(min_angular_vel_threshold_)) ||
+             (std::abs(it->angular_velocity_.y) > std::abs(min_angular_vel_threshold_)) ||
+             (std::abs(it->angular_velocity_.z) > std::abs(min_angular_vel_threshold_)))
       return false;
 
   return true;

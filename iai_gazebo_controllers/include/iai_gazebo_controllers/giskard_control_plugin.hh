@@ -89,9 +89,12 @@ namespace iai_gazebo_controllers
       gazebo::physics::ModelPtr controlled_model_, observed_model_;
       std::vector<giskard::QPControllerSpec> controller_specs_;
       std::vector<size_t> max_twist_buffer_sizes_;
+      std::vector<double> min_angular_vel_thresholds_;
+      std::vector<double> min_translational_vel_thresholds_;
       giskard::QPController controller_;
       std::deque<iai_gazebo_controllers::Twist> twist_buffer_;
       size_t max_twist_buffer_size_;
+      double min_angular_vel_threshold_, min_translational_vel_threshold_;
       double sim_start_delay_, move_start_delay_, log_delay_;
 
       KDL::Expression<KDL::Frame>::Ptr controlled_frame_;

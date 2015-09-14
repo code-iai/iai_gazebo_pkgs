@@ -22,7 +22,13 @@ observed-model: PancakeMaker
 controller-specs:
  - controller-file: motions/moveabovepan-break.yaml
    max-twist-buffer-size: 100
+   min-angular-vel-threshold: 0.05
+   min-translational-vel-threshold: 0.01
  - controller-file: motions/tiltbottle-break.yaml
+   min-angular-vel-threshold: 0.05
+   min-translational-vel-threshold: 0.01
    max-twist-buffer-size: 2000
  - controller-file: motions/tiltback-break.yaml
+   min-angular-vel-threshold: 0.05
+   min-translational-vel-threshold: 0.01
    max-twist-buffer-size: 1000
