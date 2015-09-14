@@ -59,6 +59,20 @@ namespace iai_gazebo_controllers
           const gazebo::math::Vector3& angular_velocity) :
         linear_velocity_(linear_velocity), angular_velocity_(angular_velocity) {}
 
+      std::string to_string() const
+      {
+        std::string result;
+
+        result += boost::lexical_cast<std::string>(linear_velocity_.x) + " ";
+        result += boost::lexical_cast<std::string>(linear_velocity_.y) + " ";
+        result += boost::lexical_cast<std::string>(linear_velocity_.z) + " ";
+        result += boost::lexical_cast<std::string>(angular_velocity_.x) + " ";
+        result += boost::lexical_cast<std::string>(angular_velocity_.y) + " ";
+        result += boost::lexical_cast<std::string>(angular_velocity_.z);
+
+        return result;
+      }
+
       gazebo::math::Vector3 linear_velocity_, angular_velocity_;
   };
 
