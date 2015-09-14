@@ -1,8 +1,8 @@
 controlled-model: Cup
 controller-specs:
-- {controller-file: motions/tiltback.yaml, max-cmd-buffer-size: 100}
-- {controller-file: motions/tiltbottle.yaml, max-cmd-buffer-size: 2862}
-- {controller-file: motions/tiltback.yaml, max-cmd-buffer-size: 100}
+- {controller-file: motions/works/tiltback.yaml, max-cmd-buffer-size: 100}
+- {controller-file: motions/works/tiltbottle.yaml, max-cmd-buffer-size: 2862}
+- {controller-file: motions/works/tiltback.yaml, max-cmd-buffer-size: 100}
 log-delay: 2.0
 move-start-delay: 3.0
 observed-model: PancakeMaker
