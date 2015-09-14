@@ -209,7 +209,7 @@ bool GiskardControlPlugin::MotionFinished() const
 
   // TODO: get these numbers from somewhere
   double min_translational_velocity = 0.01;
-  double min_angular_velocity = 0.02;
+  double min_angular_velocity = 0.05;
 
   for(std::deque<iai_gazebo_controllers::Twist>::const_iterator it = twist_buffer_.begin(); 
       it!=twist_buffer_.end(); ++it)
