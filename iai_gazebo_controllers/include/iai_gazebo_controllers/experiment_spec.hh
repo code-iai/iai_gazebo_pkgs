@@ -10,7 +10,7 @@ namespace iai_gazebo_controllers
   {
     public:
       std::string controller_file_;
-      size_t max_cmd_buffer_size_;
+      size_t max_twist_buffer_size_;
   };
 
   class ExperimentSpec

@@ -9,8 +9,8 @@ namespace YAML
   inline bool is_controller_spec(const Node& node)
   {
     return node.IsMap() && (node.size() == 2) && node["controller-file"] &&
-        node["controller-file"].IsScalar() && node["max-cmd-buffer-size"] &&
-        node["max-cmd-buffer-size"].IsScalar();
+        node["controller-file"].IsScalar() && node["max-twist-buffer-size"] &&
+        node["max-twist-buffer-size"].IsScalar();
   }
 
   inline bool is_experiment_spec(const Node& node)
@@ -32,7 +32,7 @@ namespace YAML
     { 
       Node node; 
       node["controller-file"] = rhs.controller_file_;
-      node["max-cmd-buffer-size"] = rhs.max_cmd_buffer_size_;
+      node["max-twist-buffer-size"] = rhs.max_twist_buffer_size_;
       return node; 
     } 
    
@@ -42,7 +42,7 @@ namespace YAML
         return false; 
    
       rhs.controller_file_ = node["controller-file"].as<std::string>();
-      rhs.max_cmd_buffer_size_ = node["max-cmd-buffer-size"].as<size_t>();
+      rhs.max_twist_buffer_size_ = node["max-twist-buffer-size"].as<size_t>();
  
       return true; 
     } 

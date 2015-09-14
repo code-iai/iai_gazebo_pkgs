@@ -42,6 +42,7 @@
 #include <gazebo/gazebo.hh>
 #include <gazebo/transport/transport.hh>
 
+#include "iai_gazebo_controllers/gazebo_utils.hh"
 #include <giskard/giskard.hpp>
 #include <deque>
 #include <vector>
@@ -87,10 +88,10 @@ namespace iai_gazebo_controllers
       // internals of controller
       gazebo::physics::ModelPtr controlled_model_, observed_model_;
       std::vector<giskard::QPControllerSpec> controller_specs_;
-      std::vector<size_t> max_cmd_buffer_sizes_;
+      std::vector<size_t> max_twist_buffer_sizes_;
       giskard::QPController controller_;
-      std::deque<Eigen::VectorXd> cmd_buffer_;
-      size_t max_cmd_buffer_size_;
+      std::deque<iai_gazebo_controllers::Twist> twist_buffer_;
+      size_t max_twist_buffer_size_;
       double sim_start_delay_, move_start_delay_, log_delay_;
 
       KDL::Expression<KDL::Frame>::Ptr controlled_frame_;

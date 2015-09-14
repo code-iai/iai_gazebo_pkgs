@@ -34,7 +34,6 @@
  *  POSSIBILITY OF SUCH DAMAGE.
  *********************************************************************/
 #include "iai_gazebo_controllers/giskard_control_plugin.hh"
-#include "iai_gazebo_controllers/gazebo_utils.hh"
 #include <iai_gazebo_controllers/yaml_parsing.hh>
 #include <gazebo/msgs/msgs.hh>
 #include <gazebo/util/LogRecord.hh>
@@ -97,6 +96,7 @@ void GiskardControlPlugin::UpdateCallback(const common::UpdateInfo& info)
   // TODO: to sth smarter than just dying
   assert(controller_.update(GetObservables(), 10));
 
+
   SetCommand(GetControlledJacobian().data * controller_.get_command());
 }
 
@@ -123,9 +123,9 @@ void GiskardControlPlugin::InitNextController()
   controlled_frame_ = scope_.find_frame_expression("mug-frame");
   controller_specs_.erase(controller_specs_.begin());
 
-  cmd_buffer_.clear();
-  max_cmd_buffer_size_ = max_cmd_buffer_sizes_[0];
-  max_cmd_buffer_sizes_.erase(max_cmd_buffer_sizes_.begin());
+  twist_buffer_.clear();
+  max_twist_buffer_size_ = max_twist_buffer_sizes_[0];
+  max_twist_buffer_sizes_.erase(max_twist_buffer_sizes_.begin());
 
   // TODO: get this number from somewhere
   assert(controller_.start(GetObservables(), 10));
@@ -181,7 +181,7 @@ void GiskardControlPlugin::ReadExperimentSpec()
     giskard::generate(controller_spec);
     controller_specs_.push_back(controller_spec);
 
-    max_cmd_buffer_sizes_.push_back(exp_spec.controller_specs_[i].max_cmd_buffer_size_);
+    max_twist_buffer_sizes_.push_back(exp_spec.controller_specs_[i].max_twist_buffer_size_);
   }
 }
 
@@ -202,22 +202,25 @@ void GiskardControlPlugin::InitGazeboCommunication()
 
 bool GiskardControlPlugin::MotionFinished() const
 {
-  assert(max_cmd_buffer_size_ > 0);
+  assert(max_twist_buffer_size_ > 0);
 
-  if(cmd_buffer_.size() != max_cmd_buffer_size_)
+  if(twist_buffer_.size() != max_twist_buffer_size_)
     return false;
 
-  double min_trans_vel = 0.01;
-  double min_ang_vel = 0.02;
+  // TODO: get these numbers from somewhere
+  double min_translational_velocity = 0.01;
+  double min_angular_velocity = 0.02;
 
-  for(std::deque<Eigen::VectorXd>::const_iterator it = cmd_buffer_.begin(); it!=cmd_buffer_.end(); ++it)
-    for(size_t row = 0; row < it->rows(); ++row)
-      // TODO: sth more sophisticated here, please
-      // TODO: get this number from somewhere
-      if((0<row) && (row<3) && (std::abs(it->operator()(row)) > min_trans_vel))
-        return false;
-      else if ((3<row) && (row<6) && (std::abs(it->operator()(row)) > min_ang_vel))
-        return false;
+  for(std::deque<iai_gazebo_controllers::Twist>::const_iterator it = twist_buffer_.begin(); 
+      it!=twist_buffer_.end(); ++it)
+    if ((std::abs(it->linear_velocity_.x) > std::abs(min_translational_velocity)) ||
+        (std::abs(it->linear_velocity_.y) > std::abs(min_translational_velocity)) ||
+        (std::abs(it->linear_velocity_.z) > std::abs(min_translational_velocity)))
+      return false;
+    else if ((std::abs(it->angular_velocity_.x) > std::abs(min_angular_velocity)) ||
+             (std::abs(it->angular_velocity_.y) > std::abs(min_angular_velocity)) ||
+             (std::abs(it->angular_velocity_.z) > std::abs(min_angular_velocity)))
+      return false;
 
   return true;
 }
@@ -291,18 +294,22 @@ KDL::Jacobian GiskardControlPlugin::GetControlledJacobian()
 
 void GiskardControlPlugin::SetCommand(const Eigen::VectorXd& command, bool with_logging)
 {
-  controlled_model_->GetLinks()[0]->SetLinearVel(gazebo::math::Vector3(command(0), command(1), command(2)));
-  controlled_model_->GetLinks()[0]->SetAngularVel(gazebo::math::Vector3(command(3), command(4), command(5)));
-
-  // remembering command
+  // remembering current of controlled model
   if(with_logging)
   {
-    assert(max_cmd_buffer_size_ > 0);
-    if(cmd_buffer_.size() >= max_cmd_buffer_size_)
-      cmd_buffer_.pop_back();
+    assert(max_twist_buffer_size_ > 0);
+    if(twist_buffer_.size() >= max_twist_buffer_size_)
+      twist_buffer_.pop_back();
 
-    cmd_buffer_.push_front(command);
+    Twist twist(controlled_model_->GetLinks()[0]->GetWorldLinearVel(),
+        controlled_model_->GetLinks()[0]->GetRelativeAngularVel());
+
+    twist_buffer_.push_front(twist);
   }
+
+  // commanding new desired twist
+  controlled_model_->GetLinks()[0]->SetLinearVel(gazebo::math::Vector3(command(0), command(1), command(2)));
+  controlled_model_->GetLinks()[0]->SetAngularVel(gazebo::math::Vector3(command(3), command(4), command(5)));
 }
 
 //////////////////////////////////////////////////

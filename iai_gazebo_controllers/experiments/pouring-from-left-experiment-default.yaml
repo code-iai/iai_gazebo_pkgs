@@ -21,8 +21,8 @@ observed-model: PancakeMaker
 # REASON: after finishing a motion, we might have to wait for an effect to happen, i.e. liquid falling
 controller-specs:
  - controller-file: motions/moveabovepan.yaml
-   max-cmd-buffer-size: 100
+   max-twist-buffer-size: 100
  - controller-file: motions/tiltbottle.yaml
-   max-cmd-buffer-size: 2000
+   max-twist-buffer-size: 2000
  - controller-file: motions/tiltback.yaml
-   max-cmd-buffer-size: 1000
+   max-twist-buffer-size: 1000
