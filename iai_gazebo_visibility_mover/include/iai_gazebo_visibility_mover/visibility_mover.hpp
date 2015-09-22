@@ -14,6 +14,10 @@ namespace iai_gazebo
 
     private:
       ros::NodeHandle nh_;
+      ros::ServiceClient spawn_urdf_client_;
+      std::string robot_description_;
+
+      bool spawnUrdf();
   };
 }
 
