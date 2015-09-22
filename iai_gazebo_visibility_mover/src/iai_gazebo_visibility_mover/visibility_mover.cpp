@@ -38,6 +38,9 @@ bool VisibilityMover::start()
     return false;
   }
 
+  trigger_server_ = nh_.advertiseService("trigger", 
+      &VisibilityMover::trigger_callback, this);
+
   joint_state_subscriber_ = nh_.subscribe("joint_states", 1, 
       &VisibilityMover::joint_state_callback, this);
 
@@ -103,6 +106,12 @@ bool VisibilityMover::set_joint_states()
 void VisibilityMover::joint_state_callback(const sensor_msgs::JointState::ConstPtr& msg)
 {
   last_q_ = *msg;
+}
 
-  set_joint_states();
+bool VisibilityMover::trigger_callback(std_srvs::Trigger::Request& request,
+    std_srvs::Trigger::Response& response)
+{
+  response.success = set_joint_states();
+
+  return response.success;
 }
