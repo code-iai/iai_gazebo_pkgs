@@ -29,6 +29,9 @@ bool VisibilityMover::start()
     return false;
   }
 
+  joint_state_subscriber_ = nh_.subscribe("joint_states", 1, 
+      &VisibilityMover::joint_state_callback, this);
+
   // TODO: remove this from here and put it into the service callback
   if(!spawnUrdf())
     return false;
@@ -60,4 +63,9 @@ bool VisibilityMover::spawnUrdf()
         nh_.getNamespace().c_str());
     return false;
   }
+}
+
+void VisibilityMover::joint_state_callback(const sensor_msgs::JointState::ConstPtr& msg)
+{
+  last_q_ = *msg;
 }

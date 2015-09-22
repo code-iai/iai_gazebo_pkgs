@@ -2,9 +2,13 @@
   <include file="$(find iai_boxy_description)/launch/upload_boxy.launch">
     <arg name="param-name" value="iai_gazebo_visibility_mover/robot_description"/>
   </include>
+
+  <include file="$(find iai_boxy_bringup)/launch/boxy_sim.launch"/>
  
   <node pkg="iai_gazebo_visibility_mover" type="iai_gazebo_visibility_mover"
-        name="iai_gazebo_visibility_mover" output="screen"/>
+        name="iai_gazebo_visibility_mover" output="screen">
+    <remap from="~joint_states" to="/joint_states"/>
+  </node>
 
   <include file="$(find gazebo_ros)/launch/empty_world.launch">
     <arg name="use_sim_time" value="false"/>

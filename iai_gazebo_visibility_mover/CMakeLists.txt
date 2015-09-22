@@ -1,7 +1,7 @@
 cmake_minimum_required(VERSION 2.8.3)
 project(iai_gazebo_visibility_mover)
 
-find_package(catkin REQUIRED roscpp gazebo_msgs)
+find_package(catkin REQUIRED roscpp gazebo_msgs sensor_msgs)
 
 catkin_package(
   INCLUDE_DIRS include
