@@ -15,13 +15,15 @@ namespace iai_gazebo
 
     private:
       ros::NodeHandle nh_;
-      ros::ServiceClient spawn_urdf_client_;
+      ros::ServiceClient spawn_urdf_client_, set_joint_states_client_;
       ros::Subscriber joint_state_subscriber_;
       std::string robot_description_;
       sensor_msgs::JointState last_q_;
 
       void joint_state_callback(const sensor_msgs::JointState::ConstPtr& msg);
+
       bool spawnUrdf();
+      bool set_joint_states();
   };
 }
 

@@ -1,5 +1,6 @@
 #include <iai_gazebo_visibility_mover/visibility_mover.hpp>
 #include <gazebo_msgs/SpawnModel.h>
+#include <gazebo_msgs/SetModelConfiguration.h>
 
 using namespace iai_gazebo;
 
@@ -25,6 +26,14 @@ bool VisibilityMover::start()
   if(!spawn_urdf_client_.waitForExistence(ros::Duration(2.0)))
   {
     ROS_ERROR("[%s] Could not connect to service '/gazebo/spawn_urdf_model'",
+        nh_.getNamespace().c_str());
+    return false;
+  }
+
+  set_joint_states_client_ = nh_.serviceClient<gazebo_msgs::SetModelConfiguration>("/gazebo/set_model_configuration");
+  if(!set_joint_states_client_.waitForExistence(ros::Duration(2.0)))
+  {
+    ROS_ERROR("[%s] Could not connect to service '/gazebo/set_model_configuration'",
         nh_.getNamespace().c_str());
     return false;
   }
@@ -65,7 +74,35 @@ bool VisibilityMover::spawnUrdf()
   }
 }
 
+bool VisibilityMover::set_joint_states()
+{
+  gazebo_msgs::SetModelConfiguration srv;
+  srv.request.model_name = "Boxy";
+  srv.request.urdf_param_name = nh_.getNamespace() + "/robot_description";
+  srv.request.joint_names = last_q_.name;
+  srv.request.joint_positions = last_q_.position;
+
+  if(set_joint_states_client_.call(srv))
+  {
+    if(!srv.response.success)
+    {
+      ROS_ERROR("[%s] Set Joint States unsuccessful: %s", nh_.getNamespace().c_str(),
+        srv.response.status_message.c_str()); 
+      return false;
+    }
+    else 
+      return true;
+  }
+  else
+  {
+    ROS_ERROR("[%s] Failed to call service '/gazebo/set_model_configuration'.",
+        nh_.getNamespace().c_str());
+    return false;
+  }
+}
 void VisibilityMover::joint_state_callback(const sensor_msgs::JointState::ConstPtr& msg)
 {
   last_q_ = *msg;
+
+  set_joint_states();
 }
