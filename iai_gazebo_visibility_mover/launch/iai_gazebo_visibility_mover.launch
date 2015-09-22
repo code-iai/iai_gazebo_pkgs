@@ -1,0 +1,4 @@
+<launch>
+  <node pkg="iai_gazebo_visibility_mover" type="iai_gazebo_visibility_mover"
+        name="iai_gazebo_visibility_mover" output="screen"/>
+</launch>
