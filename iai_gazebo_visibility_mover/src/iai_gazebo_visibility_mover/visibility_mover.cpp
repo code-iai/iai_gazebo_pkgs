@@ -131,7 +131,7 @@ bool VisibilityMover::trigger_callback(std_srvs::Trigger::Request& request,
   if(!set_joint_states())
     return false;
 
-  if(!step_simulation())
+  if(!step_simulation(1))
     return false;
 
   response.success = true;
