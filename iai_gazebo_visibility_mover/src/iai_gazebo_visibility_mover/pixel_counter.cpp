@@ -1,5 +1,6 @@
 #include <iai_gazebo_visibility_mover/pixel_counter.hpp>
 #include <opencv2/highgui/highgui.hpp>
+#include "opencv2/imgproc/imgproc.hpp"
 #include <sensor_msgs/image_encodings.h>
 #include <std_msgs/UInt64.h>
 
@@ -38,13 +39,20 @@ void PixelCounter::image_callback(const sensor_msgs::Image::ConstPtr& msg)
     return;
   }
 
-  std_msgs::UInt64 out_msg;
-  out_msg.data = count_pixels(cv_ptr);
-  blue_pixel_publisher_.publish(out_msg);
-}
+  std::vector<cv::Mat> spl(3);
+  cv::split(cv_ptr->image, spl);
 
-size_t PixelCounter::count_pixels(const cv_bridge::CvImagePtr& img)
-{
-  // TODO: implement me
-  return 125;
+  cv::Mat blue_channel_blur, blue_channel_thresh;
+  cv::medianBlur(spl[0].clone(), blue_channel_blur, 25);
+  cv::threshold(blue_channel_blur.clone(), blue_channel_thresh, 180, 255, 0);
+
+//  cv::imwrite("/tmp/images/original.jpg", cv_ptr->image);
+//  cv::imwrite("/tmp/images/blue_channel.jpg", spl[0]);
+//  cv::imwrite("/tmp/images/blue_channel_blur.jpg", blue_channel_blur);
+//  cv::imwrite("/tmp/images/blue_channel_thresh.jpg", blue_channel_thresh);
+
+  std_msgs::UInt64 out_msg;
+  out_msg.data = cv::countNonZero(blue_channel_thresh);
+  ROS_INFO_STREAM("[" << nh_.getNamespace() << "] Counted " << out_msg.data << " blue pixels.");
+  blue_pixel_publisher_.publish(out_msg);
 }

@@ -24,9 +24,6 @@ namespace iai_gazebo
 
       // Callbacks
       void image_callback(const sensor_msgs::Image::ConstPtr& msg);
-
-      // Auxs
-      size_t count_pixels(const cv_bridge::CvImagePtr& img);
   };
 }
 
