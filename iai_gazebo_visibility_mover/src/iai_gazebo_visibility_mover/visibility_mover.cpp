@@ -44,10 +44,9 @@ bool VisibilityMover::start()
   joint_state_subscriber_ = nh_.subscribe("joint_states", 1, 
       &VisibilityMover::joint_state_callback, this);
 
-  // TODO: remove this from here and put it into the service callback
   if(!spawnUrdf())
     return false;
-
+ 
   return true;
 }
 
@@ -85,6 +84,14 @@ bool VisibilityMover::set_joint_states()
   srv.request.joint_names = last_q_.name;
   srv.request.joint_positions = last_q_.position;
 
+  // DEBUG PRINTOUT
+  //std::string joint_names, joint_positions;
+  //for(size_t i=0; i<last_q_.name.size(); ++i)
+  //  joint_names += " " + last_q_.name[i];
+  //for(size_t i=0; i<last_q_.position.size(); ++i)
+  //  joint_positions += " " + boost::lexical_cast<std::string>(last_q_.position[i]);
+  //ROS_INFO_STREAM("Setting joint states\n" << joint_names << "\n" << joint_positions);
+
   if(set_joint_states_client_.call(srv))
   {
     if(!srv.response.success)
@@ -111,7 +118,11 @@ void VisibilityMover::joint_state_callback(const sensor_msgs::JointState::ConstP
 bool VisibilityMover::trigger_callback(std_srvs::Trigger::Request& request,
     std_srvs::Trigger::Response& response)
 {
-  response.success = set_joint_states();
+  response.success = false;
 
-  return response.success;
+  if(!set_joint_states())
+    return false;
+
+  response.success = true;
+  return true;
 }
