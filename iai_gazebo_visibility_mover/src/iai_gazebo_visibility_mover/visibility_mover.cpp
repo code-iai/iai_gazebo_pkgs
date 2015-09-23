@@ -1,6 +1,7 @@
 #include <iai_gazebo_visibility_mover/visibility_mover.hpp>
 #include <gazebo_msgs/SpawnModel.h>
 #include <gazebo_msgs/SetModelConfiguration.h>
+#include <gazebo/msgs/msgs.hh>
 
 using namespace iai_gazebo;
 
@@ -37,6 +38,10 @@ bool VisibilityMover::start()
         nh_.getNamespace().c_str());
     return false;
   }
+
+  gazebo::transport::NodePtr node = gazebo::transport::NodePtr(new gazebo::transport::Node());
+  node->Init();
+  world_control_publisher_ = node->Advertise<gazebo::msgs::WorldControl>("/gazebo/default/world_control");
 
   trigger_server_ = nh_.advertiseService("trigger", 
       &VisibilityMover::trigger_callback, this);
@@ -122,7 +127,22 @@ bool VisibilityMover::trigger_callback(std_srvs::Trigger::Request& request,
 
   if(!set_joint_states())
     return false;
+  // FIXME: find out why we sometimes need 2 of these
+  if(!set_joint_states())
+    return false;
+
+  if(!step_simulation())
+    return false;
 
   response.success = true;
+  return true;
+}
+
+bool VisibilityMover::step_simulation(size_t steps)
+{
+  gazebo::msgs::WorldControl msg;
+  msg.set_multi_step(steps);
+  world_control_publisher_->Publish(msg);
+
   return true;
 }
