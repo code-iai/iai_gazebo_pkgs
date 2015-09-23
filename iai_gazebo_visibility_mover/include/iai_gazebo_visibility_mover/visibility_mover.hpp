@@ -34,8 +34,9 @@ namespace iai_gazebo
 
       // Aux
       bool spawnUrdf();
-      bool set_joint_states();
+      bool set_joint_states(const sensor_msgs::JointState& q);
       bool step_simulation(size_t steps = 10);
+      bool target_visible(const sensor_msgs::JointState& q);
   };
 }
 

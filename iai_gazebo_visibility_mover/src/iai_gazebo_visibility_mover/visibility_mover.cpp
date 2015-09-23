@@ -81,13 +81,13 @@ bool VisibilityMover::spawnUrdf()
   }
 }
 
-bool VisibilityMover::set_joint_states()
+bool VisibilityMover::set_joint_states(const sensor_msgs::JointState& q)
 {
   gazebo_msgs::SetModelConfiguration srv;
   srv.request.model_name = "Boxy";
   srv.request.urdf_param_name = nh_.getNamespace() + "/robot_description";
-  srv.request.joint_names = last_q_.name;
-  srv.request.joint_positions = last_q_.position;
+  srv.request.joint_names = q.name;
+  srv.request.joint_positions = q.position;
 
   // DEBUG PRINTOUT
   //std::string joint_names, joint_positions;
@@ -125,16 +125,16 @@ bool VisibilityMover::trigger_callback(std_srvs::Trigger::Request& request,
 {
   response.success = false;
 
-  if(!set_joint_states())
-    return false;
-  // FIXME: find out why we sometimes need 2 of these
-  if(!set_joint_states())
-    return false;
+  if(target_visible(last_q_))
+  {
+    ROS_INFO("[%s] Target already visible. Not moving head.",
+        nh_.getNamespace().c_str());
+    response.success = true;
+    return true;
+  }
 
-  if(!step_simulation(1))
-    return false;
+  // FIXME: keep on implementing me
 
-  response.success = true;
   return true;
 }
 
@@ -143,6 +143,22 @@ bool VisibilityMover::step_simulation(size_t steps)
   gazebo::msgs::WorldControl msg;
   msg.set_multi_step(steps);
   world_control_publisher_->Publish(msg);
+
+  return true;
+}
+
+bool VisibilityMover::target_visible(const sensor_msgs::JointState& q)
+{
+  if(!set_joint_states(q))
+    return false;
+  // FIXME: find out why we sometimes need 2 of these
+  if(!set_joint_states(q))
+    return false;
+
+  if(!step_simulation(1))
+    return false;
+
+  // FIXME: keep on implementing me
 
   return true;
 }
