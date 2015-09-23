@@ -31,3 +31,9 @@ add_executable(iai_pixel_counter
 add_dependencies(iai_pixel_counter
   ${${PROJECT_NAME}_EXPORTED_TARGETS} ${catkin_EXPORTED_TARGETS})
 target_link_libraries(iai_pixel_counter ${catkin_LIBRARIES} ${GAZEBO_LIBRARIES})
+
+add_executable(opencv_player
+  src/${PROJECT_NAME}/opencv_player.cpp)
+add_dependencies(opencv_player
+  ${${PROJECT_NAME}_EXPORTED_TARGETS} ${catkin_EXPORTED_TARGETS})
+target_link_libraries(opencv_player ${catkin_LIBRARIES} ${GAZEBO_LIBRARIES})
