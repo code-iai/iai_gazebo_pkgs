@@ -52,6 +52,9 @@ bool VisibilityMover::start()
   if(!spawnUrdf())
     return false;
  
+  // HACK: plugin API of gazebo_ros unconditionally sets /use_sim_time, we undo it here
+  nh_.setParam("/use_sim_time", false);
+
   return true;
 }
 
