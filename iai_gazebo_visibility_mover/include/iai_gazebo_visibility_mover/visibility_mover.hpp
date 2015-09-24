@@ -33,10 +33,10 @@ namespace iai_gazebo
           std_srvs::Trigger::Response& response);
 
       // Aux
-      bool spawn_urdf(const std::string& urdf);
-      bool set_joint_states(const sensor_msgs::JointState& q);
+      bool spawn_urdf(const std::string& urdf, const std::string& robot_name);
+      bool set_joint_states(const sensor_msgs::JointState& q, const std::string& robot_name);
       bool step_simulation(size_t steps = 10);
-      bool target_visible(const sensor_msgs::JointState& q);
+      bool target_visible(const sensor_msgs::JointState& q, const std::string& robot_name);
   };
 }
 

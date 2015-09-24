@@ -49,18 +49,15 @@ bool VisibilityMover::start()
   joint_state_subscriber_ = nh_.subscribe("joint_states", 1, 
       &VisibilityMover::joint_state_callback, this);
 
-  if(!spawn_urdf(robot_description_))
-    return false;
- 
   return true;
 }
 
-bool VisibilityMover::spawn_urdf(const std::string& urdf)
+bool VisibilityMover::spawn_urdf(const std::string& urdf, const std::string& robot_name)
 {
   gazebo_msgs::SpawnModel srv;
-  srv.request.model_name = "Boxy";
+  srv.request.model_name = robot_name;
   srv.request.model_xml = urdf;
-  srv.request.robot_namespace = "boxy";
+  srv.request.robot_namespace = robot_name;
 
   bool result = false;
 
@@ -91,10 +88,10 @@ bool VisibilityMover::spawn_urdf(const std::string& urdf)
   return result;
 }
 
-bool VisibilityMover::set_joint_states(const sensor_msgs::JointState& q)
+bool VisibilityMover::set_joint_states(const sensor_msgs::JointState& q, const std::string& robot_name)
 {
   gazebo_msgs::SetModelConfiguration srv;
-  srv.request.model_name = "Boxy";
+  srv.request.model_name = robot_name;
   srv.request.urdf_param_name = nh_.getNamespace() + "/robot_description";
   srv.request.joint_names = q.name;
   srv.request.joint_positions = q.position;
@@ -125,6 +122,7 @@ bool VisibilityMover::set_joint_states(const sensor_msgs::JointState& q)
     return false;
   }
 }
+
 void VisibilityMover::joint_state_callback(const sensor_msgs::JointState::ConstPtr& msg)
 {
   last_q_ = *msg;
@@ -135,7 +133,7 @@ bool VisibilityMover::trigger_callback(std_srvs::Trigger::Request& request,
 {
   response.success = false;
 
-  if(target_visible(last_q_))
+  if(target_visible(last_q_, "boxy"))
   {
     ROS_INFO("[%s] Target already visible. Not moving head.",
         nh_.getNamespace().c_str());
@@ -157,12 +155,15 @@ bool VisibilityMover::step_simulation(size_t steps)
   return true;
 }
 
-bool VisibilityMover::target_visible(const sensor_msgs::JointState& q)
+bool VisibilityMover::target_visible(const sensor_msgs::JointState& q, const std::string& robot_name)
 {
-  if(!set_joint_states(q))
+  if(!spawn_urdf(robot_description_, robot_name))
+    return false;
+
+  if(!set_joint_states(q, robot_name))
     return false;
   // FIXME: find out why we sometimes need 2 of these
-  if(!set_joint_states(q))
+  if(!set_joint_states(q, robot_name))
     return false;
 
   if(!step_simulation(1))
