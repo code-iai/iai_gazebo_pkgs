@@ -49,21 +49,20 @@ bool VisibilityMover::start()
   joint_state_subscriber_ = nh_.subscribe("joint_states", 1, 
       &VisibilityMover::joint_state_callback, this);
 
-  if(!spawnUrdf())
+  if(!spawn_urdf(robot_description_))
     return false;
  
-  // HACK: plugin API of gazebo_ros unconditionally sets /use_sim_time, we undo it here
-  nh_.setParam("/use_sim_time", false);
-
   return true;
 }
 
-bool VisibilityMover::spawnUrdf()
+bool VisibilityMover::spawn_urdf(const std::string& urdf)
 {
   gazebo_msgs::SpawnModel srv;
   srv.request.model_name = "Boxy";
-  srv.request.model_xml = robot_description_;
+  srv.request.model_xml = urdf;
   srv.request.robot_namespace = "boxy";
+
+  bool result = false;
 
   if(spawn_urdf_client_.call(srv))
   {
@@ -71,17 +70,25 @@ bool VisibilityMover::spawnUrdf()
     {
       ROS_ERROR("[%s] Spawn Urdf unsuccessful: %s", nh_.getNamespace().c_str(),
         srv.response.status_message.c_str()); 
-      return false;
+      result = false;
     }
     else 
-      return true;
+      result = true;
   }
   else
   {
     ROS_ERROR("[%s] Failed to call service '/gazebo/spawn_urdf_model'.",
         nh_.getNamespace().c_str());
-    return false;
+    result = false;
   }
+
+  // HACK: The plugin API of gazebo_ros unconditionally sets /use_sim_time=true.
+  //       We do not want this because it srews with the ROS time. This happens
+  //       everytime we spawn a robot with such a plugin inside. Our robot has such
+  //       plugins. Hence, we undo it here, everytime.
+  nh_.setParam("/use_sim_time", false);
+
+  return result;
 }
 
 bool VisibilityMover::set_joint_states(const sensor_msgs::JointState& q)
