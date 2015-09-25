@@ -9,7 +9,8 @@
 using namespace iai_gazebo;
 
 VisibilityMover::VisibilityMover(const ros::NodeHandle& nh) :
-    nh_( nh )
+    nh_( nh ), robot_description_( "" ), pixel_count_( 0 ),
+    has_new_pixel_count_( false )
 {
 }
 
@@ -75,6 +76,9 @@ bool VisibilityMover::start()
 
   joint_state_subscriber_ = nh_.subscribe("joint_states", 1, 
       &VisibilityMover::joint_state_callback, this);
+
+  pixel_count_subscriber_ = nh_.subscribe("pixel_count", 1, 
+      &VisibilityMover::pixel_count_callback, this);
 
   if(!spawn_urdf(robot_description_, "boxy"))
     return false;
@@ -198,12 +202,12 @@ bool VisibilityMover::set_joint_states(const sensor_msgs::JointState& q, const s
   srv.request.joint_positions = q.position;
 
   // DEBUG PRINTOUT
-  std::string joint_names, joint_positions;
-  for(size_t i=0; i<q.name.size(); ++i)
-    joint_names += " " + q.name[i];
-  for(size_t i=0; i<q.position.size(); ++i)
-    joint_positions += " " + boost::lexical_cast<std::string>(q.position[i]);
-  ROS_INFO_STREAM("Setting joint states\n" << joint_names << "\n" << joint_positions);
+  //std::string joint_names, joint_positions;
+  //for(size_t i=0; i<q.name.size(); ++i)
+  //  joint_names += " " + q.name[i];
+  //for(size_t i=0; i<q.position.size(); ++i)
+  //  joint_positions += " " + boost::lexical_cast<std::string>(q.position[i]);
+  //ROS_INFO_STREAM("Setting joint states\n" << joint_names << "\n" << joint_positions);
 
   for(size_t i=0; i<iterations; ++i)
   {
@@ -232,12 +236,18 @@ void VisibilityMover::joint_state_callback(const sensor_msgs::JointState::ConstP
   last_q_ = *msg;
 }
 
+void VisibilityMover::pixel_count_callback(const std_msgs::UInt64::ConstPtr& msg)
+{
+  has_new_pixel_count_ = true;
+  pixel_count_ = msg->data;
+}
+
 bool VisibilityMover::trigger_callback(std_srvs::Trigger::Request& request,
     std_srvs::Trigger::Response& response)
 {
   response.success = false;
 
-  if(target_visible(last_q_, "boxy"))
+  if(target_visible(last_q_, "boxy", 0.05))
   {
     ROS_INFO("[%s] Target already visible. Not moving head.",
         nh_.getNamespace().c_str());
@@ -259,8 +269,10 @@ bool VisibilityMover::step_simulation(size_t steps)
   return true;
 }
 
-bool VisibilityMover::target_visible(const sensor_msgs::JointState& q, const std::string& robot_name)
+bool VisibilityMover::target_visible(const sensor_msgs::JointState& q, const std::string& robot_name,
+    double threshold)
 {
+  // ACQUIRE PRE-PIXEL-COUNT
   size_t setting_iterations = 2;
   size_t sim_steps = 1;
 
@@ -273,14 +285,17 @@ bool VisibilityMover::target_visible(const sensor_msgs::JointState& q, const std
   if(!step_simulation(sim_steps))
     return false;
 
+  wait_for_pixel_count();
+  size_t pre_pixel_count = pixel_count_;
+
   sensor_msgs::JointState left_arm_away;
   for(size_t i=0; i<7; ++i)
   {
     left_arm_away.name.push_back("left_arm_" + boost::lexical_cast<std::string>(i) + "_joint");
     left_arm_away.position.push_back(0.0);
   }
-  // FIXME: keep on implementing me
 
+  // ACQUIRE POST-PIXEL-COUNT
   if(!set_joint_states(left_arm_away, robot_name, setting_iterations))
     return false;
 
@@ -290,7 +305,14 @@ bool VisibilityMover::target_visible(const sensor_msgs::JointState& q, const std
   if(!step_simulation(sim_steps))
     return false;
 
-  return true;
+  wait_for_pixel_count();
+  size_t post_pixel_count = pixel_count_;
+
+  // DECISION
+  int delta = static_cast<int>(post_pixel_count) - static_cast<int>(pre_pixel_count);
+  double ratio = static_cast<double>(delta) / static_cast<double>(post_pixel_count);
+  ROS_DEBUG_STREAM("delta: " << delta << ", ratio:" << ratio << ", treshold: " << threshold);
+  return (post_pixel_count > 0) && (ratio < threshold);
 }
 
 bool VisibilityMover::clear_body_wrenches()
@@ -337,3 +359,12 @@ bool VisibilityMover::clear_body_wrenches()
 
   return true;
 }
+
+void VisibilityMover::wait_for_pixel_count()
+{
+  has_new_pixel_count_ = false;
+  
+  while(ros::ok() && !has_new_pixel_count_)
+    ros::spinOnce();
+}
+

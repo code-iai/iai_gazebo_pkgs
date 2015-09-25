@@ -26,7 +26,7 @@ bool PixelCounter::start()
 
 void PixelCounter::image_callback(const sensor_msgs::Image::ConstPtr& msg)
 {
-  ROS_INFO_STREAM("[" << nh_.getNamespace() << "] Processing image.");
+  ROS_DEBUG_STREAM("[" << nh_.getNamespace() << "] Processing image.");
 
   cv_bridge::CvImagePtr cv_ptr;
   try
