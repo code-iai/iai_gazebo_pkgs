@@ -1,5 +1,11 @@
 <launch>
-  <include file="$(find iai_boxy_bringup)/launch/boxy_sim.launch"/>
+  <rosparam command="load"
+      file="$(find iai_gazebo_visibility_mover)/config/boxy_start_config.yaml"
+      ns="loopback_controllers"/> 
+
+  <include file="$(find iai_boxy_bringup)/launch/boxy_sim.launch">
+    <arg name="upload-default-start-config" value="false"/>
+  </include>
 
   <node pkg="iai_gazebo_visibility_mover" type="iai_gazebo_visibility_mover"
         name="iai_gazebo_visibility_mover" output="screen">
