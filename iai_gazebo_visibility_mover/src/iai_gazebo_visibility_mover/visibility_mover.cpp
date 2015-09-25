@@ -208,14 +208,15 @@ bool VisibilityMover::find_model(const std::string& robot_name)
   return result;
 }
 
-bool VisibilityMover::set_joint_states(const sensor_msgs::JointState& q, const std::string& robot_name,
-    size_t iterations)
+bool VisibilityMover::set_joint_states(const std::map<std::string, double>& q, 
+    const std::string& robot_name, size_t iterations)
 {
+  sensor_msgs::JointState qmsg = to_msg(q);
   gazebo_msgs::SetModelConfiguration srv;
   srv.request.model_name = robot_name;
   srv.request.urdf_param_name = nh_.getNamespace() + "/robot_description";
-  srv.request.joint_names = q.name;
-  srv.request.joint_positions = q.position;
+  srv.request.joint_names = qmsg.name;
+  srv.request.joint_positions = qmsg.position;
 
   // DEBUG PRINTOUT
   //std::string joint_names, joint_positions;
@@ -273,7 +274,9 @@ bool VisibilityMover::trigger_callback(std_srvs::Trigger::Request& request,
 
   response.success = false;
 
-  if(target_visible(last_q_, robot_name, threshold))
+  std::map<std::string, double> last_q = to_map(last_q_);
+
+  if(target_visible(last_q, robot_name, threshold))
   {
     ROS_INFO("[%s] Target already visible. Not moving head.",
         nh_.getNamespace().c_str());
@@ -281,17 +284,13 @@ bool VisibilityMover::trigger_callback(std_srvs::Trigger::Request& request,
     return true;
   }
 
-  // FIXME: merge alternative_configs_ with last_q_
   for(size_t i=0; i<alternative_configs_.size(); ++i)
   {
-    if(!set_joint_states(last_q_, robot_name, setting_iterations))
-      return true;
-
-    if(target_visible(alternative_configs_[i], robot_name, threshold))
+    if(target_visible(merge_configs(last_q, alternative_configs_[i]), robot_name, threshold))
     {
       ROS_INFO("[%s] Target already visible in alternative config. Moving head.",
           nh_.getNamespace().c_str());
-      std::cout << alternative_configs_[i] << std::endl;
+//      std::cout << alternative_configs_[i] << std::endl;
       response.success = true;
       return true;
     }
@@ -309,7 +308,7 @@ bool VisibilityMover::step_simulation(size_t steps)
   return true;
 }
 
-bool VisibilityMover::target_visible(const sensor_msgs::JointState& q, const std::string& robot_name,
+bool VisibilityMover::target_visible(const std::map<std::string, double>& q, const std::string& robot_name,
     double threshold)
 {
   // ACQUIRE PRE-PIXEL-COUNT
@@ -327,15 +326,14 @@ bool VisibilityMover::target_visible(const sensor_msgs::JointState& q, const std
   wait_for_pixel_count();
   size_t pre_pixel_count = pixel_count_;
 
-  sensor_msgs::JointState left_arm_away;
+  std::map<std::string, double> left_arm_away;
   for(size_t i=0; i<7; ++i)
   {
-    left_arm_away.name.push_back("left_arm_" + boost::lexical_cast<std::string>(i) + "_joint");
-    left_arm_away.position.push_back(0.0);
+    left_arm_away["left_arm_" + boost::lexical_cast<std::string>(i) + "_joint"] = 0.0;
   }
 
   // ACQUIRE POST-PIXEL-COUNT
-  if(!set_joint_states(left_arm_away, robot_name, setting_iterations))
+  if(!set_joint_states(merge_configs(q, left_arm_away), robot_name, setting_iterations))
     return false;
 
   if(!step_simulation(sim_steps))
@@ -456,15 +454,15 @@ bool VisibilityMover::read_alternative_configs()
   sensor_msgs::JointState msg;
   msg.name = joint_names;
   msg.position = config1;
-  alternative_configs_.push_back(msg);
+  alternative_configs_.push_back(to_map(msg));
   msg.position = config2;
-  alternative_configs_.push_back(msg);
+  alternative_configs_.push_back(to_map(msg));
   msg.position = config3;
-  alternative_configs_.push_back(msg);
+  alternative_configs_.push_back(to_map(msg));
   msg.position = config4;
-  alternative_configs_.push_back(msg);
+  alternative_configs_.push_back(to_map(msg));
   msg.position = config5;
-  alternative_configs_.push_back(msg);
+  alternative_configs_.push_back(to_map(msg));
 
   return true;
 }
@@ -493,3 +491,39 @@ bool VisibilityMover::reset_base_pose(const std::string& robot_name)
 
   return true;
 }
+
+std::map<std::string, double> VisibilityMover::to_map(const sensor_msgs::JointState& q) const
+{
+  std::map<std::string, double> result;
+
+  assert(q.position.size() == q.name.size());
+  for(size_t i=0; i< q.position.size(); ++i)
+    result[q.name[i]] = q.position[i];
+
+  return result;
+}
+
+sensor_msgs::JointState VisibilityMover::to_msg(const std::map<std::string, double>& q) const
+{
+  sensor_msgs::JointState result;
+
+  for (std::map<std::string, double>::const_iterator it=q.begin(); it!=q.end(); ++it)
+  {
+    result.name.push_back(it->first);
+    result.position.push_back(it->second);
+  }
+  return result;
+}
+
+std::map<std::string, double> VisibilityMover::merge_configs(const std::map<std::string, double>& base,
+    const std::map<std::string, double>& replacement) const
+{
+  std::map<std::string, double> result = base;
+
+  for (std::map<std::string, double>::const_iterator it=replacement.begin(); 
+       it!=replacement.end(); ++it)
+    result[it->first] = it->second;
+
+  return result;
+}
+

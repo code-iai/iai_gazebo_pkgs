@@ -31,7 +31,7 @@ namespace iai_gazebo
       sensor_msgs::JointState last_q_;
       size_t pixel_count_;
       bool has_new_pixel_count_;
-      std::vector<sensor_msgs::JointState> alternative_configs_;
+      std::vector< std::map<std::string, double> > alternative_configs_;
 
       // Callbacks
       void joint_state_callback(const sensor_msgs::JointState::ConstPtr& msg);
@@ -43,13 +43,19 @@ namespace iai_gazebo
       bool find_model(const std::string& robot_name);
       bool spawn_urdf(const std::string& urdf, const std::string& robot_name);
       bool delete_model(const std::string& robot_name);
-      bool set_joint_states(const sensor_msgs::JointState& q, const std::string& robot_name, size_t iterations);
+      bool set_joint_states(const std::map< std::string, double >& q, 
+          const std::string& robot_name, size_t iterations);
       bool clear_body_wrenches();
       bool reset_base_pose(const std::string& robot_name);
       bool step_simulation(size_t steps);
-      bool target_visible(const sensor_msgs::JointState& q, const std::string& robot_name, double threshold);
+      bool target_visible(const std::map< std::string, double>& q, const std::string& robot_name,
+          double threshold);
       void wait_for_pixel_count();
       bool read_alternative_configs();
+      std::map<std::string, double> to_map(const sensor_msgs::JointState& q) const;
+      sensor_msgs::JointState to_msg(const std::map<std::string, double>& q) const;
+      std::map<std::string, double> merge_configs(const std::map<std::string, double>& base,
+          const std::map<std::string, double>& replacement) const;
   };
 }
 
