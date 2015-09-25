@@ -176,7 +176,7 @@
   <!-- mounting plate of UR3 -->
   <!-- Joint connecting the parent to our frame_in -->
   <joint name="neck_adapter_ur3_in_joint" type="fixed">
-    <origin rpy="0 0 0" xyz="0.214 -0.227 1.48"/>
+    <origin rpy="0 0 0" xyz="0.175 -0.227 1.48"/>
     <parent link="base_link"/>
     <child link="neck_adapter_ur3_frame_in"/>
   </joint>
@@ -1009,7 +1009,7 @@
 
     <link name="${name}_arm_hand_link" / -->
   <joint name="left_gripper_anterior_gripper_joint" type="fixed">
-    <origin rpy="0 0 0.78539816339" xyz="0 0 0"/>
+    <origin rpy="0 0 2.3562" xyz="0 0 0"/>
     <parent link="left_arm_cabling_adaptor_link"/>
     <child link="left_gripper_base_link"/>
   </joint>
