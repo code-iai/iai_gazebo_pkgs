@@ -39,7 +39,10 @@
   <gazebo reference="neck_">
     <material>Gazebo/Red</material>
   </gazebo>
-  <gazebo reference="base_footprint">
+  <gazebo reference="boxy_base_link">
+    <material>Gazebo/Red</material>
+  </gazebo>
+  <gazebo reference="torso_base_link">
     <material>Gazebo/Red</material>
   </gazebo>
   <gazebo reference="triangle_">
@@ -107,7 +110,7 @@
   <!--this is the diamiter of one of the aluminium (/2) pipes (20mm) = the diamiter of the piece that holds the slider (45mm) -->
   <!-- distance from the axis 0 to the first alu pipe 74 + distance between the pipes 150 + diamiter of the slider 200 /2   ( = center ) -->
   <!-- /Property definitions e.g. constants -->
-  <link name="base_link">
+  <link name="boxy_base_link">
     <inertial>
       <origin rpy="0 0 0" xyz="-0.257082749974343 -0.227847593519202 0.0535404411050965"/>
       <mass value="70.0210745907357"/>
@@ -134,14 +137,14 @@
   <link name="laser_reference_front"/>
   <joint name="laser_reference_front_joint" type="fixed">
     <origin rpy="-4.1881E-15 -4.2124E-15 0.7854" xyz="0.19107 0.0506 0.1575"/>
-    <parent link="base_link"/>
+    <parent link="boxy_base_link"/>
     <child link="laser_reference_front"/>
     <axis xyz="-0.99849 0 -0.054862"/>
   </joint>
   <link name="laser_reference_back"/>
   <joint name="laser_reference_back_joint" type="fixed">
     <origin rpy="4.9333E-15 4.5082E-15 -2.3562" xyz="-0.69357 -0.506 0.1575"/>
-    <parent link="base_link"/>
+    <parent link="boxy_base_link"/>
     <child link="laser_reference_back"/>
     <axis xyz="-1 0 0"/>
   </joint>
@@ -169,7 +172,7 @@
   <joint name="base_footprint_joint" type="fixed">
     <origin rpy="0 0 0" xyz="0.36 0.25 0.16"/>
     <parent link="base_footprint"/>
-    <child link="base_link"/>
+    <child link="boxy_base_link"/>
   </joint>
   <!-- /JOINT for base_footprint -->
   <!-- NEW NECK ASSEMBLY -->
@@ -177,7 +180,7 @@
   <!-- Joint connecting the parent to our frame_in -->
   <joint name="neck_adapter_ur3_in_joint" type="fixed">
     <origin rpy="0 0 0" xyz="0.175 -0.227 1.48"/>
-    <parent link="base_link"/>
+    <parent link="boxy_base_link"/>
     <child link="neck_adapter_ur3_frame_in"/>
   </joint>
   <!-- FIXME: replace this with the actual mesh exported by Alexis -->
@@ -535,7 +538,7 @@
              quaternion: 0.0177781 0.202257 -0.0472198 0.978032 (xyzw) -->
   <joint name="shoulder_kinect_joint" type="fixed">
     <origin rpy="0.01708077682636155 0.4085798647123734 -0.09294704527264909" xyz="-0.135394 -0.00764754 1.54755"/>
-    <parent link="base_link"/>
+    <parent link="boxy_base_link"/>
     <child link="shoulder_kinect_link"/>
   </joint>
   <link name="shoulder_kinect_link">
@@ -585,7 +588,7 @@
   <!-- JOINT to connect the base with the torso -->
   <joint name="torso_joint" type="fixed">
     <origin rpy="0 0 0" xyz="0 0.065 0.41"/>
-    <parent link="base_link"/>
+    <parent link="boxy_base_link"/>
     <child link="torso_base_link"/>
   </joint>
   <!-- /JOINT to connect the base with the torso -->
@@ -640,7 +643,7 @@
       rpy="4.7298 6.267 1.5685260" /-->
     <!-- Output of the hand/eye calibration baserobot_H_basearm-->
     <origin rpy="4.70695928 6.28217403836 1.56327975371" xyz="0.0786889663592487 0.0986351579738104 0.906352096493862"/>
-    <parent link="base_link"/>
+    <parent link="boxy_base_link"/>
     <child link="triangle_base_link"/>
     <axis xyz="0 -1 0"/>
     <limit effort="0" lower="-0.586" upper="0" velocity="0.02"/>
