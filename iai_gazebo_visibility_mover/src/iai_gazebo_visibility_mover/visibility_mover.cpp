@@ -272,7 +272,7 @@ bool VisibilityMover::trigger_callback(std_srvs::Trigger::Request& request,
     std_srvs::Trigger::Response& response)
 {
   std::string robot_name = "boxy";
-  double threshold = 0.2;
+  double threshold = 0.1;
   size_t setting_iterations = 2;
 
   response.success = false;
