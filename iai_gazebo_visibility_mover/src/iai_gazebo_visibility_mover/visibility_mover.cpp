@@ -293,22 +293,6 @@ bool VisibilityMover::target_visible(const sensor_msgs::JointState& q, const std
   return true;
 }
 
-bool VisibilityMover::respawn_urdf(const std::string& urdf, const std::string& robot_name)
-{
-  bool result = true;
-
-  if(!delete_model(robot_name))
-    result = false;
-
-  if(!spawn_urdf(urdf, robot_name))
-    result = false;
-
-  if(!result)
-    ROS_ERROR("[%s] Respawning of urdf failed.", nh_.getNamespace().c_str());
-
-  return result;
-}
-
 bool VisibilityMover::clear_body_wrenches()
 {
   std::vector<std::string> body_names;

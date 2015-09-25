@@ -37,7 +37,6 @@ namespace iai_gazebo
       bool find_model(const std::string& robot_name);
       bool spawn_urdf(const std::string& urdf, const std::string& robot_name);
       bool delete_model(const std::string& robot_name);
-      bool respawn_urdf(const std::string& urdf, const std::string& robot_name);
       bool set_joint_states(const sensor_msgs::JointState& q, const std::string& robot_name, size_t iterations);
       bool clear_body_wrenches();
       bool step_simulation(size_t steps);
