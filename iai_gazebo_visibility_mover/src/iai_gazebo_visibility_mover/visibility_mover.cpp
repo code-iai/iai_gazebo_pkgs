@@ -421,7 +421,9 @@ bool VisibilityMover::read_alternative_configs()
   joint_names.push_back("neck_wrist_2_joint");
   joint_names.push_back("neck_wrist_3_joint");
 
-  std::vector<double> config1, config2, config3, config4, config5;
+  std::vector<double> config1, config2, config3, config4, config5,
+      config6, config7, config8, config9, config10, config11,
+      config12, config13, config14, config15;
   config1.push_back(1.6133809977777778);
   config1.push_back(-1.1410953011111111);
   config1.push_back(1.635197595);
@@ -457,6 +459,76 @@ bool VisibilityMover::read_alternative_configs()
   config5.push_back(1.5577870607376099);
   config5.push_back(3.015765428543091);
 
+  config6.push_back(1.272057294845581);
+  config6.push_back(-1.348339859639303);
+  config6.push_back(1.421757698059082);
+  config6.push_back(-0.2135232130633753);
+  config6.push_back(1.3236674070358276);
+  config6.push_back(3.1781420707702637);
+
+  config7.push_back(1.2720932960510254);
+  config7.push_back(-2.349339310322897);
+  config7.push_back(2.1557388305664062);
+  config7.push_back(-0.12168628374208623);
+  config7.push_back(1.3236074447631836);
+  config7.push_back(3.1781539916992188);
+
+  config8.push_back(2.006105422973633);
+  config8.push_back(-1.2148321310626429);
+  config8.push_back(2.0223541259765625);
+  config8.push_back(-0.4892209211932581);
+  config8.push_back(1.3235955238342285);
+  config8.push_back(2.259474039077759);
+
+  config9.push_back(2.0060935020446777);
+  config9.push_back(-0.7477543989764612);
+  config9.push_back(1.5552387237548828);
+  config9.push_back(-0.5810282866107386);
+  config9.push_back(1.3236314058303833);
+  config9.push_back(2.259485960006714);
+
+  config10.push_back(2.006129264831543);
+  config10.push_back(-0.2138903776751917);
+  config10.push_back(0.4875149726867676);
+  config10.push_back(0.062090277671813965);
+  config10.push_back(1.5991644859313965);
+  config10.push_back(2.2594261169433594);
+
+  config11.push_back(-0.12931424776186162);
+  config11.push_back(-0.41399985948671514);
+  config11.push_back(0.4874911308288574);
+  config11.push_back(0.42949092388153076);
+  config11.push_back(0.9561718702316284);
+  config11.push_back(3.821215867996216);
+  
+  config12.push_back(0.20434153079986572);
+  config12.push_back(-0.41409570375551397);
+  config12.push_back(0.4875149726867676);
+  config12.push_back(0.42950308322906494);
+  config12.push_back(1.3236314058303833);
+  config12.push_back(3.821215867996216);
+
+  config13.push_back(0.8049560785293579);
+  config13.push_back(-0.3473094145404261);
+  config13.push_back(0.48746681213378906);
+  config13.push_back(-0.12171060243715459);
+  config13.push_back(1.3236194849014282);
+  config13.push_back(3.821239948272705);
+
+  config14.push_back(0.33774617314338684);
+  config14.push_back(-1.1480568091021937);
+  config14.push_back(1.688767433166504);
+  config14.push_back(-0.48914891878236944);
+  config14.push_back(1.1398762464523315);
+  config14.push_back(3.8212039470672607);
+
+  config15.push_back(1.4722658395767212);
+  config15.push_back(-1.1481288115130823);
+  config15.push_back(1.6887316703796387);
+  config15.push_back(-0.48914891878236944);
+  config15.push_back(1.6911078691482544);
+  config15.push_back(3.0863242149353027);
+
   sensor_msgs::JointState msg;
   msg.name = joint_names;
   msg.position = config1;
@@ -468,6 +540,28 @@ bool VisibilityMover::read_alternative_configs()
   msg.position = config4;
   alternative_configs_.push_back(to_map(msg));
   msg.position = config5;
+  alternative_configs_.push_back(to_map(msg));
+  msg.position = config5;
+  alternative_configs_.push_back(to_map(msg));
+  msg.position = config6;
+  alternative_configs_.push_back(to_map(msg));
+  msg.position = config7;
+  alternative_configs_.push_back(to_map(msg));
+  msg.position = config8;
+  alternative_configs_.push_back(to_map(msg));
+  msg.position = config9;
+  alternative_configs_.push_back(to_map(msg));
+  msg.position = config10;
+  alternative_configs_.push_back(to_map(msg));
+  msg.position = config11;
+  alternative_configs_.push_back(to_map(msg));
+  msg.position = config12;
+  alternative_configs_.push_back(to_map(msg));
+  msg.position = config13;
+  alternative_configs_.push_back(to_map(msg));
+  msg.position = config14;
+  alternative_configs_.push_back(to_map(msg));
+  msg.position = config15;
   alternative_configs_.push_back(to_map(msg));
 
   return true;
