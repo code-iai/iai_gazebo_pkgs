@@ -3,6 +3,7 @@
 #include <gazebo_msgs/SpawnModel.h>
 #include <gazebo_msgs/DeleteModel.h>
 #include <gazebo_msgs/SetModelConfiguration.h>
+#include <gazebo_msgs/SetModelState.h>
 #include <gazebo_msgs/GetModelState.h>
 #include <gazebo/msgs/msgs.hh>
 
@@ -70,6 +71,14 @@ bool VisibilityMover::start()
   if(!clear_body_wrench_client_.waitForExistence(ros::Duration(2.0)))
   {
     ROS_ERROR("[%s] Could not connect to service '/gazebo/clear_body_wrench'",
+        nh_.getNamespace().c_str());
+    return false;
+  }
+
+  set_model_state_client_ = nh_.serviceClient<gazebo_msgs::SetModelState>("/gazebo/set_model_state");
+  if(!set_model_state_client_.waitForExistence(ros::Duration(2.0)))
+  {
+    ROS_ERROR("[%s] Could not connect to service '/gazebo/set_model_state'",
         nh_.getNamespace().c_str());
     return false;
   }
@@ -237,6 +246,9 @@ bool VisibilityMover::set_joint_states(const sensor_msgs::JointState& q, const s
 
   if(!clear_body_wrenches())
     return false;
+
+  if(!reset_base_pose(robot_name))
+   return false;
 
   return true;
 }
@@ -453,6 +465,31 @@ bool VisibilityMover::read_alternative_configs()
   alternative_configs_.push_back(msg);
   msg.position = config5;
   alternative_configs_.push_back(msg);
+
+  return true;
+}
+
+bool VisibilityMover::reset_base_pose(const std::string& robot_name)
+{
+  gazebo_msgs::SetModelState srv;
+  srv.request.model_state.model_name = robot_name;
+  srv.request.model_state.pose.orientation.w = 1.0;
+
+  if(set_model_state_client_.call(srv))
+  {
+    if(!srv.response.success)
+    {
+      ROS_ERROR("[%s] Set Model State unsuccessful: %s", nh_.getNamespace().c_str(),
+        srv.response.status_message.c_str()); 
+      return false;
+    }
+  }
+  else
+  {
+    ROS_ERROR("[%s] Failed to call service '/gazebo/set_model_state'.",
+        nh_.getNamespace().c_str());
+    return false;
+  }
 
   return true;
 }
