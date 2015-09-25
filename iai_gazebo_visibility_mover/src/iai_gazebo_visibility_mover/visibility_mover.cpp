@@ -1,4 +1,5 @@
 #include <iai_gazebo_visibility_mover/visibility_mover.hpp>
+#include <gazebo_msgs/BodyRequest.h>
 #include <gazebo_msgs/SpawnModel.h>
 #include <gazebo_msgs/DeleteModel.h>
 #include <gazebo_msgs/SetModelConfiguration.h>
@@ -53,6 +54,14 @@ bool VisibilityMover::start()
   if(!set_joint_states_client_.waitForExistence(ros::Duration(2.0)))
   {
     ROS_ERROR("[%s] Could not connect to service '/gazebo/set_model_configuration'",
+        nh_.getNamespace().c_str());
+    return false;
+  }
+
+  clear_body_wrench_client_ = nh_.serviceClient<gazebo_msgs::BodyRequest>("/gazebo/clear_body_wrenches");
+  if(!clear_body_wrench_client_.waitForExistence(ros::Duration(2.0)))
+  {
+    ROS_ERROR("[%s] Could not connect to service '/gazebo/clear_body_wrench'",
         nh_.getNamespace().c_str());
     return false;
   }
@@ -127,7 +136,10 @@ bool VisibilityMover::delete_model(const std::string& robot_name)
         result = false;
       }
       else 
+      {
+        ROS_INFO("[%s] Delete Model successful.", nh_.getNamespace().c_str());
         result = true;
+      }
     }
     else
     {
@@ -137,7 +149,10 @@ bool VisibilityMover::delete_model(const std::string& robot_name)
     }
   }
   else
+  {
+    ROS_INFO("[%s] Delete Model unnecessary.", nh_.getNamespace().c_str());
     result = true;
+  }
 
   return result;
 }
@@ -158,7 +173,10 @@ bool VisibilityMover::find_model(const std::string& robot_name)
       result = false;
     }
     else 
+    {
+      ROS_INFO("[%s] Found model %s", nh_.getNamespace().c_str(), robot_name.c_str());
       result = true;
+    }
   }
   else
   {
@@ -167,13 +185,11 @@ bool VisibilityMover::find_model(const std::string& robot_name)
     result = false;
   }
 
-  if(!spawn_urdf(robot_description_, robot_name))
-    return false;
-
   return result;
 }
 
-bool VisibilityMover::set_joint_states(const sensor_msgs::JointState& q, const std::string& robot_name)
+bool VisibilityMover::set_joint_states(const sensor_msgs::JointState& q, const std::string& robot_name,
+    size_t iterations)
 {
   gazebo_msgs::SetModelConfiguration srv;
   srv.request.model_name = robot_name;
@@ -189,23 +205,26 @@ bool VisibilityMover::set_joint_states(const sensor_msgs::JointState& q, const s
     joint_positions += " " + boost::lexical_cast<std::string>(q.position[i]);
   ROS_INFO_STREAM("Setting joint states\n" << joint_names << "\n" << joint_positions);
 
-  if(set_joint_states_client_.call(srv))
+  for(size_t i=0; i<iterations; ++i)
   {
-    if(!srv.response.success)
+    if(set_joint_states_client_.call(srv))
     {
-      ROS_ERROR("[%s] Set Joint States unsuccessful: %s", nh_.getNamespace().c_str(),
-        srv.response.status_message.c_str()); 
+      if(!srv.response.success)
+      {
+        ROS_ERROR("[%s] Set Joint States unsuccessful: %s", nh_.getNamespace().c_str(),
+          srv.response.status_message.c_str()); 
+        return false;
+      }
+    }
+    else
+    {
+      ROS_ERROR("[%s] Failed to call service '/gazebo/set_model_configuration'.",
+          nh_.getNamespace().c_str());
       return false;
     }
-    else 
-      return true;
   }
-  else
-  {
-    ROS_ERROR("[%s] Failed to call service '/gazebo/set_model_configuration'.",
-        nh_.getNamespace().c_str());
-    return false;
-  }
+
+  return true;
 }
 
 void VisibilityMover::joint_state_callback(const sensor_msgs::JointState::ConstPtr& msg)
@@ -242,15 +261,17 @@ bool VisibilityMover::step_simulation(size_t steps)
 
 bool VisibilityMover::target_visible(const sensor_msgs::JointState& q, const std::string& robot_name)
 {
-  size_t ticks = 5;
-  for(size_t tick=0; tick<ticks; ++tick)
-  {
-    if(!set_joint_states(q, robot_name))
-      return false;
-  
-    if(!step_simulation(1))
-      return false;
-  }
+  size_t setting_iterations = 2;
+  size_t sim_steps = 1;
+
+  if(!set_joint_states(q, robot_name, setting_iterations))
+    return false;
+
+  if(!clear_body_wrenches())
+    return false;
+
+  if(!step_simulation(sim_steps))
+    return false;
 
   sensor_msgs::JointState left_arm_away;
   for(size_t i=0; i<7; ++i)
@@ -260,13 +281,74 @@ bool VisibilityMover::target_visible(const sensor_msgs::JointState& q, const std
   }
   // FIXME: keep on implementing me
 
-  for(size_t tick=0; tick<ticks; ++tick)
+  if(!set_joint_states(left_arm_away, robot_name, setting_iterations))
+    return false;
+
+  if(!clear_body_wrenches())
+    return false;
+
+  if(!step_simulation(sim_steps))
+    return false;
+
+  return true;
+}
+
+bool VisibilityMover::respawn_urdf(const std::string& urdf, const std::string& robot_name)
+{
+  bool result = true;
+
+  if(!delete_model(robot_name))
+    result = false;
+
+  if(!spawn_urdf(urdf, robot_name))
+    result = false;
+
+  if(!result)
+    ROS_ERROR("[%s] Respawning of urdf failed.", nh_.getNamespace().c_str());
+
+  return result;
+}
+
+bool VisibilityMover::clear_body_wrenches()
+{
+  std::vector<std::string> body_names;
+  body_names.push_back("boxy::base_footprint");
+  body_names.push_back("boxy::neck_shoulder_link");
+  body_names.push_back("boxy::neck_upper_arm_link");
+  body_names.push_back("boxy::neck_forearm_link");
+  body_names.push_back("boxy::neck_wrist_1_link");
+  body_names.push_back("boxy::neck_wrist_2_link");
+  body_names.push_back("boxy::neck_wrist_3_link");
+  body_names.push_back("boxy::triangle_base_link");
+  body_names.push_back("boxy::left_arm_1_link");
+  body_names.push_back("boxy::left_arm_2_link");
+  body_names.push_back("boxy::left_arm_3_link");
+  body_names.push_back("boxy::left_arm_4_link");
+  body_names.push_back("boxy::left_arm_5_link");
+  body_names.push_back("boxy::left_arm_6_link");
+  body_names.push_back("boxy::left_arm_7_link");
+  body_names.push_back("boxy::left_gripper_gripper_left_link");
+  body_names.push_back("boxy::left_gripper_gripper_right_link");
+  body_names.push_back("boxy::right_arm_1_link");
+  body_names.push_back("boxy::right_arm_2_link");
+  body_names.push_back("boxy::right_arm_3_link");
+  body_names.push_back("boxy::right_arm_4_link");
+  body_names.push_back("boxy::right_arm_5_link");
+  body_names.push_back("boxy::right_arm_6_link");
+  body_names.push_back("boxy::right_arm_7_link");
+  body_names.push_back("boxy::right_gripper_gripper_left_link");
+  body_names.push_back("boxy::right_gripper_gripper_right_link");
+
+  gazebo_msgs::BodyRequest srv;
+  for(size_t i=0; i<body_names.size(); ++i)
   {
-    if(!set_joint_states(left_arm_away, robot_name))
+    srv.request.body_name = body_names[i];
+    if(!clear_body_wrench_client_.call(srv))
+    {
+      ROS_ERROR("[%s] Failed to call service '/gazebo/clear_body_wrench' for body '%s'.",
+          nh_.getNamespace().c_str(), body_names[i].c_str());
       return false;
-  
-    if(!step_simulation(1))
-      return false;
+    }
   }
 
   return true;

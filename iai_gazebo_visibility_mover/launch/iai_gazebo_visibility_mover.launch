@@ -14,7 +14,7 @@
  
   <include file="$(find gazebo_ros)/launch/empty_world.launch">
     <arg name="use_sim_time" value="false"/>
-    <arg name="gui" value="false"/>
+    <arg name="gui" value="true"/>
     <arg name="paused" value="true"/>
   </include>
 </launch>

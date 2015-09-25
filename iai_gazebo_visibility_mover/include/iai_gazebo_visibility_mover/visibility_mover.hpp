@@ -19,7 +19,7 @@ namespace iai_gazebo
       // Communications
       ros::NodeHandle nh_;
       ros::ServiceClient delete_model_client_, spawn_urdf_client_, 
-          set_joint_states_client_, model_state_client_;
+          set_joint_states_client_, model_state_client_, clear_body_wrench_client_;
       ros::ServiceServer trigger_server_;
       ros::Subscriber joint_state_subscriber_;
       gazebo::transport::PublisherPtr world_control_publisher_;
@@ -37,8 +37,10 @@ namespace iai_gazebo
       bool find_model(const std::string& robot_name);
       bool spawn_urdf(const std::string& urdf, const std::string& robot_name);
       bool delete_model(const std::string& robot_name);
-      bool set_joint_states(const sensor_msgs::JointState& q, const std::string& robot_name);
-      bool step_simulation(size_t steps = 10);
+      bool respawn_urdf(const std::string& urdf, const std::string& robot_name);
+      bool set_joint_states(const sensor_msgs::JointState& q, const std::string& robot_name, size_t iterations);
+      bool clear_body_wrenches();
+      bool step_simulation(size_t steps);
       bool target_visible(const sensor_msgs::JointState& q, const std::string& robot_name);
   };
 }
