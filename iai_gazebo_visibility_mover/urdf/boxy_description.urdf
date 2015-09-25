@@ -993,6 +993,9 @@
     <parent link="left_arm_flange_link"/>
     <child link="left_arm_cabling_adaptor_link"/>
   </joint>
+  <gazebo reference="left_arm_cabling_adaptor_link">
+    <material value="Gazebo/Red"/>
+  </gazebo>
   <link name="left_arm_cabling_adaptor_link">
     <visual>
       <origin rpy="0 0 0" xyz="0 0 -0.005"/>
@@ -1512,7 +1515,7 @@
     </collision>
   </link>
   <gazebo reference="right_arm_7_link">
-    <material value="Gazebo/Blue"/>
+    <material value="Gazebo/Red"/>
   </gazebo>
   <transmission name="right_arm_6_trans" type="pr2_mechanism_model/SimpleTransmission">
     <actuator name="right_arm_6_motor"/>
@@ -1540,6 +1543,9 @@
     <parent link="right_arm_flange_link"/>
     <child link="right_arm_cabling_adaptor_link"/>
   </joint>
+  <gazebo reference="right_arm_cabling_adaptor_link">
+    <material value="Gazebo/Red"/>
+  </gazebo>
   <link name="right_arm_cabling_adaptor_link">
     <visual>
       <origin rpy="0 0 0" xyz="0 0 -0.005"/>
@@ -1566,6 +1572,9 @@
     <child link="right_arm_adapter_iso50_kms40_frame_in"/>
   </joint>
   <!-- link for the adapter plate -->
+  <gazebo reference="right_arm_adapter_iso50_kms40_frame_in">
+    <material value="Gazebo/Red"/>
+  </gazebo>
   <link name="right_arm_adapter_iso50_kms40_frame_in">
     <visual>
       <origin rpy="0 0 0" xyz="0 0 0"/>
@@ -1591,6 +1600,9 @@
     <child link="right_arm_kms40_frame_in"/>
   </joint>
   <!-- Link for the kms40 sensor-->
+  <gazebo reference="right_arm_kms40_frame_in">
+    <material value="Gazebo/Red"/>
+  </gazebo>
   <link name="right_arm_kms40_frame_in">
     <visual>
       <origin rpy="0 0 0" xyz="0 0 0"/>
@@ -1616,6 +1628,9 @@
     <parent link="right_arm_kms40_frame_out"/>
     <child link="right_arm_adapter_kms40_fwk050_frame_in"/>
   </joint>
+  <gazebo reference="right_arm_adapter_kms40_fwk050_frame_in">
+    <material value="Gazebo/Red"/>
+  </gazebo>
   <link name="right_arm_adapter_kms40_fwk050_frame_in">
     <visual>
       <origin rpy="0 0 0" xyz="0 0 0"/>
@@ -1642,6 +1657,9 @@
     <parent link="right_arm_adapter_kms40_fwk050_frame_out"/>
     <child link="right_arm_fwk_fwa_050_frame_in"/>
   </joint>
+  <gazebo reference="right_arm_fwk_fwa_050_frame_in">
+    <material value="Gazebo/Red"/>
+  </gazebo>
   <link name="right_arm_fwk_fwa_050_frame_in">
     <visual>
       <origin rpy="0 0 0" xyz="0 0 0"/>
@@ -1668,6 +1686,9 @@
     <parent link="right_arm_fwk_fwa_050_frame_out"/>
     <child link="right_arm_adapter_fwa050_wsg50_frame_in"/>
   </joint>
+  <gazebo reference="right_arm_adapter_fwa050_wsg50_frame_in">
+    <material value="Gazebo/Red"/>
+  </gazebo>
   <link name="right_arm_adapter_fwa050_wsg50_frame_in">
     <visual>
       <origin rpy="0 0 0" xyz="0 0 0"/>
