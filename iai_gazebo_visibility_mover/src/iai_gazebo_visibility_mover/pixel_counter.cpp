@@ -47,10 +47,10 @@ void PixelCounter::image_callback(const sensor_msgs::Image::ConstPtr& msg)
   cv::threshold(blue_channel_blur.clone(), blue_channel_thresh, 180, 255, 0);
 
   std::string date = boost::lexical_cast<std::string>(ros::Time::now().toSec());
-  cv::imwrite("/tmp/images/original" + date + ".jpg", cv_ptr->image);
-  cv::imwrite("/tmp/images/blue_channel" + date + ".jpg", spl[0]);
-  cv::imwrite("/tmp/images/blue_channel_blur" + date + ".jpg", blue_channel_blur);
-  cv::imwrite("/tmp/images/blue_channel_thresh" + date + ".jpg", blue_channel_thresh);
+  cv::imwrite("/tmp/images/" + date + "_original.jpg", cv_ptr->image);
+  cv::imwrite("/tmp/images/" + date + "_blue_channel.jpg", spl[0]);
+  cv::imwrite("/tmp/images/" + date + "_blue_channel_blur.jpg", blue_channel_blur);
+  cv::imwrite("/tmp/images/" + date + "_blue_channel_thresh.jpg", blue_channel_thresh);
 
   std_msgs::UInt64 out_msg;
   out_msg.data = cv::countNonZero(blue_channel_thresh);
