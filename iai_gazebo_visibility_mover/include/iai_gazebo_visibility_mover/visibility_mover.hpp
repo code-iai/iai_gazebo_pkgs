@@ -30,6 +30,7 @@ namespace iai_gazebo
       sensor_msgs::JointState last_q_;
       size_t pixel_count_;
       bool has_new_pixel_count_;
+      std::vector<sensor_msgs::JointState> alternative_configs_;
 
       // Callbacks
       void joint_state_callback(const sensor_msgs::JointState::ConstPtr& msg);
@@ -46,6 +47,7 @@ namespace iai_gazebo
       bool step_simulation(size_t steps);
       bool target_visible(const sensor_msgs::JointState& q, const std::string& robot_name, double threshold);
       void wait_for_pixel_count();
+      bool read_alternative_configs();
   };
 }
 

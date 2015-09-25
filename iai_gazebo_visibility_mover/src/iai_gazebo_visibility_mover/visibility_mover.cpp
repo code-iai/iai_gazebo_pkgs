@@ -27,6 +27,13 @@ bool VisibilityMover::start()
     return false;
   }
 
+  if(!read_alternative_configs())
+  {
+    ROS_ERROR("[%s] Could not read alternative head configs",
+        nh_.getNamespace().c_str());
+    return false;
+  }
+
   spawn_urdf_client_ = nh_.serviceClient<gazebo_msgs::SpawnModel>("/gazebo/spawn_urdf_model");
   if(!spawn_urdf_client_.waitForExistence(ros::Duration(2.0)))
   {
@@ -228,6 +235,9 @@ bool VisibilityMover::set_joint_states(const sensor_msgs::JointState& q, const s
     }
   }
 
+  if(!clear_body_wrenches())
+    return false;
+
   return true;
 }
 
@@ -245,9 +255,13 @@ void VisibilityMover::pixel_count_callback(const std_msgs::UInt64::ConstPtr& msg
 bool VisibilityMover::trigger_callback(std_srvs::Trigger::Request& request,
     std_srvs::Trigger::Response& response)
 {
+  std::string robot_name = "boxy";
+  double threshold = 0.05;
+  size_t setting_iterations = 2;
+
   response.success = false;
 
-  if(target_visible(last_q_, "boxy", 0.05))
+  if(target_visible(last_q_, robot_name, threshold))
   {
     ROS_INFO("[%s] Target already visible. Not moving head.",
         nh_.getNamespace().c_str());
@@ -255,8 +269,22 @@ bool VisibilityMover::trigger_callback(std_srvs::Trigger::Request& request,
     return true;
   }
 
-  // FIXME: keep on implementing me
+  // FIXME: merge alternative_configs_ with last_q_
+  for(size_t i=0; i<alternative_configs_.size(); ++i)
+  {
+    if(!set_joint_states(last_q_, robot_name, setting_iterations))
+      return true;
 
+    if(target_visible(alternative_configs_[i], robot_name, threshold))
+    {
+      ROS_INFO("[%s] Target already visible in alternative config. Moving head.",
+          nh_.getNamespace().c_str());
+      std::cout << alternative_configs_[i] << std::endl;
+      response.success = true;
+      return true;
+    }
+  }
+ 
   return true;
 }
 
@@ -276,10 +304,9 @@ bool VisibilityMover::target_visible(const sensor_msgs::JointState& q, const std
   size_t setting_iterations = 2;
   size_t sim_steps = 1;
 
-  if(!set_joint_states(q, robot_name, setting_iterations))
-    return false;
+  has_new_pixel_count_ = false;
 
-  if(!clear_body_wrenches())
+  if(!set_joint_states(q, robot_name, setting_iterations))
     return false;
 
   if(!step_simulation(sim_steps))
@@ -299,9 +326,6 @@ bool VisibilityMover::target_visible(const sensor_msgs::JointState& q, const std
   if(!set_joint_states(left_arm_away, robot_name, setting_iterations))
     return false;
 
-  if(!clear_body_wrenches())
-    return false;
-
   if(!step_simulation(sim_steps))
     return false;
 
@@ -318,6 +342,7 @@ bool VisibilityMover::target_visible(const sensor_msgs::JointState& q, const std
 bool VisibilityMover::clear_body_wrenches()
 {
   std::vector<std::string> body_names;
+  body_names.push_back("ground_plane::link");
   body_names.push_back("boxy::base_footprint");
   body_names.push_back("boxy::neck_shoulder_link");
   body_names.push_back("boxy::neck_upper_arm_link");
@@ -362,9 +387,72 @@ bool VisibilityMover::clear_body_wrenches()
 
 void VisibilityMover::wait_for_pixel_count()
 {
-  has_new_pixel_count_ = false;
+  ROS_DEBUG("Waiting for pixel count...");
   
   while(ros::ok() && !has_new_pixel_count_)
     ros::spinOnce();
+  ROS_DEBUG("Done.");
 }
 
+bool VisibilityMover::read_alternative_configs()
+{
+
+  std::vector<std::string> joint_names;
+  joint_names.push_back("neck_shoulder_pan_joint");
+  joint_names.push_back("neck_shoulder_lift_joint");
+  joint_names.push_back("neck_elbow_joint");
+  joint_names.push_back("neck_wrist_1_joint");
+  joint_names.push_back("neck_wrist_2_joint");
+  joint_names.push_back("neck_wrist_3_joint");
+
+  std::vector<double> config1, config2, config3, config4, config5;
+  config1.push_back(1.6133809977777778);
+  config1.push_back(-1.1410953011111111);
+  config1.push_back(1.635197595);
+  config1.push_back(-1.4261073272222222);
+  config1.push_back(1.5552615827777778);
+  config1.push_back(3.0162754655555553);
+
+  config2.push_back(0.2483704537153244);
+  config2.push_back(-0.2301581541644495);
+  config2.push_back(0.768549919128418);
+  config2.push_back(-0.8555524984942835);
+  config2.push_back(0.561461329460144);
+  config2.push_back(4.1270880699157715);
+
+  config3.push_back(2.637866258621216);
+  config3.push_back(-0.7665770689593714);
+  config3.push_back(1.292036533355713);
+  config3.push_back(-0.40053111711610967);
+  config3.push_back(1.8659439086914062);
+  config3.push_back(2.288059711456299);
+
+  config4.push_back(1.2661278247833252);
+  config4.push_back(-0.17604047456850225);
+  config4.push_back(0.48613643646240234);
+  config4.push_back(-0.17137366930116826);
+  config4.push_back(1.5050984621047974);
+  config4.push_back(3.1847846508026123);
+
+  config5.push_back(1.4161126613616943);
+  config5.push_back(-1.0655291716205042);
+  config5.push_back(2.187502861022949);
+  config5.push_back(-1.2248061339007776);
+  config5.push_back(1.5577870607376099);
+  config5.push_back(3.015765428543091);
+
+  sensor_msgs::JointState msg;
+  msg.name = joint_names;
+  msg.position = config1;
+  alternative_configs_.push_back(msg);
+  msg.position = config2;
+  alternative_configs_.push_back(msg);
+  msg.position = config3;
+  alternative_configs_.push_back(msg);
+  msg.position = config4;
+  alternative_configs_.push_back(msg);
+  msg.position = config5;
+  alternative_configs_.push_back(msg);
+
+  return true;
+}
