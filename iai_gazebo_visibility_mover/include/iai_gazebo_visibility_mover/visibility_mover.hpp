@@ -24,6 +24,7 @@ namespace iai_gazebo
           set_model_state_client_;
       ros::ServiceServer trigger_server_;
       ros::Subscriber joint_state_subscriber_, pixel_count_subscriber_;
+      ros::Publisher neck_command_publisher_;
       gazebo::transport::PublisherPtr world_control_publisher_;
 
       // Internal memory of things

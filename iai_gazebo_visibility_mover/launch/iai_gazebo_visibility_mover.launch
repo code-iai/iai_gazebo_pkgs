@@ -1,5 +1,5 @@
 <launch>
-  <arg name="sim-mode" default="true"/>
+  <arg name="sim-mode" default="false"/>
 
   <group if="$(arg sim-mode)">
     <rosparam command="load"
@@ -15,6 +15,7 @@
         name="iai_gazebo_visibility_mover" output="screen">
     <remap from="~joint_states" to="/joint_states"/>
     <remap from="~pixel_count" to="/iai_pixel_counter/blue_pixels"/>
+    <remap from="~neck_command" to="/neck/joint_goal"/>
     <param name="robot_description" textfile="$(find iai_gazebo_visibility_mover)/urdf/boxy_description.urdf" />
   </node>
 

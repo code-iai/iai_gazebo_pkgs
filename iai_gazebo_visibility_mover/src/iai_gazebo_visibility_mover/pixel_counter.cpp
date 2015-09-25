@@ -46,13 +46,14 @@ void PixelCounter::image_callback(const sensor_msgs::Image::ConstPtr& msg)
   cv::medianBlur(spl[0].clone(), blue_channel_blur, 25);
   cv::threshold(blue_channel_blur.clone(), blue_channel_thresh, 180, 255, 0);
 
-//  cv::imwrite("/tmp/images/original.jpg", cv_ptr->image);
-//  cv::imwrite("/tmp/images/blue_channel.jpg", spl[0]);
-//  cv::imwrite("/tmp/images/blue_channel_blur.jpg", blue_channel_blur);
-//  cv::imwrite("/tmp/images/blue_channel_thresh.jpg", blue_channel_thresh);
+  std::string date = boost::lexical_cast<std::string>(ros::Time::now().toSec());
+  cv::imwrite("/tmp/images/original" + date + ".jpg", cv_ptr->image);
+  cv::imwrite("/tmp/images/blue_channel" + date + ".jpg", spl[0]);
+  cv::imwrite("/tmp/images/blue_channel_blur" + date + ".jpg", blue_channel_blur);
+  cv::imwrite("/tmp/images/blue_channel_thresh" + date + ".jpg", blue_channel_thresh);
 
   std_msgs::UInt64 out_msg;
   out_msg.data = cv::countNonZero(blue_channel_thresh);
-  ROS_INFO_STREAM("[" << nh_.getNamespace() << "] Counted " << out_msg.data << " blue pixels.");
+  ROS_DEBUG_STREAM("[" << nh_.getNamespace() << "] Counted " << out_msg.data << " blue pixels.");
   blue_pixel_publisher_.publish(out_msg);
 }

@@ -6,6 +6,7 @@
 #include <gazebo_msgs/SetModelState.h>
 #include <gazebo_msgs/GetModelState.h>
 #include <gazebo/msgs/msgs.hh>
+#include <algorithm>
 
 using namespace iai_gazebo;
 
@@ -95,6 +96,8 @@ bool VisibilityMover::start()
 
   pixel_count_subscriber_ = nh_.subscribe("pixel_count", 1, 
       &VisibilityMover::pixel_count_callback, this);
+
+  neck_command_publisher_ = nh_.advertise<sensor_msgs::JointState>("neck_command", 1);
 
   if(!spawn_urdf(robot_description_, "boxy"))
     return false;
@@ -269,7 +272,7 @@ bool VisibilityMover::trigger_callback(std_srvs::Trigger::Request& request,
     std_srvs::Trigger::Response& response)
 {
   std::string robot_name = "boxy";
-  double threshold = 0.05;
+  double threshold = 0.2;
   size_t setting_iterations = 2;
 
   response.success = false;
@@ -284,13 +287,14 @@ bool VisibilityMover::trigger_callback(std_srvs::Trigger::Request& request,
     return true;
   }
 
+  std::random_shuffle ( alternative_configs_.begin(), alternative_configs_.end() );
   for(size_t i=0; i<alternative_configs_.size(); ++i)
   {
     if(target_visible(merge_configs(last_q, alternative_configs_[i]), robot_name, threshold))
     {
       ROS_INFO("[%s] Target already visible in alternative config. Moving head.",
           nh_.getNamespace().c_str());
-//      std::cout << alternative_configs_[i] << std::endl;
+      neck_command_publisher_.publish(to_msg(alternative_configs_[i]));
       response.success = true;
       return true;
     }
@@ -339,13 +343,15 @@ bool VisibilityMover::target_visible(const std::map<std::string, double>& q, con
   if(!step_simulation(sim_steps))
     return false;
 
+  has_new_pixel_count_ = false;
   wait_for_pixel_count();
   size_t post_pixel_count = pixel_count_;
 
   // DECISION
   int delta = static_cast<int>(post_pixel_count) - static_cast<int>(pre_pixel_count);
   double ratio = static_cast<double>(delta) / static_cast<double>(post_pixel_count);
-  ROS_DEBUG_STREAM("delta: " << delta << ", ratio:" << ratio << ", treshold: " << threshold);
+  ROS_INFO_STREAM("pre: " << pre_pixel_count << ", post: " << post_pixel_count << 
+      ", delta: " << delta << ", ratio:" << ratio << ", treshold: " << threshold);
   return (post_pixel_count > 0) && (ratio < threshold);
 }
 
