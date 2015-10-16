@@ -209,6 +209,7 @@ void GiskardControlPlugin::InitGazeboCommunication()
   node->Init(world_->GetName());
   serverControlPublisher_ = node->Advertise<msgs::ServerControl>("/gazebo/server/control");
   visualizationPublisher_ = node->Advertise<msgs::Vector3d>("/giskard/visualization", 1);
+  logControlPublisher_ = node->Advertise<msgs::LogControl>("/gazebo/log/control");
 }
 
 //////////////////////////////////////////////////
@@ -254,7 +255,7 @@ void GiskardControlPlugin::DelaySimStart()
 void GiskardControlPlugin::StartLogging()
 {
   std::cout << "Start logging." << std::endl;
-  util::LogRecord::Instance()->SetBasePath("logs");
+  util::LogRecord::Instance()->SetBasePath("/media/yfang/hdd/ControllerData/");
   util::LogRecord::Instance()->Start("txt");
 }
 
@@ -263,16 +264,27 @@ void GiskardControlPlugin::StartLogging()
 void GiskardControlPlugin::StopLogging()
 {
   util::LogRecord::Instance()->Stop();
+  std::cout << "STOPPED LOGGING" << std::endl;
+  msgs::LogControl log_msg;
+  log_msg.set_stop(true);
+  logControlPublisher_->Publish(log_msg);
 }
 
 //////////////////////////////////////////////////
 
 void GiskardControlPlugin::RequestGazeboShutdown()
 {
-  std::cout << "REQUESTING GAZEBO SERVER SHUTDOWN" << std::endl;
-  msgs::ServerControl server_msg;
-  server_msg.set_stop(true);
-  serverControlPublisher_->Publish(server_msg);
+    bool shutdown_ = false;
+    if(shutdown_){
+        std::cout << "REQUESTING GAZEBO SERVER SHUTDOWN" << std::endl;
+        msgs::ServerControl server_msg;
+        server_msg.set_stop(true);
+        serverControlPublisher_->Publish(server_msg);
+    }
+    else {
+        std::cout << "GAZEBO PAUSE" << std::endl;
+        world_->SetPaused(true);
+    }
 }
 
 //////////////////////////////////////////////////

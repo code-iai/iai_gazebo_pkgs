@@ -41,12 +41,12 @@
 
     <include>
         <uri>model://mug</uri>
-        <pose>0.1032 -0.1524 0.8515 0 0 0</pose>
+        <pose>0.5366 -0.3402 0.855 0 0 0</pose>
     </include>
 
     <plugin name="SpawnLiquid" filename="libSpawnLiquid.so">
       <initPos>0.2 0.1 0.88</initPos>
-      <nrSpheres>80</nrSpheres>
+      <nrSpheres>494</nrSpheres>
       <inObject>Cup</inObject>
       <inObjectZOffset>0.07729136</inObjectZOffset>
       <mass>0.0006</mass>
@@ -69,8 +69,7 @@
     </plugin>
 
     <plugin name="GiskardControlPlugin" filename="libGiskardControlPlugin.so">
-      <experimentFile>experiments/pouring-from-right-experiment.yaml</experimentFile>
-      <!--experimentFile>experiments/pouring-from-left-experiment-unconstrained-orientation.yaml</experimentFile-->
+      <experimentFile>experiments/pouring-from-left-experiment-default.yaml</experimentFile>
     </plugin>
 
   </world>
