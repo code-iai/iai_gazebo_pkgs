@@ -109,38 +109,38 @@ scope:
 - mug-above-itself: {z-coord: mug-top-to-mug-bottom}
 - {controllable-weight: 0.001}
 - {constraint-weight: 10.001}
-- {min-trans-vel: -0.59}
-- {max-trans-vel: 0.59}
-- {min-rot-vel: -0.0116}
-- {max-rot-vel: 0.0116}
+- {min-trans-vel: -0.3619}
+- {max-trans-vel: 0.3619}
+- {min-rot-vel: -0.7296}
+- {max-rot-vel: 0.7296}
 soft-constraints:
 - soft-constraint:
-  - double-sub: [-0.0413, mug-bottom-behind-maker]
-  - double-sub: [0.0039, mug-bottom-behind-maker]
+  - double-sub: [0.0063, mug-bottom-behind-maker]
+  - double-sub: [0.0703, mug-bottom-behind-maker]
   - constraint-weight
   - mug-bottom-behind-maker
 - soft-constraint:
-  - double-sub: [-0.0317, mug-bottom-left-maker]
-  - double-sub: [-0.0086, mug-bottom-left-maker]
+  - double-sub: [-0.1247, mug-bottom-left-maker]
+  - double-sub: [-0.0842, mug-bottom-left-maker]
   - constraint-weight
   - mug-bottom-left-maker
 - soft-constraint:
-  - double-sub: [0.1867, mug-bottom-above-maker]
-  - double-sub: [0.224, mug-bottom-above-maker]
+  - double-sub: [0.2154, mug-bottom-above-maker]
+  - double-sub: [0.2764, mug-bottom-above-maker]
   - constraint-weight
   - mug-bottom-above-maker
 - soft-constraint:
-  - double-sub: [-0.0774, mug-behind-itself]
-  - double-sub: [-0.0343, mug-behind-itself]
+  - double-sub: [-0.0767, mug-behind-itself]
+  - double-sub: [-0.034, mug-behind-itself]
   - constraint-weight
   - mug-behind-itself
 - soft-constraint:
   - double-sub: [0.0696, mug-left-itself]
-  - double-sub: [0.0971, mug-left-itself]
+  - double-sub: [0.0965, mug-left-itself]
   - constraint-weight
   - mug-left-itself
 - soft-constraint:
-  - double-sub: [-0.0203, mug-above-itself]
-  - double-sub: [-0.0037, mug-above-itself]
+  - double-sub: [-0.0392, mug-above-itself]
+  - double-sub: [-0.0191, mug-above-itself]
   - constraint-weight
   - mug-above-itself

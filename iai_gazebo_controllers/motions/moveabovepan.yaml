@@ -1,96 +1,146 @@
-scope:
-  # definition of some nice short-cuts
-  - unit-x: {vector3: [1, 0, 0]}
-  - unit-y: {vector3: [0, 1, 0]}
-  - unit-z: {vector3: [0, 0, 1]}
-  - identity-rot: {axis-angle: [unit-x, 0]} 
-  - zero-vec: {vector3: [0, 0, 0]}
-  
-  # definition of input transforms 
-  - mug-frame:
-      cached-frame:
-        frame-mul:
-          - frame: [identity-rot, {vector3: [{input-var: 0}, 0, 0]}]
-          - frame: [identity-rot, {vector3: [0, {input-var: 1}, 0]}]
-          - frame: [identity-rot, {vector3: [0, 0, {input-var: 2}]}]
-          - frame: [{axis-angle: [unit-z, {input-var: 3}]}, zero-vec]
-          - frame: [{axis-angle: [unit-y, {input-var: 4}]}, zero-vec]
-          - frame: [{axis-angle: [unit-x, {input-var: 5}]}, zero-vec]
-  - maker-frame:
-      cached-frame:
-        frame-mul:
-          - frame: [identity-rot, {vector3: [{input-var: 6}, 0, 0]}]
-          - frame: [identity-rot, {vector3: [0, {input-var: 7}, 0]}]
-          - frame: [identity-rot, {vector3: [0, 0, {input-var: 8}]}]
-          - frame: [{axis-angle: [unit-z, {input-var: 9}]}, zero-vec]
-          - frame: [{axis-angle: [unit-y, {input-var: 10}]}, zero-vec]
-          - frame: [{axis-angle: [unit-x, {input-var: 11}]}, zero-vec]
-
-  # definition of features
-  - mug-bottom: {origin-of: mug-frame}
-  - mug-top: {transform-vector: [mug-frame, {vector3: [0, 0, 0.108]}]}
-  - maker-top: {origin-of: maker-frame}
-
-  # distance vector between top of maker and bottom of mug
-  - mug-bottom-to-maker-top:
-      cached-vector: {vector-sub: [mug-bottom, maker-top]}
-  - mug-top-to-mug-bottom:
-      cached-vector: {vector-sub: [mug-top, mug-bottom]}
-
-  # expressions used in constraints 
-  - mug-bottom-behind-maker: {x-coord: mug-bottom-to-maker-top}
-  - mug-bottom-left-maker: {y-coord: mug-bottom-to-maker-top}
-  - mug-bottom-above-maker: {z-coord: mug-bottom-to-maker-top}
-  - mug-behind-itself: {x-coord: mug-top-to-mug-bottom}
-  - mug-left-itself: {y-coord: mug-top-to-mug-bottom}
-  - mug-above-itself: {z-coord: mug-top-to-mug-bottom}
-
-  # some constants
-  - controllable-weight: 0.001 # mu * 1
-  - constraint-weight: 10.001 # mu + 10
-  - min-trans-vel: -0.3 # in m/s
-  - max-trans-vel: 0.3 # in m/s
-  - min-rot-vel: -0.7 # in rad/s
-  - max-rot-vel: 0.7 # in rad/s
-
 controllable-constraints:
-  - controllable-constraint: [min-trans-vel, max-trans-vel, controllable-weight, 0]
-  - controllable-constraint: [min-trans-vel, max-trans-vel, controllable-weight, 1]
-  - controllable-constraint: [min-trans-vel, max-trans-vel, controllable-weight, 2]
-  - controllable-constraint: [min-rot-vel, max-rot-vel, controllable-weight, 3]
-  - controllable-constraint: [min-rot-vel, max-rot-vel, controllable-weight, 4]
-  - controllable-constraint: [min-rot-vel, max-rot-vel, controllable-weight, 5]
-
-soft-constraints: 
-  - soft-constraint: 
-      - {double-sub: [-0.03, mug-bottom-behind-maker]} # control law for lower boundary
-      - {double-sub: [0.03, mug-bottom-behind-maker]} # control law for upper boundary
-      - constraint-weight # weight of this constraint
-      - mug-bottom-behind-maker # expression used for Jacobian calcuation
-  - soft-constraint: 
-      - {double-sub: [-0.03, mug-bottom-left-maker]} # control law for lower boundary
-      - {double-sub: [0.03, mug-bottom-left-maker]} # control law for upper boundary
-      - constraint-weight # weight of this constraint
-      - mug-bottom-left-maker # expression used for Jacobian calcuation
-  - soft-constraint: 
-      - {double-sub: [0.15, mug-bottom-above-maker]} # control law for lower boundary
-      - {double-sub: [0.2, mug-bottom-above-maker]} # control law for upper boundary
-      - constraint-weight # weight of this constraint
-      - mug-bottom-above-maker # expression used for Jacobian calcuation
-  - soft-constraint: 
-      - {double-sub: [-0.01, mug-behind-itself]} # control law for lower boundary
-      - {double-sub: [0.01, mug-behind-itself]} # control law for upper boundary
-      - constraint-weight # weight of this constraint
-      - mug-behind-itself # expression used for Jacobian calcuation
-  - soft-constraint: 
-      - {double-sub: [-0.01, mug-left-itself]} # control law for lower boundary
-      - {double-sub: [0.01, mug-left-itself]} # control law for upper boundary
-      - constraint-weight # weight of this constraint
-      - mug-left-itself # expression used for Jacobian calcuation
-  - soft-constraint: 
-      - {double-sub: [0.1, mug-above-itself]} # control law for lower boundary
-      - {double-sub: [0.11, mug-above-itself]} # control law for upper boundary
-      - constraint-weight # weight of this constraint
-      - mug-above-itself # expression used for Jacobian calcuation
-
-hard-constraints: [] # no hard constraints used in this motion
+- controllable-constraint: [min-trans-vel, max-trans-vel, controllable-weight, 0]
+- controllable-constraint: [min-trans-vel, max-trans-vel, controllable-weight, 1]
+- controllable-constraint: [min-trans-vel, max-trans-vel, controllable-weight, 2]
+- controllable-constraint: [min-rot-vel, max-rot-vel, controllable-weight, 3]
+- controllable-constraint: [min-rot-vel, max-rot-vel, controllable-weight, 4]
+- controllable-constraint: [min-rot-vel, max-rot-vel, controllable-weight, 5]
+hard-constraints: []
+scope:
+- unit-x:
+    vector3: [1, 0, 0]
+- unit-y:
+    vector3: [0, 1, 0]
+- unit-z:
+    vector3: [0, 0, 1]
+- identity-rot:
+    axis-angle: [unit-x, 0]
+- zero-vec:
+    vector3: [0, 0, 0]
+- mug-frame:
+    cached-frame:
+      frame-mul:
+      - frame:
+        - identity-rot
+        - vector3:
+          - {input-var: 0}
+          - 0
+          - 0
+      - frame:
+        - identity-rot
+        - vector3:
+          - 0
+          - {input-var: 1}
+          - 0
+      - frame:
+        - identity-rot
+        - vector3:
+          - 0
+          - 0
+          - {input-var: 2}
+      - frame:
+        - axis-angle:
+          - unit-z
+          - {input-var: 3}
+        - zero-vec
+      - frame:
+        - axis-angle:
+          - unit-y
+          - {input-var: 4}
+        - zero-vec
+      - frame:
+        - axis-angle:
+          - unit-x
+          - {input-var: 5}
+        - zero-vec
+- maker-frame:
+    cached-frame:
+      frame-mul:
+      - frame:
+        - identity-rot
+        - vector3:
+          - {input-var: 6}
+          - 0
+          - 0
+      - frame:
+        - identity-rot
+        - vector3:
+          - 0
+          - {input-var: 7}
+          - 0
+      - frame:
+        - identity-rot
+        - vector3:
+          - 0
+          - 0
+          - {input-var: 8}
+      - frame:
+        - axis-angle:
+          - unit-z
+          - {input-var: 9}
+        - zero-vec
+      - frame:
+        - axis-angle:
+          - unit-y
+          - {input-var: 10}
+        - zero-vec
+      - frame:
+        - axis-angle:
+          - unit-x
+          - {input-var: 11}
+        - zero-vec
+- mug-bottom: {origin-of: mug-frame}
+- mug-top:
+    transform-vector:
+    - mug-frame
+    - vector3: [0, 0, 0.108]
+- maker-top: {origin-of: maker-frame}
+- mug-bottom-to-maker-top:
+    cached-vector:
+      vector-sub: [mug-bottom, maker-top]
+- mug-top-to-mug-bottom:
+    cached-vector:
+      vector-sub: [mug-top, mug-bottom]
+- mug-bottom-behind-maker: {x-coord: mug-bottom-to-maker-top}
+- mug-bottom-left-maker: {y-coord: mug-bottom-to-maker-top}
+- mug-bottom-above-maker: {z-coord: mug-bottom-to-maker-top}
+- mug-behind-itself: {x-coord: mug-top-to-mug-bottom}
+- mug-left-itself: {y-coord: mug-top-to-mug-bottom}
+- mug-above-itself: {z-coord: mug-top-to-mug-bottom}
+- {controllable-weight: 0.001}
+- {constraint-weight: 10.001}
+- {min-trans-vel: -0.3619}
+- {max-trans-vel: 0.3619}
+- {min-rot-vel: -0.7296}
+- {max-rot-vel: 0.7296}
+soft-constraints:
+- soft-constraint:
+  - double-sub: [0.0063, mug-bottom-behind-maker]
+  - double-sub: [0.0703, mug-bottom-behind-maker]
+  - constraint-weight
+  - mug-bottom-behind-maker
+- soft-constraint:
+  - double-sub: [-0.1247, mug-bottom-left-maker]
+  - double-sub: [-0.0842, mug-bottom-left-maker]
+  - constraint-weight
+  - mug-bottom-left-maker
+- soft-constraint:
+  - double-sub: [0.2154, mug-bottom-above-maker]
+  - double-sub: [0.2764, mug-bottom-above-maker]
+  - constraint-weight
+  - mug-bottom-above-maker
+- soft-constraint:
+  - double-sub: [-0.0767, mug-behind-itself]
+  - double-sub: [-0.034, mug-behind-itself]
+  - constraint-weight
+  - mug-behind-itself
+- soft-constraint:
+  - double-sub: [0.0696, mug-left-itself]
+  - double-sub: [0.0965, mug-left-itself]
+  - constraint-weight
+  - mug-left-itself
+- soft-constraint:
+  - double-sub: [-0.0392, mug-above-itself]
+  - double-sub: [-0.0191, mug-above-itself]
+  - constraint-weight
+  - mug-above-itself
