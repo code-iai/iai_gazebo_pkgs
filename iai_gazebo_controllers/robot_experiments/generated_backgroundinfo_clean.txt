@@ -1,0 +1,150 @@
+fill level: 52
+number of spheres: 150
+container startpos: 0.3636 -0.01961 0.8718 0 0 0
+position difference maker-container: [-0.0636   0.41961  0.0182   0.       0.       0.     ]
+
+fill level: 1
+number of spheres: 150
+container startpos: 0.6436 0.1412 0.8718 0 0 0
+position difference maker-container: [-0.3436  0.2588  0.0182  0.      0.      0.    ]
+
+fill level: 61
+number of spheres: 150
+container startpos: 0.3541 -0.03262 0.8718 0 0 0
+position difference maker-container: [-0.0541   0.43262  0.0182   0.       0.       0.     ]
+
+fill level: 28
+number of spheres: 150
+container startpos: 0.2133 -0.2198 0.8718 0 0 0
+position difference maker-container: [ 0.0867  0.6198  0.0182  0.      0.      0.    ]
+
+fill level: 76
+number of spheres: 150
+container startpos: 0.1959 -0.1152 0.8718 0 0 0
+position difference maker-container: [ 0.1041  0.5152  0.0182  0.      0.      0.    ]
+
+fill level: 40
+number of spheres: 150
+container startpos: 0.6274 -0.2474 0.8718 0 0 0
+position difference maker-container: [-0.3274  0.6474  0.0182  0.      0.      0.    ]
+
+fill level: 1
+number of spheres: 150
+container startpos: 0.6276 -0.3002 0.8718 0 0 0
+position difference maker-container: [-0.3276  0.7002  0.0182  0.      0.      0.    ]
+
+fill level: 13
+number of spheres: 150
+container startpos: 0.413 -0.008171 0.8718 0 0 0
+position difference maker-container: [-0.113     0.408171  0.0182    0.        0.        0.      ]
+
+fill level: 73
+number of spheres: 150
+container startpos: 0.6789 0.188 0.8718 0 0 0
+position difference maker-container: [-0.3789  0.212   0.0182  0.      0.      0.    ]
+
+fill level: 38
+number of spheres: 150
+container startpos: 0.4715 0.03234 0.8718 0 0 0
+position difference maker-container: [-0.1715   0.36766  0.0182   0.       0.       0.     ]
+
+fill level: 75
+number of spheres: 150
+container startpos: 0.5686 0.08446 0.8718 0 0 0
+position difference maker-container: [-0.2686   0.31554  0.0182   0.       0.       0.     ]
+
+fill level: 59
+number of spheres: 150
+container startpos: 0.1228 -0.01374 0.8718 0 0 0
+position difference maker-container: [ 0.1772   0.41374  0.0182   0.       0.       0.     ]
+
+fill level: 6
+number of spheres: 150
+container startpos: 0.4914 0.07823 0.8718 0 0 0
+position difference maker-container: [-0.1914   0.32177  0.0182   0.       0.       0.     ]
+
+fill level: 39
+number of spheres: 150
+container startpos: 0.1239 -0.08701 0.8718 0 0 0
+position difference maker-container: [ 0.1761   0.48701  0.0182   0.       0.       0.     ]
+
+fill level: 46
+number of spheres: 150
+container startpos: 0.3934 -0.1659 0.8718 0 0 0
+position difference maker-container: [-0.0934  0.5659  0.0182  0.      0.      0.    ]
+
+fill level: 73
+number of spheres: 150
+container startpos: 0.2307 -0.2962 0.8718 0 0 0
+position difference maker-container: [ 0.0693  0.6962  0.0182  0.      0.      0.    ]
+
+fill level: 52
+number of spheres: 150
+container startpos: 0.2997 -0.04875 0.8718 0 0 0
+position difference maker-container: [  3.00000000e-04   4.48750000e-01   1.82000000e-02   0.00000000e+00
+   0.00000000e+00   0.00000000e+00]
+
+fill level: 30
+number of spheres: 150
+container startpos: 0.5328 0.04986 0.8718 0 0 0
+position difference maker-container: [-0.2328   0.35014  0.0182   0.       0.       0.     ]
+
+fill level: 41
+number of spheres: 150
+container startpos: 0.6688 -0.06562 0.8718 0 0 0
+position difference maker-container: [-0.3688   0.46562  0.0182   0.       0.       0.     ]
+
+fill level: 73
+number of spheres: 150
+container startpos: 0.4718 0.1741 0.8718 0 0 0
+position difference maker-container: [-0.1718  0.2259  0.0182  0.      0.      0.    ]
+
+fill level: 23
+number of spheres: 150
+container startpos: 0.1837 -0.1751 0.8718 0 0 0
+position difference maker-container: [ 0.1163  0.5751  0.0182  0.      0.      0.    ]
+
+fill level: 50
+number of spheres: 150
+container startpos: 0.2946 0.08398 0.8718 0 0 0
+position difference maker-container: [ 0.0054   0.31602  0.0182   0.       0.       0.     ]
+
+fill level: 22
+number of spheres: 150
+container startpos: 0.3349 0.003273 0.8718 0 0 0
+position difference maker-container: [-0.0349    0.396727  0.0182    0.        0.        0.      ]
+
+fill level: 62
+number of spheres: 150
+container startpos: 0.1211 -0.1665 0.8718 0 0 0
+position difference maker-container: [ 0.1789  0.5665  0.0182  0.      0.      0.    ]
+
+fill level: 13
+number of spheres: 150
+container startpos: 0.3022 -0.05163 0.8718 0 0 0
+position difference maker-container: [-0.0022   0.45163  0.0182   0.       0.       0.     ]
+
+fill level: 48
+number of spheres: 150
+container startpos: 0.2666 0.1929 0.8718 0 0 0
+position difference maker-container: [ 0.0334  0.2071  0.0182  0.      0.      0.    ]
+
+fill level: 11
+number of spheres: 150
+container startpos: 0.6527 0.1075 0.8718 0 0 0
+position difference maker-container: [-0.3527  0.2925  0.0182  0.      0.      0.    ]
+
+fill level: 48
+number of spheres: 150
+container startpos: 0.546 -0.3279 0.8718 0 0 0
+position difference maker-container: [-0.246   0.7279  0.0182  0.      0.      0.    ]
+
+fill level: 46
+number of spheres: 150
+container startpos: 0.3375 -0.3403 0.8718 0 0 0
+position difference maker-container: [-0.0375  0.7403  0.0182  0.      0.      0.    ]
+
+fill level: 2
+number of spheres: 150
+container startpos: 0.3305 -0.09321 0.8718 0 0 0
+position difference maker-container: [-0.0305   0.49321  0.0182   0.       0.       0.     ]

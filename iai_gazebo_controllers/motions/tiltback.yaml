@@ -135,12 +135,12 @@ soft-constraints:
   - constraint-weight
   - mug-behind-itself
 - soft-constraint:
-  - double-sub: [0.069, mug-left-itself]
-  - double-sub: [0.1045, mug-left-itself]
+  - double-sub: [0.0548, mug-left-itself]
+  - double-sub: [0.0835, mug-left-itself]
   - constraint-weight
   - mug-left-itself
 - soft-constraint:
-  - double-sub: [0.0164, mug-above-itself]
-  - double-sub: [0.0562, mug-above-itself]
+  - double-sub: [0.0499, mug-above-itself]
+  - double-sub: [0.0857, mug-above-itself]
   - constraint-weight
   - mug-above-itself

@@ -41,14 +41,14 @@
 
     <include>
         <uri>model://mug</uri>
-        <pose>0.3478 -0.2471 0.8515 0 0 0</pose>
+        <pose>0.6591 0.05944 0.8718 0 0 0</pose>
     </include>
 
     <plugin name="SpawnLiquid" filename="libSpawnLiquid.so">
       <initPos>0.2 0.1 0.88</initPos>
-      <nrSpheres>177</nrSpheres>
+      <nrSpheres>150</nrSpheres>
       <inObject>Cup</inObject>
-      <inObjectZOffset>0.07729136</inObjectZOffset>
+      <inObjectZOffset>0.06296841875</inObjectZOffset>
       <mass>0.0006</mass>
       <sphereRadius>0.0045</sphereRadius>
       <spawnDiam>0.03</spawnDiam>
