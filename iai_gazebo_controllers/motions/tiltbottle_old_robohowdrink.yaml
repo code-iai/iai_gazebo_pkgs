@@ -93,12 +93,8 @@ scope:
 - mug-top:
     transform-vector:
     - mug-frame
-    - vector3: [0, 0, 0.181]
-- maker-bottom: {origin-of: maker-frame}
-- maker-top:
-    transform-vector:
-    - maker-frame
-    - vector3: [0, 0, 0.088]
+    - vector3: [0, 0, 0.108]
+- maker-top: {origin-of: maker-frame}
 - mug-top-to-maker-top:
     cached-vector:
       vector-sub: [mug-top, maker-top]
@@ -113,38 +109,38 @@ scope:
 - mug-above-itself: {z-coord: mug-top-to-mug-bottom}
 - {controllable-weight: 0.001}
 - {constraint-weight: 10.001}
-- {min-trans-vel: -120.7191}
-- {max-trans-vel: 120.7191}
-- {min-rot-vel: -1412.3489}
-- {max-rot-vel: 1412.3489}
+- {min-trans-vel: -119.448}
+- {max-trans-vel: 119.448}
+- {min-rot-vel: -1503.9882}
+- {max-rot-vel: 1503.9882}
 soft-constraints:
 - soft-constraint:
   - double-sub: [-0.0029, mug-top-behind-maker]
-  - double-sub: [0.0048, mug-top-behind-maker]
+  - double-sub: [0.0047, mug-top-behind-maker]
   - constraint-weight
   - mug-top-behind-maker
 - soft-constraint:
-  - double-sub: [-0.0171, mug-top-left-maker]
-  - double-sub: [-0.014, mug-top-left-maker]
+  - double-sub: [-0.0172, mug-top-left-maker]
+  - double-sub: [-0.0141, mug-top-left-maker]
   - constraint-weight
   - mug-top-left-maker
 - soft-constraint:
-  - double-sub: [0.0351, mug-top-above-maker]
-  - double-sub: [0.0426, mug-top-above-maker]
+  - double-sub: [0.0355, mug-top-above-maker]
+  - double-sub: [0.0428, mug-top-above-maker]
   - constraint-weight
   - mug-top-above-maker
 - soft-constraint:
-  - double-sub: [-0.0315, mug-behind-itself]
-  - double-sub: [-0.0169, mug-behind-itself]
+  - double-sub: [-0.0333, mug-behind-itself]
+  - double-sub: [-0.0193, mug-behind-itself]
   - constraint-weight
   - mug-behind-itself
 - soft-constraint:
-  - double-sub: [0.1619, mug-left-itself]
-  - double-sub: [0.167, mug-left-itself]
+  - double-sub: [0.1606, mug-left-itself]
+  - double-sub: [0.1656, mug-left-itself]
   - constraint-weight
   - mug-left-itself
 - soft-constraint:
-  - double-sub: [-0.069, mug-above-itself]
-  - double-sub: [-0.0616, mug-above-itself]
+  - double-sub: [-0.0717, mug-above-itself]
+  - double-sub: [-0.0644, mug-above-itself]
   - constraint-weight
   - mug-above-itself

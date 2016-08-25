@@ -1,12 +1,12 @@
-controlled-model: Cup
+controlled-model: SiggBottle
 controller-specs:
 - {controller-file: motions/moveabovepan.yaml, max-twist-buffer-size: 100, min-angular-vel-threshold: 0.05,
   min-translational-vel-threshold: 0.01}
-- {controller-file: motions/tiltbottle.yaml, max-twist-buffer-size: 1600, min-angular-vel-threshold: 0.05,
+- {controller-file: motions/tiltbottle.yaml, max-twist-buffer-size: 1, min-angular-vel-threshold: 0.05,
   min-translational-vel-threshold: 0.01}
 - {controller-file: motions/tiltback.yaml, max-twist-buffer-size: 100, min-angular-vel-threshold: 0.05,
   min-translational-vel-threshold: 0.01}
 log-delay: 2
 move-start-delay: 3
-observed-model: PancakeMaker
+observed-model: EcoCup
 sim-start-delay: 2.0

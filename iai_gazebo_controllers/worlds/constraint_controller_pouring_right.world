@@ -41,7 +41,7 @@
 
     <include>
         <uri>model://mug</uri>
-        <pose>0.6591 0.05944 0.8718 0 0 0</pose>
+        <pose>0.6299 -0.1509 0.8718 0 0 0</pose>
     </include>
 
     <plugin name="SpawnLiquid" filename="libSpawnLiquid.so">

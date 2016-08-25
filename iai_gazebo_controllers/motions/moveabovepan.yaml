@@ -93,54 +93,58 @@ scope:
 - mug-top:
     transform-vector:
     - mug-frame
-    - vector3: [0, 0, 0.108]
-- maker-top: {origin-of: maker-frame}
+    - vector3: [0, 0, 0.181]
+- maker-bottom: {origin-of: maker-frame}
+- maker-top:
+    transform-vector:
+    - maker-frame
+    - vector3: [0, 0, 0.088]
 - mug-bottom-to-maker-top:
     cached-vector:
       vector-sub: [mug-bottom, maker-top]
 - mug-top-to-mug-bottom:
     cached-vector:
       vector-sub: [mug-top, mug-bottom]
-- mug-bottom-behind-maker: {x-coord: mug-bottom-to-maker-top}
-- mug-bottom-left-maker: {y-coord: mug-bottom-to-maker-top}
-- mug-bottom-above-maker: {z-coord: mug-bottom-to-maker-top}
+- mug-top-behind-maker: {x-coord: mug-top-to-maker-top}
+- mug-top-left-maker: {y-coord: mug-top-to-maker-top}
+- mug-top-above-maker: {z-coord: mug-top-to-maker-top}
 - mug-behind-itself: {x-coord: mug-top-to-mug-bottom}
 - mug-left-itself: {y-coord: mug-top-to-mug-bottom}
 - mug-above-itself: {z-coord: mug-top-to-mug-bottom}
 - {controllable-weight: 0.001}
 - {constraint-weight: 10.001}
-- {min-trans-vel: -0.6004}
-- {max-trans-vel: 0.6004}
-- {min-rot-vel: -0.7296}
-- {max-rot-vel: 0.7296}
+- {min-trans-vel: -781.1606}
+- {max-trans-vel: 781.1606}
+- {min-rot-vel: -1435.7507}
+- {max-rot-vel: 1435.7507}
 soft-constraints:
 - soft-constraint:
-  - double-sub: [0.0063, mug-bottom-behind-maker]
-  - double-sub: [0.0703, mug-bottom-behind-maker]
+  - double-sub: [-0.0072, mug-top-behind-maker]
+  - double-sub: [0.0012, mug-top-behind-maker]
   - constraint-weight
-  - mug-bottom-behind-maker
+  - mug-top-behind-maker
 - soft-constraint:
-  - double-sub: [-0.1247, mug-bottom-left-maker]
-  - double-sub: [-0.0842, mug-bottom-left-maker]
+  - double-sub: [-0.0138, mug-top-left-maker]
+  - double-sub: [-0.0078, mug-top-left-maker]
   - constraint-weight
-  - mug-bottom-left-maker
+  - mug-top-left-maker
 - soft-constraint:
-  - double-sub: [0.1797, mug-bottom-above-maker]
-  - double-sub: [0.2383, mug-bottom-above-maker]
+  - double-sub: [0.0524, mug-top-above-maker]
+  - double-sub: [0.0636, mug-top-above-maker]
   - constraint-weight
-  - mug-bottom-above-maker
+  - mug-top-above-maker
 - soft-constraint:
-  - double-sub: [-0.0767, mug-behind-itself]
-  - double-sub: [-0.034, mug-behind-itself]
+  - double-sub: [-0.0275, mug-behind-itself]
+  - double-sub: [-0.0133, mug-behind-itself]
   - constraint-weight
   - mug-behind-itself
 - soft-constraint:
-  - double-sub: [0.0696, mug-left-itself]
-  - double-sub: [0.0965, mug-left-itself]
+  - double-sub: [0.1739, mug-left-itself]
+  - double-sub: [0.1784, mug-left-itself]
   - constraint-weight
   - mug-left-itself
 - soft-constraint:
-  - double-sub: [-0.0303, mug-above-itself]
-  - double-sub: [-0.0207, mug-above-itself]
+  - double-sub: [-0.0278, mug-above-itself]
+  - double-sub: [-0.016, mug-above-itself]
   - constraint-weight
   - mug-above-itself
